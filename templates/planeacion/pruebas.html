@@ -1,0 +1,171 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                {{ table_product_title }}
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="tabla_pron_prod" class="table table-bordered">
+                    <thead>
+                        <tr style="text-align: center">
+                            <th style="width: 10%">#</th>
+                            <th style="width: 20%">Producto</th>
+                            <th style="width: 15%">Proyección unidades</th>
+                            <th style="width: 15%">Proyección venta</th>
+                            <th style="width: 20%">Costo compra</th>
+                            <th style="width: 20%">Proyección compra</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    {{ table_customer_title }}
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="tabla_pron_cli" class="table table-bordered">
+                    <thead>
+                        <tr style="text-align: center">
+                            <th style="width: 10%">#</th>
+                            <th style="width: 20%">Cliente</th>
+                            <th style="width: 15%">Proyección</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    {{ table_zone_title }}
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr style="text-align: center">
+                            <th style="width: 10%">#</th>
+                            <th style="width: 20%">Zona</th>
+                            <th style="width: 15%">Proyección</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    {{ table_advisor_title }}
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr style="text-align: center">
+                            <th style="width: 10%">#</th>
+                            <th style="width: 20%">Asesor</th>
+                            <th style="width: 15%">Proyección</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="col-md-8">
+    <div class="card card-primary card-outline">
+        <div class="card-header">
+            <h3 class="card-title">
+                {{ table_title }}
+            </h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+            <table id="tabla_pronosticos" class="table table-bordered">
+                <thead>
+                    <tr style="text-align: center">
+                        <th style="width: 10%">#</th>
+                        <th style="width: 50%">Proyección de ventas</th>
+                        <th style="width: 20%">Ver</th>
+                        <th style="width: 20%">Seleccionar</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="card card-primary">
+        <div class="card-header">
+          <h5 class="card-title m-0">Ajustar pronóstico</h5>
+        </div>
+        <div class="card-body">
+          <p class="card-text">Seleccione esta opción para ajustar los pronósticos manualmente</p>
+          <a href="#" class="btn btn-primary">Ajustar</a>
+        </div>
+      </div>
+</div>

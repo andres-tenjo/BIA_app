@@ -1,0 +1,131 @@
+{% extends 'modulo_configuracion/form.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} BIA | Editar perfil empresa {% endblock title %}
+{% block title-header %}
+{% endblock title-header %}
+
+    {% block form %}
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Tipo de persona:</label>
+                {{ form.person_type  }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Tipo de identificación:</label>
+                {{ form.id_type }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Nº de identificación:</label>
+                {{ form.id_number }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Nombre o razón social:</label>
+                {{ form.company_name }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* País:</label>
+                {{ form.country }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Departamento:</label>
+                {{ form.department }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Ciudad:</label>
+                {{ form.city }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Código postal:</label>
+                {{ form.postal_code }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Dirección:</label>
+                {{ form.address }}
+            </div>            
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                <label>Correo electrónico:</label>
+                {{ form.email }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>Teléfono Nº:</label>
+                {{ form.tel_number }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Celular Nº:</label>
+                {{ form.cel_number }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Código actividad principal:</label>
+                {{ form.main_activity_code }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>Código actividad secundaria:</label>
+                {{ form.second_activity_code }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Tipo de contribuyente:</label>
+                {{ form.contrib_type }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                <label>Logo empresa:</label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                {{ form.logo }}
+            </div>
+        </div>
+    </div>
+    <br>
+    <h6 class="text-primary">Los campos marcados con * son obligatorios</h6>
+    <hr>
+    {% endblock form %}
+    {% block extrajs %}
+        <script src="{% static 'js/parametrizacion/crear_empresa.js' %}"></script>
+        <script src="{% static 'js/parametrizacion/main.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
+    {% endblock extrajs %}

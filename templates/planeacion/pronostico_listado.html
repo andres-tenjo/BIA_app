@@ -1,0 +1,281 @@
+{% extends 'bia/modulo_configuracion.html' %}
+{% load static %}
+{% block title-header %}
+{% endblock title-header %}
+{% block menu-header %}
+    {% block menu %}
+    {% endblock menu %}
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+        </a>
+    </li>
+{% endblock menu-header %}
+{% block content-window %}
+    <form method="post">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-plus"></i>
+                    {{ title }}
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="accordionExample">
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Establecer meta mes
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Ingrese la meta de venta monetaria para el mes:</label>
+                                                {{ form_plan.monetary_goal }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Ingrese el valor de la venta esperada:</label>
+                                                {{ form_plan.monetary_goal }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Gráfico de historico venta mes:</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <figure class="highcharts-figure">
+                                            <div id="containerSale"></div>
+                                        </figure>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" id="headingThree">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Establecer meta por categoría
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                            <div class="card-body">
+                                <div class="card card-dark">
+                                    <div class="card-header">
+                                        <h3 class="card-title">
+                                            <i class="fas fa-exchange-alt"></i>
+                                            Establecer meta por categoría
+                                        </h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="accordion">
+                                            <div class="card">
+                                                <div class="card-header" id="headingOne">
+                                                    <div class="mb-0">
+                                                        <div class="row">
+                                                            <div class="col-lg-4">
+                                                                <button class="btn btn-link collapsed cityRun" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                                                    Ciudad
+                                                                </button>
+                                                            </div>
+                                                            <div style="text-align: right;" class="col-lg-2">
+                                                                <label>Meta $:</label>
+                                                            </div>
+                                                            <div class="col-lg-2">
+                                                                <input type="text" class="form-control" autocomplete="off" name="goalMonCity" readonly="true">
+                                                            </div>
+                                                            <div style="text-align: right;" class="col-lg-2">
+                                                                <label>Meta %:</label>
+                                                            </div>
+                                                            <div class="col-lg-2">
+                                                                <input type="text" class="form-control" autocomplete="off" name="goalPercCity" readonly="true">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <table id="cityDataTable" class="table table-hover">
+                                                                    <thead>
+                                                                        <tr style="text-align: center" class="table-active">
+                                                                            <th style="width: 20%;">Ciudad</th>
+                                                                            <th style="width: 30%;">Última venta</th>
+                                                                            <th style="width: 15%;">Pronóstico venta</th>
+                                                                            <th style="width: 15%;">Meta $</th>
+                                                                            <th style="width: 15%;">Meta %</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <hr>
+                                                        <div class="row">
+                                                            <div class="col-lg-3">
+                                                                <label>
+                                                                    <input type="checkbox" class="cbAct" value="0">
+                                                                    Establecer meta por ciudad
+                                                                </label>            
+                                                            </div>
+                                                            <div class="col-lg-3">
+                                                                <a href="" type="button" data-toggle="collapse" data-target="#cityGraphCollapse" aria-expanded="false" aria-controls="cityGraphCollapse">
+                                                                    <label>
+                                                                        Ver gráfico
+                                                                    </label>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <hr>
+                                                        <div class="row">
+                                                            <div class="col-lg-6">
+                                                                <div class="collapse" id="cityGraphCollapse">
+                                                                    <div id="containerCity"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header" id="headingTwo">
+                                                    <h5 class="mb-0">
+                                                        <button class="btn btn-link collapsed zoneRun" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                            Zona
+                                                        </button>
+                                                    </h5>
+                                                </div>
+                                                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-lg-6">
+                                                                <table id="dataZone" class="display table table-hover" width="100%"></table>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <div id="containerZone"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header" id="headingThree">
+                                                    <h5 class="mb-0">
+                                                        <button class="btn btn-link collapsed advisorRun" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                            Asesor
+                                                        </button>
+                                                    </h5>
+                                                </div>
+                                                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-lg-6">
+                                                                <table id="dataAdvisor" class="display table table-hover" width="100%"></table>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <div id="containerAdvisor"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header" id="headingFour">
+                                                    <h5 class="mb-0">
+                                                        <button class="btn btn-link collapsed catCustRun" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                                            Categoría clientes
+                                                        </button>
+                                                    </h5>
+                                                </div>
+                                                <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-lg-6">
+                                                                <table id="dataCustCat" class="display table table-hover" width="100%"></table>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <div id="containerCustCat"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-header" id="headingFive">
+                                                    <h5 class="mb-0">
+                                                        <button class="btn btn-link collapsed custRun" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                                            Clientes
+                                                        </button>
+                                                    </h5>
+                                                </div>
+                                                <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-lg-6">
+                                                                <table id="dataCust" class="display table table-hover" width="100%"></table>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <div id="containerCust"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" id="headingTwo">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Indicador de venta nueva
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <figure class="highcharts-figure">
+                                            <div id="containerSale"></div>
+                                        </figure>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-6">
+                    <button type="submit" class="btn btn-outline-primary">Guardar Planeación</button>
+                </div>
+            </div>
+        </div>
+        <!-- /.card -->
+    </form>
+</div>
+{% endblock content-window %}
+{% block extrajs %}  
+    <script src="{% static 'js/planeacion/plan_comercial.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+{% endblock %}

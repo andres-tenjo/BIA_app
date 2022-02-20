@@ -1,0 +1,85 @@
+{% extends 'bia/modulo_configuracion.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title-header %}
+{% endblock title-header %}
+
+{% block menu-header %}
+    {% block menu %}
+    {% endblock menu %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'configuracion:listar_clientes' %}">
+            Listado de clientes
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{% url 'configuracion:opciones_cliente' %}">
+            Opciones de catálogo
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+            Instructivo
+        </a>
+    </li>
+{% endblock menu-header %}
+
+{% block content-window %}
+    {% csrf_token %}
+    <form method="post" action="." enctype="multipart/form-data" id="form">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-upload"></i>
+                            Importar archivo de catálogo de clientes
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <hr>
+                                <div class="form-group">
+                                    <input type="file" name="file" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                {% csrf_token %}
+                                <button 
+                                    id="upload"
+                                    type="submit" 
+                                    class="btn btn-outline-primary btn-block btn-block">                                    
+                                    <i class="fas fa-upload"></i> Cargar
+                                </button>
+                            </div>
+                            <div 
+                                class="col-lg-3 justify-content-center" 
+                                id="spinnerBox" 
+                                hidden="true">
+                                <div 
+                                    class="spinner-border text-primary" 
+                                    style="width: 2rem; height: 2rem;" 
+                                    role="status">
+                                </div>
+                                <div 
+                                    class="spinner-grow text-primary" 
+                                    style="width: 2rem; height: 2rem;" 
+                                    role="status">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock content-window %}
+{% block js %}
+    <script src="{% static 'js/parametrizacion/importar_catalogo_clientes.js' %}"></script>
+{% endblock js %}

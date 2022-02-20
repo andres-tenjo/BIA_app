@@ -1,0 +1,115 @@
+{% extends 'usuarios/form.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Parametrización | Crear usuario {% endblock title %}
+{% block extra_css %}
+{% endblock extra_css %}
+{% block title-header %}
+{% endblock title-header %}
+
+    {% block menu %}
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            Ver usuarios
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ group_create_url }}">
+            Crear grupo
+        </a>
+    </li>    
+    <li class="breadcrumb-item">
+        <a href="{{ list_group_url }}">
+            Ver grupos
+        </a>
+    </li>
+    {% endblock menu %}
+    
+    {% block form %}    
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group" required>
+                <label>* Nombres:</label>
+                {{ form.first_name }}
+            </div>
+        </div>
+        <div class="col-lg-4" required>
+            <div class="form-group">
+                <label>* Apellidos:</label>
+                {{ form.last_name }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Nombre de usuario:</label>
+                {{ form.username }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Correo electrónico:</label>
+                {{ form.email }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Grupos:</label>
+                {{ form.groups }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Permisos adicionales:</label>
+                {{ form.user_permissions }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Imagen de perfil:</label>
+                {{ form.image }}
+            </div>
+        </div>
+    </div>
+    <div class="row" hidden id="editPassword">
+        <div class="col-lg-3">
+            <div class="form-group">
+                <label>
+                    <input 
+                        type="checkbox" 
+                        id="cbPwd" 
+                        value="0">
+                        Reestablecer contraseña
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="pwdRow">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Contraseña:</label>
+                {{ form.password }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Confirmar contraseña:</label>
+                {{ form.password2 }}
+            </div>
+        </div>
+    </div>
+    <h6 class="text-danger" id="pwdText">La contraseña debe tener una longitud mínima de 6 caracteres</h6>
+    <br>
+    <h6 class="text-primary">Los campos marcados con * son obligatorios</h6>
+    <hr>
+
+    {% endblock form %}  
+    {% block button %}
+    {% endblock button %}
+    {% block extrajs %}  
+        <script src="{% static 'js/usuarios/crear_usuario.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
+    {% endblock extrajs %}

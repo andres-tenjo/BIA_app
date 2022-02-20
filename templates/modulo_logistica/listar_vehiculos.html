@@ -1,0 +1,31 @@
+{% extends 'modulo_logistica/list_view.html' %}
+{% load static %}
+{% block title %}
+    BIA | Vehiculos
+{% endblock title %}
+
+    {% block buttons_list %}
+    <a href="{{ create_url }}" class="btn btn-primary btn-flat btnTest">
+        <i class="fas fa-plus"></i> Nuevo registro
+    </a>
+    <a href="{{ list_url }}" class="btn btn-success btn-flat">
+        <i class="fas fa-sync"></i> Actualizar
+    </a>
+    <hr>
+    {% endblock buttons_list %}
+    {% block columns %}
+    <tr style="text-align: center" class="table-active">
+        <th style="width: 5%;">Nº</th>
+        <th style="width: 10%;">Nombre</th>
+        <th style="width: 20%;">Marca</th>
+        <th style="width: 10%;">Tipo de vehiculo</th>
+        <th style="width: 15%;">Carrocería</th>
+        <th style="width: 10%;">Kilometros</th>
+        <th style="width: 10%;">Consumo</th>
+        <th style="width: 10%;">Capacidad</th>
+        <th style="width: 10%;">Estado</th>
+    </tr>
+    {% endblock columns %}
+{% block window-js %}
+    <script src="{% static 'js/logistica/listar_vehiculos.js' %}"></script>
+    {% endblock window-js %}

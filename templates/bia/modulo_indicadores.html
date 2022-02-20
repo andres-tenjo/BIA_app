@@ -1,0 +1,85 @@
+{% extends 'bia/base_home_sidebar.html' %}
+{% load static %}
+{% block title %}BIA | Indicadores{% endblock title %}
+{% block brand-logo %}
+<!-- Brand Logo -->
+<a href="{% url 'modulo_indicadores' %}" class="brand-link">
+    <img src="{% static 'img/home/modulo_indicadores.png' %}" alt="Indicadores" class="brand-image img-circle elevation-3"
+    style="opacity: .8">
+    <span class="brand-text font-weight-light">Indicadores</span>
+</a>
+{% endblock brand-logo %}
+{% block sidebar-menu %}
+<!-- Sidebar Menu -->
+    <nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <li class="nav-item">
+            <a href="{% url 'indicadores:indicadores_comerciales' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'indicadores:indicadores_comerciales' %}active{% endif %}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Indicadores comercial</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'indicadores:indicadores_compras' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'indicadores:indicadores_compras' %}active{% endif %}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Indicadores compras</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'indicadores:indicadores_almacen' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'indicadores:indicadores_almacen' %}active{% endif %}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Indicadores almacén</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'indicadores:indicadores_transporte' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'indicadores:indicadores_transporte' %}active{% endif %}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Indicadores transporte</p>
+            </a>
+        </li>
+    </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+</div>
+<!-- /.sidebar -->
+{% endblock sidebar-menu %}
+
+    {% block content-header %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1 class="m-0 text-dark">
+                {% block title-header %}
+                Bienvenido al Módulo Indicadores de BIA
+                {% endblock title-header %}
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            {% block menu-header %}
+            <li class="breadcrumb-item"><a href="#">Instructivo módulo indicadores V 1.0</a></li>
+            {% endblock menu-header %}
+            </ol>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- /.content-header -->
+    {% endblock content-header %}
+    {% block content-body %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            {% block content-window %}
+            {% endblock content-window %}
+        </div>
+    </section>
+    {% endblock content-body %}
+</div>
+<!-- /.content-wrapper -->

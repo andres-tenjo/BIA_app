@@ -1,0 +1,44 @@
+{% extends 'modulo_configuracion/list_view.html' %}
+{% load static %}
+{% block title %}
+    BIA | Usuarios
+{% endblock title %}
+{% block menu %}
+    <li class="breadcrumb-item">
+        <a href="{{ create_url }}">
+            Crear usuario
+        </a>
+    </li>    
+    <li class="breadcrumb-item">
+        <a href="{{ group_create_url }}">
+            Crear grupo
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ list_group_url }}">
+            Ver grupos
+        </a>
+    </li>
+{% endblock menu %}
+
+{% block row_table %}
+<div class="row justify-content-center"></div>
+{% endblock row_table %}
+
+    {% block columns %}
+    <tr style="text-align: center" class="table-active">
+        <th style="width: 10%;">Nº</th>
+        <th style="width: 15%;">Nombres</th>
+        <th style="width: 15%;">Usuario</th>
+        <th style="width: 10%;">Fecha de registro</th>
+        <th style="width: 15%;">Email</th>
+        <th style="width: 10%;">Imagen</th>
+        <th style="width: 15%;">Estado</th>
+        <th style="width: 10%;">Opciones</th>
+    </tr>
+    {% endblock columns %}
+{% block window-js %}
+    <script src="{% static 'js/usuarios/listar_usuarios.js' %}"></script>
+    
+{% endblock window-js %}
+

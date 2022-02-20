@@ -1,0 +1,28 @@
+class Dias(Model):
+    cod_bodega = models.ForeignKey(CatalogoBodegas, on_delete=models.CASCADE)
+    cod_und_almacenamiento = models.ForeignKey(UnidadAlmacenamiento, on_delete=models.CASCADE)
+    cantidad = models.IntegerField('Cantidad')
+
+    class Meta:
+        verbose_name= 'Día'
+        verbose_name_plural= 'Días'
+        ordering = ['cod_bodega']
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        return item
+
+    def __str__ (self):
+        return self.cod_bodega
+
+
+
+
+
+
+
+
+
+
+
+

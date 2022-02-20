@@ -1,0 +1,369 @@
+{% extends 'modulo_configuracion/list_view.html' %}
+{% load static %}
+{% block title %}
+    BIA | Proveedores
+{% endblock title %}
+
+    {% block menu %}
+    <li class="breadcrumb-item">
+        <a href="{{ options_url }}">
+            Opciones de catálogo
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ create_url }}">
+            Crear proveedor
+        </a>
+    </li>
+    {% endblock menu %}
+    {% block input-search %}
+    <div class="form-group">
+        <label>Buscar proveedor:</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            autocomplete="off" 
+            id="buscar_proveedor">
+    </div> 
+    {% endblock input-search %}
+    {% block columns %}
+    <tr style="text-align: center" class="table-active">
+        <th style="width: 10%;">Tipo de persona</th>
+        <th style="width: 10%;">Tipo de Identificación</th>
+        <th style="width: 10%;">Identificación</th>
+        <th style="width: 10%;">Email</th>
+        <th style="width: 15%;">Nombre contacto</th>
+        <th style="width: 10%;">Celular contacto</th>
+        <th style="width: 10%;">Estado</th>
+        <th style="width: 15%;">Opciones</th>
+    </tr>
+    {% endblock columns %}
+    {% block export-catalogue %}
+    <div class="row">
+        <div class="col-lg-4">
+            <a
+                href="{% url 'configuracion:exportar_catalogo_proveedores' %}"
+                type="button"
+                id="exportCat"  
+                class="list-group-item list-group-item-action" 
+                aria-current="true">
+                <i class="fas fa-cloud-download-alt"></i>
+                Descargar catálogo de proveedores
+            </a>
+        </div>
+    </div>
+    {% endblock export-catalogue %}
+{% block window-js %}
+    <script src="{% static 'js/parametrizacion/listar_proveedores.js' %}"></script>
+    <div 
+        class="modal fade" 
+        id="myModalDet" 
+        tabindex="-1" 
+        role="dialog" 
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><b><i class="fas fa-plus"></i> 
+                        Detalle de proveedor</b></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card card-secondary">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-info"></i>
+                                        Perfil proveedor
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <img 
+                                            src="" 
+                                            class="brand-image elevation-3"
+                                            style="opacity: .8"
+                                            width="100" 
+                                            height="100"
+                                            id="qrCode">
+                                        </img>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Proveedor:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="supp_name">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Tipo de persona:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="type_person">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Tipo de identificación:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="id_type">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Nº identificación:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="id_number">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Email:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="mail">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Nombre contacto:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="contact">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Celular contacto:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="cel">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" hidden="true">
+                                                <label>Nombre contacto 2:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="contact2">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" hidden="true">
+                                                <label>Celular contacto 2:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="cel2">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Departamento:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="depto">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Ciudad:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="city">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Dirección:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="dir">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Código postal:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="postal">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Valor mínimo de compra:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="min_purchase_value">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Condición de entrega:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="logistic_condition">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-secondary">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-cash-register"></i>
+                                        Información de pago
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Método de pago:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="pay_method">
+                                            </div>
+                                        </div>
+                                        <div id="credDays" class="col-lg-4" hidden="true">
+                                            <div class="form-group">
+                                                <label>Días crédito:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="credit_days">
+                                            </div>
+                                        </div>
+                                        <div id="credLimit" class="col-lg-4" hidden="true">
+                                            <div class="form-group">
+                                                <label>Cupo de crédito:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="credit_limit">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-secondary" id="purchaseConditions" hidden="true">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-cash-register"></i>
+                                        Condiciones de compra
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group" hidden="true" id="q_min">
+                                                <label>Cantidad mínima de compra:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true"
+                                                    name="q_min">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" hidden="true" id="vol_min">
+                                                <label>Volumen mínimo de compra:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="vol_min">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group" hidden="true" id="val_min">
+                                                <label>Valor mínimo de compra:</label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    autocomplete="off" 
+                                                    readonly="true" 
+                                                    name="val_min">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock window-js %}

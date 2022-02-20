@@ -1,0 +1,62 @@
+{% extends 'bia/modulo_compras.html' %}
+
+{% load static %}
+
+{% block title %}
+    mod_com_cat_prod_comp
+{% endblock title %}
+
+{% block content %}
+    
+    <div class="container-fluid">
+        <h1 class="mt-5" style="text-align:center;">Subcategoría de productos</h1>
+        <h6 class="mt-5" style="text-align:center;">Ingrese el nombre de la subcategoría que desea buscar</h6>
+        <div class="container mt-3">
+            <div class="row">
+                <div class="col-md-12 search">
+                    <form method="get">
+                        <div id="custom-search-input">
+                            <div class="input-group col-md-12">
+                                <input type="text" class="form-control" placeholder="Buscar" name="buscar">
+                                <span class="input group-list">
+                                    <button type="submit" class="boton btn-primary">Buscar</button>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+                {% if object_list %}
+                    <table class="table table-hover mt-5">
+                        <thead>
+                          <tr>
+                            <th scope="col" style="text-align: center;">Código</th>
+                            <th scope="col" style="text-align: center;">Fecha de creación</th>
+                            <th scope="col" style="text-align: center;">Nombre</th>
+                            <th scope="col" style="text-align: center;">Estado</th>
+                            <th scope="col" style="text-align: center;">Opciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for object in object_list%}
+                            <tr>
+                                <td style="text-align: center;">{{ object.cod_subcategoria }}</td>
+                                <td style="text-align: center;">{{ object.fecha_creacion }}</td>
+                                <td style="text-align: center;">{{ object.nombre_subcategoria }}</td>
+                                <td style="text-align: center;">{{ object.estado_subcat }}</td>
+                                <td style="text-align: center;">
+                                    <a href="{% url 'editar_subcat_prod' object.cod_subcategoria %}">Editar</a>
+                                </td>
+                            {% endfor %}
+                            </tr>
+                        </tbody>
+                      </table>
+                    
+                {% endif %}
+        </div>
+    
+{% endblock content %}
+
+{% block extrajs %}
+
+{% endblock extrajs %}

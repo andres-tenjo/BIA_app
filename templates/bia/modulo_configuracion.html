@@ -1,0 +1,144 @@
+{% extends 'bia/base_home_sidebar.html' %}
+{% load static %}
+{% block title %} BIA | Parametrización{% endblock title %}
+{% block brand-logo %}
+<!-- Brand Logo -->
+<a href="{% url 'modulo_configuracion' %}" class="brand-link">
+    <img src="{% static 'img/home/modulo_config.png' %}" alt="configuracion" class="brand-image img-circle elevation-3"
+    style="opacity: .8">
+    <span class="brand-text font-weight-light">Parametrización</span>
+</a>
+{% endblock brand-logo %}
+{% block sidebar-menu %}
+<!-- Sidebar Menu -->
+    <nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <li class="nav-item">
+            <a href="{% url 'configuracion:crear_empresa' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'configuracion:crear_empresa' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:editar_empresa' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:perfil_empresa' %}active{% endif %}">
+                <i class="nav-icon fas fa-building"></i>
+                <p>Perfil empresarial</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a id="userButton" type="button" href="" class="nav-link
+                {% if request.resolver_match.view_name == 'configuracion:vista_usuarios' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'usuarios:crear_grupos_usuarios' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'usuarios:editar_grupos' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'usuarios:listar_grupos' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'usuarios:crear_usuarios' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'usuarios:listar_usuarios' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'usuarios:editar_usuarios' %}active{% endif %}">
+                <i class="nav-icon fas fa-users"></i>
+                <p>Usuarios y Permisos</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a id="productsButton" type="button" href="" class="nav-link
+                {% if request.resolver_match.view_name == 'configuracion:product_catalogue' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:crear_producto' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:listar_productos' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:actualizar_producto' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:opciones_producto' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:import_products' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:export_products' %}active{% endif %}">
+                <i class="nav-icon fas fa-gift"></i>
+                <p>Catálogo de productos</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a id="suppliersButton" type="button" href="" class="nav-link
+                {% if request.resolver_match.view_name == 'configuracion:cat_proveedores' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:crear_proveedor' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:opciones_proveedor' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:actualizar_proveedor' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:import_suppliers' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:export_suppliers' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:listar_proveedores' %}active{% endif %}">
+                <i class="nav-icon fas fa-id-badge"></i>
+                <p>Catálogo de proveedores</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a id="customersButton" type="button" href="" class="nav-link
+                {% if request.resolver_match.view_name == 'configuracion:cat_clientes' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:crear_cliente' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:opciones_cliente' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:import_customers' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:actualizar_cliente' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:listar_clientes' %}active{% endif %}">
+                <i class="nav-icon fas fa-user-tie"></i>
+                <p>Catálogo de clientes</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a id="warehouseButton" type="button" href="" class="nav-link
+                {% if request.resolver_match.view_name == 'configuracion:catalogo_bodegas' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:crear_bodega' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:editar_bodega' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:listar_bodegas' %}active{% endif %}">
+                <i class="nav-icon fas fa-warehouse"></i>
+                <p>Catálogo de bodegas</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a id="historicoMovimientosButton" type="button" href="" class="nav-link
+                {% if request.resolver_match.view_name == 'configuracion:importar_historico_movimientos' %}active{% endif %}">
+                <i class="nav-icon fas fa-file-upload"></i>
+                <p>Historico de movimientos</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a id="" type="button" href="{% url 'configuracion:ajustes_inventario' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'configuracion:ajustes_inventario' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:importar_ajustes_inventario' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:crear_ajuste_inventario' %}active{% endif %}">
+                <i class="nav-icon fas fa-file-upload"></i>
+                <p>Ajustes de inventario</p>
+            </a>
+        </li>
+    </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+</div>
+<!-- /.sidebar -->
+{% endblock sidebar-menu %}
+
+    {% block content-header %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1 class="m-0 text-dark">
+                {% block title-header %}
+                Bienvenido al Módulo Planeación de BIA
+                {% endblock title-header %}
+                {% block button_list%}
+                {% endblock button_list%}
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            {% block menu-header %}
+            {% endblock menu-header %}
+            </ol>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- /.content-header -->
+    {% endblock content-header %}
+    {% block content-body %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            {% block content-window %}
+            {% endblock content-window %}
+        </div>
+    </section>
+    {% endblock content-body %}
+</div>
+<!-- /.content-wrapper -->

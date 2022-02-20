@@ -1,0 +1,364 @@
+{% extends 'modulo_configuracion/form.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Parametrización | Crear producto {% endblock title %}
+{% block title-header %}
+{% endblock title-header %}
+
+    {% block menu-header %}
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            Ver productos
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+            Ver instructivo
+        </a>
+    </li>
+    {% endblock menu-header %}
+    
+    {% block form %}
+    <div class="row" id="preview">
+        
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Nombre:</label>
+                {{ form.product_desc }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Código de barras:</label>
+                <div class="input-group">
+                    {{ form.bar_code }}
+                    <div class="input-group-append">
+                        <button 
+                            class="btn btn-outline-primary btn-flat btnScanQrCode" 
+                            disabled="true"
+                            type="button">
+                            <i class="fas fa-qrcode"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Presentación:</label>
+                {{ form.presentation }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Marca:</label>
+                {{ form.trademark }}
+            </div>  
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Categoría:</label>
+                <div class="input-group">
+                    {{ form.product_cat }}
+                    <div class="input-group-append">
+                        <button 
+                            class="btn btn-outline-primary btn-flat btnAddCat" 
+                            type="button">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Subcategoría:</label>
+                <div class="input-group">
+                    {{ form.product_subcat }}
+                    <div class="input-group-append">
+                        <button 
+                            class="btn btn-outline-primary btn-flat btnAddSubcat" 
+                            type="button">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Unidad de compra:</label>
+                <div class="input-group">
+                    {{ form.purchase_unit }}
+                    <div class="input-group-append">
+                        <button 
+                            class="btn btn-outline-primary btn-flat btnAddUdc" 
+                            type="button">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Cantidad por unidad:</label>
+                {{ form.quantity_pu }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Precio de compra:</label>
+                {{ form.cost_pu }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Unidad de venta:</label>
+                <div class="input-group">
+                    {{ form.sales_unit }}
+                    <div class="input-group-append">
+                        <button 
+                            class="btn btn-outline-primary btn-flat btnAddUdv" 
+                            type="button">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Cantidad por unidad:</label>
+                {{ form.quantity_su }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Precio de venta:</label>
+                {{ form.full_sale_price }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Iva:</label>
+                {{ form.iva }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Otros impuestos:</label>
+                {{ form.other_tax }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Tiempo de entrega del proveedor:</label>
+                {{ form.del_time }}
+            </div>
+        </div>
+    </div>
+    <br>
+    <h6 class="text-primary">Los campos marcados con * son obligatorios</h6>
+    <hr>
+    {% endblock form %}
+    
+    {% block extrajs %}  
+        <script src="{% static 'js/parametrizacion/crear_producto.js' %}"></script>
+        <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+        <script src="{% static 'lib/quagga/quagga.min.js' %}"></script>
+        <div 
+            class="modal fade bd-example-modal-lg" 
+            id="myModalQr" 
+            tabindex="-1" 
+            role="dialog" 
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">     
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                            <b><i class="fas fa-user-plus"></i> Lector de código QR</b>
+                        </h5>
+                        <button 
+                            type="button" 
+                            class="close" 
+                            data-dismiss="modal" 
+                            aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <video id="preview"></video>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div 
+            class="modal fade" 
+            id="myModalCategory" 
+            tabindex="-1" 
+            role="dialog" 
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <form id="frmCatProd" enctype="multipart/form-data" method="post">
+                <div class="modal-dialog" role="document">     
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                <b><i class="fas fa-user-plus"></i> Crear categoría de producto</b>
+                            </h5>
+                            <button 
+                                type="button" 
+                                class="close" 
+                                data-dismiss="modal" 
+                                aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% for field in frmProductCat.visible_fields %}
+                                <div class="form-group">
+                                    <label for="email">{{ field.label }}:</label>
+                                    {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat">
+                                <i class="fas fa-save"></i> Guardar Categoría
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div 
+            class="modal fade" 
+            id="myModalSubcategory" 
+            tabindex="-1" 
+            role="dialog" 
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <form id="frmSubcatProd" enctype="multipart/form-data" method="post">
+                <div class="modal-dialog" role="document">     
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                <b><i class="fas fa-user-plus"></i> Crear subcategoría de producto</b>
+                            </h5>
+                            <button 
+                                type="button" 
+                                class="close" 
+                                data-dismiss="modal" 
+                                aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% for field in frmProductSub.visible_fields %}
+                                <div class="form-group">
+                                    <label for="email">{{ field.label }}:</label>
+                                    {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat">
+                                <i class="fas fa-save"></i> Guardar Subcategoría
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div 
+            class="modal fade" 
+            id="myModalUdc" 
+            tabindex="-1" 
+            role="dialog" 
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <form id="frmUdcProd" enctype="multipart/form-data" method="post">
+                <div class="modal-dialog" role="document">     
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                <b><i class="fas fa-user-plus"></i> Crear unidad de medida en compra</b>
+                            </h5>
+                            <button 
+                                type="button" 
+                                class="close" 
+                                data-dismiss="modal" 
+                                aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% for field in frmUdcProd.visible_fields %}
+                                <div class="form-group">
+                                    <label for="email">{{ field.label }}:</label>
+                                    {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat">
+                                <i class="fas fa-save"></i> Guardar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div 
+            class="modal fade" 
+            id="myModalUdv" 
+            tabindex="-1" 
+            role="dialog" 
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <form id="frmUdvProd" enctype="multipart/form-data" method="post">
+                <div class="modal-dialog" role="document">     
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                <b><i class="fas fa-user-plus"></i> Crear unidad de medida en venta</b>
+                            </h5>
+                            <button 
+                                type="button" 
+                                class="close" 
+                                data-dismiss="modal" 
+                                aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% for field in frmUdvProd.visible_fields %}
+                                <div class="form-group">
+                                    <label for="email">{{ field.label }}:</label>
+                                    {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat">
+                                <i class="fas fa-save"></i> Guardar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endblock extrajs %}  

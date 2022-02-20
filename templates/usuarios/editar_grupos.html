@@ -1,0 +1,197 @@
+{% extends 'usuarios/form.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Parametrización | Editar grupo {% endblock title %}
+{% block extra_css %}
+{% endblock extra_css %}
+{% block title-header %}
+{% endblock title-header %}
+
+{% block menu %}
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            Ver grupos
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ user_create_url }}">
+            Crear usuario
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ list_user_url }}">
+            Ver usuarios
+        </a>
+    </li>
+{% endblock menu %}
+    
+    {% block form %}
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group" required>
+                <label>* Nombre del grupo:</label>
+                {{ form.name }}
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>
+                    Seleccione los permisos por módulo
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="accordion" id="accordionExample">
+            <div class="card card-primary card-outline">
+              <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                  <button class="btn btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Módulo comercial
+                  </button>
+                </h2>
+              </div>
+              <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                {{ form.com_permission }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>
+                                    {{ form.commercial }}
+                                    Seleccionar todos
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="card card-primary card-outline">
+              <div class="card-header" id="headingTwo">
+                <h2 class="mb-0">
+                  <button class="btn btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    Módulo compras
+                  </button>
+                </h2>
+              </div>
+              <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                {{ form.pur_permission }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>
+                                    {{ form.purchase }}
+                                    Seleccionar todos
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="card card-primary card-outline">
+              <div class="card-header" id="headingThree">
+                <h2 class="mb-0">
+                  <button class="btn btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    Módulo almacén
+                  </button>
+                </h2>
+              </div>
+              <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                <div class="card-body">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    {{ form.log_permission }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>
+                                        {{ form.logistics }}
+                                        Seleccionar todos
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="card card-primary card-outline">
+                <div class="card-header" id="headingFour">
+                  <h2 class="mb-0">
+                    <button class="btn btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        Administración
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+                  <div class="card-body">
+                      <div class="card-body">
+                          <div class="row">
+                            <div class="col-lg-6">
+                                  <div class="form-group">
+                                    {{ form.adm_permission }}
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-lg-6">
+                                  <div class="form-group">
+                                      <label>
+                                            {{ form.admin }}    
+                                            Seleccionar todos
+                                      </label>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row px-3">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label class="text-primary">
+                    {{ form.all }}
+                    Seleccionar todos los permisos
+                </label>
+            </div>
+        </div>
+    </div>
+    {% endblock form %}
+    {% block button %}
+        <div class="col-lg-4">
+            <a href="{{ group_create_url }}" class="btn btn-outline-danger btn-block" type="button">
+                <i class="fas fa-window-close"></i> Cancelar
+            </a>
+        </div>
+    {% endblock button %}    
+    {% block extrajs %}
+        <script src="{% static 'js/usuarios/crear_grupo.js' %}"></script>
+    {% endblock extrajs %}  

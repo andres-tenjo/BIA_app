@@ -1,0 +1,162 @@
+{% extends 'modulo_configuracion/form.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Parametrización | Crear proveedor {% endblock title %}
+{% block title-header %}
+{% endblock title-header %}
+
+    {% block menu-header %}
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            Ver proveedores
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+            Ver instructivo
+        </a>
+    </li>
+    {% endblock menu-header %}
+
+    {% block form %}
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Tipo de persona:</label>
+                {{ form.person_type }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Tipo de identificación:</label>
+                {{ form.id_type }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Nº identificación:</label>
+                {{ form.identification }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Proveedor:</label>
+                {{ form.supplier_name }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>Email:</label>
+                {{ form.email }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Nombre contacto:</label>
+                {{ form.contact_name }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Celular contacto:</label>
+                {{ form.contact_cel }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>Nombre otro contacto:</label>
+                {{ form.other_contact_name }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>Celular otro contacto:</label>
+                {{ form.other_contact_cel }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Departamento:</label>
+                {{ form.department }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Ciudad:</label>
+                {{ form.city }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Dirección:</label>
+                {{ form.supplier_address }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Código postal:</label>
+                {{ form.postal_code }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Valor mínimo de compra:</label>
+                {{ form.min_purchase_value }}
+            </div>
+        </div>
+        <div class="col-lg">
+            <div class="form-group">
+                <label>* Condición de entrega:</label>
+                {{ form.logistic_condition }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Método de pago:</label>
+                {{ form.pay_method }}
+            </div>
+        </div>
+    </div>
+    <h6 
+        id="textMethod" 
+        class="text-danger" 
+        hidden="true">Ingrese el cupo y los días de crédito
+    </h6>
+    <br>
+    <div class="row" hidden="true" id="creditMethod">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Cupo de crédito:</label>
+                {{ form.credit_limit }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Días de crédito:</label>
+                {{ form.credit_days }}
+            </div>
+        </div>
+    </div>
+    <h6 
+        class="text-primary">
+        Los campos marcados con * son obligatorios
+    </h6>
+    
+    {% endblock form %}
+    {% block extrajs %}
+    <script src="{% static 'js/parametrizacion/crear_proveedor.js' %}"></script>
+    <script src="{% static 'js/parametrizacion/main.js' %}"></script>
+    {% endblock extrajs %}  
+    {% block frm-submit %}
+    {% endblock frm-submit %}

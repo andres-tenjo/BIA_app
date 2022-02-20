@@ -1,0 +1,23 @@
+{% extends 'modulo_configuracion/list_view.html' %}
+{% load static %}
+{% block title %}
+    BIA | Cartera cliente
+{% endblock title %}
+{% block options_head %}
+
+{% endblock options_head %}
+    {% block columns %}
+    <tr style="text-align: center" class="table-active">
+        <th style="width: 5%;">Nº</th>
+        <th style="width: 20%;">Cliente</th>
+        <th style="width: 15%;">Cupo disponible</th>
+        <th style="width: 15%;">Pago minimo</th>
+        <th style="width: 15%;">Fecha pago minimo</th>
+        <th style="width: 15%;">Pago total</th>
+        <th style="width: 15%;">Estado cartera</th>
+    </tr>        
+    {% endblock columns %}
+            
+{% block window-js %}
+    <script src=""></script>
+{% endblock window-js %}

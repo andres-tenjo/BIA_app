@@ -1,0 +1,320 @@
+<!-- load-static -->
+{% load static %}
+<!-- /.load-static -->
+<!-- load-html5-->
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+    <head>
+        <meta name="BIA" charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- title-web -->
+        <title>
+            {% block title %}{% endblock title %}
+        </title>
+        <!-- /.title-web -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- load-css-library -->
+        
+        <!-- CSS STYLE BIA -->
+        <link rel="stylesheet" href="{% static 'css/bia.css' %}">
+        <!-- Font Awesome Icons -->
+        <link rel="stylesheet" href="{% static 'lib/adminlte-3.0.5 2/plugins/fontawesome-free/css/all.min.css' %}">
+        <!-- Theme style -->
+        <link rel="stylesheet" href="{% static 'lib/adminlte-3.0.5 2/dist/css/adminlte.min.css' %}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pixeden-stroke-7-icon@1.2.3/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.0/css/flag-icon.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900">
+        <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700">
+        <!-- Google Font: Source Sans Pro -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900">
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+        <!-- Bootstrap 4 -->
+        <link rel="stylesheet" href="{% static 'lib/bootstrap-4.5.3-dist/css/bootstrap.min.css' %}">
+        <!-- Sweetalert2 -->
+        <link rel="stylesheet" href="{% static 'lib/sweetalert2-9.10.0/bootstrap-4.min.css' %}">
+        <!-- Jquery Confirm -->
+        <link rel="stylesheet" href="{% static 'lib/jquery-confirm-v3.3.4/jquery-confirm.min.css' %}">
+        <!-- Datatable -->
+        <link rel="stylesheet" href="{% static 'lib/DataTables-1.10.23/css/dataTables.bootstrap4.min.css' %}">
+        <link rel="stylesheet" href="{% static 'lib/DataTables-1.10.23/css/responsive.bootstrap4.min.css' %}">
+        <link rel="stylesheet" href="{% static 'lib/DataTables-1.10.23/css/buttons.dataTables.min.css' %}">   
+        <!-- Select2 -->
+        <link rel="stylesheet" href="{% static 'lib/select2-4.1.0-beta.0/select2.min.css' %}">
+        <link rel="stylesheet" href="{% static 'lib/select2-4.1.0-beta.0/select2-bootstrap4.min.css' %}">
+        <!-- JqueryUI -->
+        <link rel="stylesheet" href="{% static 'lib/jquery-ui-1.12.1/jquery-ui.min.css' %}">
+        <!-- Moment // Tempusdominus -->
+        <link rel="stylesheet" href="{% static 'lib/tempusdominus-bootstrap-4/tempusdominus-bootstrap-4.min.css' %}">
+        <!-- Touchspin -->
+        <link rel="stylesheet" href="{% static 'lib/bootstrap-touchspin-4.3.0/jquery.bootstrap-touchspin.css' %}">
+        <!-- Highcharts -->
+        
+        {% block extra_css %}
+        {% endblock extra_css %}
+    </head>
+    <!-- /.load-html-5 -->
+    <!-- Body -->
+    <body class="hold-transition sidebar-mini layout-fixed">
+        <div class="wrapper">
+            <!-- Navbar -->
+            <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+                <!-- Left navbar links -->
+                <ul class="navbar-nav">
+                    <!-- Push Menu -->
+                    <li class="nav-item">
+                        <a class="nav-link" data-widget="pushmenu" role="button"><i class="fas fa-bars"></i></a>
+                    </li>
+                    <!-- /.Push Menu -->
+                    <!-- Home Url -->
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <a href="{% url 'home' %}" class="nav-link">Home</a>
+                    </li>
+                    <!-- /.Home Url -->
+                    <!-- Push Modules Menu -->
+                    <li class="nav-item dropdown d-none d-sm-inline-block">
+                        <a class="nav-link dropdown-toggle" href="{% url 'home' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Módulos
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'comercial:promociones' %}">Comercial</a>
+                            <a class="dropdown-item" href="{% url 'compras:iniciar_negociacion' %}">Compras</a>
+                            <a class="dropdown-item" href="{% url 'logistica:catalogo_productos' %}">Logistica</a>
+                            <a class="dropdown-item" href="{% url 'indicadores:indicadores_comerciales' %}">Indicadores</a>
+                            <a class="dropdown-item" href="{% url 'configuracion:crear_empresa' %}">Planeación</a>
+                        </div>
+                    </li>
+                    <!-- /.Push Modules Menu -->
+                <!-- /.Left navbar links -->
+                </ul>
+                <!-- search-navbar -->
+                <form class="form-inline ml-3">
+                    <div class="input-group input-group-sm">
+                        <input class="form-control form-control-navbar" type="search" placeholder="Buscar" aria-label="Search">
+                        <div class="input-group-append">
+                            <button class="btn btn-navbar" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <!-- /.search-navbar -->
+                <!-- Right navbar links -->
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+    
+                    </li>
+                    <!-- User Menu -->
+                    <li class="nav-item dropdown d-none d-sm-inline-block">
+                        <a class="nav-link dropdown-toggle" href="{% url 'perfil_usuario' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="far fa-user"></i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <h3 class="dropdown-item-title" style="text-align: center;">
+                                {{ user.username | title }}
+                            </h3>
+                            <a class="dropdown-item" href="{% url 'perfil_usuario' %}">
+                                <i class="far fa-address-card mr-2"></i>
+                                Ver perfil
+                            </a>
+                            <a class="dropdown-item" href="{% url 'logout' %}">
+                                <i class="fas fa-user-times mr-2"></i>
+                                Salir
+                            </a>
+                        </div>
+                    </li>
+                    <!-- /.User Menu -->
+                    <!-- Messages Dropdown Menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" data-toggle="dropdown" href="#">
+                            <i class="far fas fa-comment-dots"></i>
+                            <span class="badge badge-danger navbar-badge">3</span>
+                        </a>
+                        
+                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                            <a href="#" class="dropdown-item">
+                            <!-- Message Start -->
+                            <div class="media">
+                            <img src="{% static 'lib/adminlte-3.0.5 2/dist/img/user1-128x128.jpg' %}" alt="User admin" class="img-size-50 mr-3 img-circle">
+                            <div class="media-body">
+                                <h3 class="dropdown-item-title">
+                                    Andrés Tenjo
+                                    <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
+                                </h3>
+                                <p class="text-sm">Inventario ejecutado con exito...</p>
+                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> Hace 4 horas</p>
+                            </div>
+                        </div>
+                        <!-- Message End -->
+                        </a>
+                        <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                            <!-- Message Start -->
+                            <div class="media">
+                            <img src="{% static 'lib/adminlte-3.0.5 2/dist/img/user7-128x128.jpg' %}" alt="User Avatar" class="img-size-50 img-circle mr-3">
+                            <div class="media-body">
+                                <h3 class="dropdown-item-title">
+                                    Nydia Sarmiento
+                                    <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
+                                </h3>
+                                <p class="text-sm">Cambio de precio en producto cod 1010</p>
+                                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i>Hace 6 horas</p>
+                            </div>
+                        </div>
+                        <!-- Message End -->
+                        </a>
+                    </li>
+                    <!-- /.Messages Dropdown Menu -->
+                    <!-- Notifications Dropdown Menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" data-toggle="dropdown" href="#">
+                            <i class="far fa-bell"></i>
+                            <span class="badge badge-warning navbar-badge">15</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                            <span class="dropdown-item dropdown-header">15 Notificaciones</span>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-envelope mr-2"></i> 4 nuevos mensajes
+                                <span class="float-right text-muted text-sm">3 min</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-users mr-2"></i> 8 promociones
+                                <span class="float-right text-muted text-sm">12 horas</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-file mr-2"></i> 3 nuevos reportes
+                                <span class="float-right text-muted text-sm">2 días</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item dropdown-footer">Ver todas las notificaciones</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+                            <i class="fas fa-th-large"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- /.navbar -->
+            <!-- Main Sidebar Container -->
+            <aside class="main-sidebar sidebar-dark-primary elevation-4">
+                {% block brand-logo %}
+                {% endblock brand-logo %}
+                <!-- Sidebar -->
+                <div class="sidebar">
+                {% block sidebar-menu %}
+                {% endblock sidebar-menu %}
+            </aside>
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                {% block content-header %}
+                {% endblock content-header %}
+                {% block content-body %}
+                {% endblock content-body %}
+            </div>
+            <footer class="main-footer">
+                <strong>Copyright &copy; 2020-2021 <a href="http://adminlte.io">BIApp</a>.</strong>
+                Convergencia Soluciones S.A.S..
+                <div class="float-right d-none d-sm-inline-block">
+                    <b>Version</b> 1.0.0
+                </div>
+            </footer>
+            <!-- Control Sidebar -->
+            <aside class="control-sidebar control-sidebar-dark">
+                <!-- Control sidebar content goes here -->
+            </aside>
+        <!-- /.control-sidebar -->
+        </div>
+        <!-- ./wrapper -->
+
+    <!-- load-js-library -->
+    <!-- jQuery -->
+    <script src="{% static 'lib/adminlte-3.0.5 2/plugins/jquery/jquery.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <!-- Bootstrap 4 -->
+    <script src="{% static 'lib/bootstrap-4.5.3-dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'lib/bootstrap-4.5.3-dist/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static 'lib/adminlte-3.0.5 2/dist/js/adminlte.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.0.5 2/plugins/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.0.5 2/plugins/sparklines/sparkline.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.0.5 2/plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+    <!-- Sweetalert2 -->
+    <script src="{% static 'lib/sweetalert2-9.10.0/sweetalert2.all.min.js' %}"></script>
+    <!-- Jquery Confirm -->
+    <script src="{% static 'lib/jquery-confirm-v3.3.4/jquery-confirm.min.js' %}"></script>
+    <!-- Datatable -->
+    <script src="{% static 'lib/DataTables-1.10.23/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'lib/DataTables-1.10.23/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/DataTables-1.10.23/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'lib/DataTables-1.10.23/js/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/DataTables-1.10.23/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'lib/DataTables-1.10.23/js/buttons.flash.min.js' %}"></script>
+    <script src="{% static 'lib/DataTables-1.10.23/js/jszip.min.js' %}"></script>
+    <script src="{% static 'lib/DataTables-1.10.23/js/pdfmake.min.js' %}"></script>
+    <script src="{% static 'lib/DataTables-1.10.23/js/vfs_fonts.js' %}"></script>
+    <script src="{% static 'lib/DataTables-1.10.23/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'lib/DataTables-1.10.23/js/buttons.print.min.js' %}"></script>
+    <!-- Select2 -->
+    <script src="{% static 'lib/select2-4.1.0-beta.0/select2.min.js' %}"></script>
+    <script src="{% static 'lib/select2-4.1.0-beta.0/es.js' %}"></script>
+    <!-- JqueryUI -->
+    <script src="{% static 'lib/jquery-ui-1.12.1/jquery-ui.min.js' %}"></script>
+    <!-- Moment // Tempusdominus -->
+    <script src="{% static 'lib/moment-2.25.3/moment-with-locales.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus-bootstrap-4/tempusdominus-bootstrap-4.min.js' %}"></script>
+    <!-- Touchspin -->
+    <script src="{% static 'lib/bootstrap-touchspin-4.3.0/jquery.bootstrap-touchspin.js' %}"></script>
+    <!-- Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.2/dist/chart.min.js"></script>
+    
+    <!-- Highcharts -->
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/data.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+    
+    <!-- Functions -->
+    <script src="{% static 'js/home/planeacion.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        {% if messages %}
+            var html = '<p>';
+            {% for message in messages %}
+                html += '{{ message }}<br>';
+            {% endfor %}
+            html += '</p>';
+            Swal.fire({
+                title: 'Error!',
+                html: html,
+                icon: 'error'
+            });
+        {% endif %}
+    </script>
+    <script>
+        {% if messages.errors %}
+          {% for message in messages.errors %}
+            Swal.fire({
+                title: 'Error!',
+                text: message,
+                icon: 'error'
+            });
+          {% endfor %}
+        {% endif %}
+      </script>
+    {% block js %}
+    {% endblock js %}
+    {% block extrajs %}    
+    {% endblock extrajs %}
+    </body>
+</html>

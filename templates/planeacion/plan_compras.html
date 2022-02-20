@@ -1,0 +1,550 @@
+{% extends 'bia/modulo_configuracion.html' %}
+{% load static %}
+{% block title-header %}
+{% endblock title-header %}
+{% block menu-header %}
+    {% block menu %}
+    {% endblock menu %}
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+        </a>
+    </li>
+{% endblock menu-header %}
+{% block content-window %}
+    <form method="post">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-plus"></i>
+                    {{ title }}
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card card-dark">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-chart-line"></i>
+                                    Objetivo mensual
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="text-center">Establecer meta mensual</h5>
+                                <br>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="container-fluid justify-content-center">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label>Meta:</label>
+                                                            {{ form_plan.monetary_goal }}
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label class="text-center" name="percLabelGoal" hidden>Incremento:</label>
+                                                            {{ form_plan.perc_goal }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label>
+                                                            <input type="checkbox" class="cbGoal" value="0">
+                                                            Establecer meta
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label>% Indicador de profundización:</label>
+                                                            {{ form_plan.perc_deep_clients }}
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label>% Indicador de clientes nuevos:</label>
+                                                            {{ form_plan.perc_new_clients }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label>
+                                                            <input type="checkbox" class="cbIndex" value="0">
+                                                            Establecer indicadores
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <input type="hidden" name="action" value="">
+                                            <button class="btn btn-outline-primary btnForecast" type="button" data-toggle="collapse" data-target="#forecastCollapse" aria-expanded="false" aria-controls="forecastCollapse">Ver pronóstico</button>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <input type="hidden" name="action" value="">
+                                            <button class="btn btn-outline-primary btnDist" type="button" data-toggle="collapse" data-target="#actCollapse" aria-expanded="false" aria-controls="actCollapse">Distribuir meta</button>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <input type="hidden" name="action" value="">
+                                            <button class="btn btn-outline-primary btnManual" type="button" data-toggle="collapse" data-target="#actCollapse" aria-expanded="false" aria-controls="actCollapse">Ajustar manualmente</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>            
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="collapse" id="forecastCollapse">
+                            <div class="card card-dark">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        Pronóstico de ventas
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <table id="dataForecast" class="table table-hover">
+                                                <thead>
+                                                    <tr style="text-align: center" class="table-active">
+                                                        <th style="width: 20%;">Mes</th>
+                                                        <th style="width: 30%;">Semana</th>
+                                                        <th style="width: 15%;">Proyección de venta</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>      
+                                        <div class="col-lg-6">
+                                            <figure class="highcharts-figure">
+                                                <div id="containerForecast"></div>
+                                            </figure>
+                                        </div>
+                                    </div>      
+                                </div>      
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="collapse" id="actCollapse">
+                            <div class="card card-dark">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        Actividades para cumplimiento de meta
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>Nombre:</label>
+                                                <input type="text" class="form-control" name="nameAct">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>Descripción:</label>
+                                                <input type="text" class="form-control" name="descAct">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>% Indicador de profundización:</label>
+                                                <input type="text" class="form-control" name="indDeepCliAct">    
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>% Indicador de clientes nuevos:</label>
+                                                <input type="text" class="form-control" name="indNewCliAct">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Fecha inicio:</label>
+                                                <input type="text" class="form-control datetimepicker-input" name="initAct" autocomplete="off" id="act_init_date" data-target="#act_init_date" data-toggle="datetimepicker">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Fecha fin:</label>
+                                                <input type="text" class="form-control datetimepicker-input" name="endAct" autocomplete="off" id="act_end_date" data-target="#act_end_date" data-toggle="datetimepicker">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Meta profundización de clientes:</label>
+                                                <input type="text" class="form-control" autocomplete="off" readonly="true" name="realDeep">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Acumulado:</label>
+                                                <input type="text" class="form-control" autocomplete="off" readonly="true" name="actAcumDeep">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Meta clientes nuevos:</label>
+                                                <input type="text" class="form-control" autocomplete="off" readonly="true" name="realNew">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Acumulado:</label>
+                                                <input type="text" class="form-control" autocomplete="off" readonly="true" name="actAcumNew">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <input type="hidden" name="action" value="">
+                                                <button type="button" class="btn btn-outline-primary btn-block addAct">Agregar actividad</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <input type="hidden" name="action" value="">
+                                                <button class="btn btn-outline-primary btn-block btnActTable" type="button" data-toggle="collapse" data-target="#tableActCollapse" aria-expanded="false" aria-controls="tableActCollapse">Ver actividades</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>
+                                                    <input type="checkbox" class="cbAct" value="0">
+                                                    Establecer actividades
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="collapse" id="tableActCollapse">
+                                                <table id="actTable" class="table table-hover">
+                                                    <thead>
+                                                        <tr style="text-align: center" class="table-active">
+                                                            <th style="width: 20%;">Actividad</th>
+                                                            <th style="width: 30%;">Descripción</th>
+                                                            <th style="width: 15%;">% Profundiczación</th>
+                                                            <th style="width: 15%;">% Nuevos clientes</th>
+                                                            <th style="width: 10%;">Fecha Inicio</th>
+                                                            <th style="width: 10%;">Fecha Fin</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                                <br>
+                                                <button type="button" class="btn btn-outline-primary removeAct">Eliminar actividades</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-dark">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        Estacionalidades y fluctuaciones de la demanda
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>Nombre:</label>
+                                                <input type="text" class="form-control" name="staName">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>Descripción:</label>
+                                                <input type="text" class="form-control" name="staDesc">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>% Crecimiento:</label>
+                                                <input type="text" class="form-control" autocomplete="off" name="staCrec">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>% Decrecimiento:</label>
+                                                <input type="text" class="form-control" autocomplete="off" name="staDec">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Fecha inicio:</label>
+                                                <input type="text" class="form-control" name="initDateSta">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">  
+                                            <div class="form-group">
+                                                <label>Fecha fin:</label>
+                                                <input type="text" class="form-control" name="endDateSta">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <input type="hidden" name="action" value="">
+                                                <button type="button" class="btn btn-outline-primary btn-block addSta">Agregar estacionalidad</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <input type="hidden" name="action" value="">
+                                                <button class="btn btn-outline-primary btn-block btnStaTable" type="button" data-toggle="collapse" data-target="#tableStaCollapse" aria-expanded="false" aria-controls="tableStaCollapse">Ver estacionalidades</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>
+                                                    <input type="checkbox" class="cbSta" value="0">
+                                                    Establecer estacionalidades
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="collapse" id="tableStaCollapse">
+                                                <table id="staTable" class="table table-hover">
+                                                    <thead>
+                                                        <tr style="text-align: center" class="table-active">
+                                                            <th style="width: 20%;">Estacionalidad</th>
+                                                            <th style="width: 30%;">Descripción</th>
+                                                            <th style="width: 15%;">% Crecimiento</th>
+                                                            <th style="width: 15%;">% Decrecimiento</th>
+                                                            <th style="width: 10%;">Fecha Inicio</th>
+                                                            <th style="width: 10%;">Fecha Fin</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                                <br>
+                                                <button type="button" class="btn btn-outline-primary removeSta">Eliminar estacionalidades</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-dark">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        Establecer meta por categoría
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <div id="accordion">
+                                        <div class="card">
+                                            <div class="card-header" id="headingOne">
+                                                <div class="mb-0">
+                                                    <div class="row">
+                                                        <div class="col-lg-4">
+                                                            <button class="btn btn-link collapsed cityRun" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                                                Ciudad
+                                                            </button>
+                                                        </div>
+                                                        <div style="text-align: right;" class="col-lg-2">
+                                                            <label>Meta $:</label>
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <input type="text" class="form-control" autocomplete="off" name="goalMonCity" readonly="true">
+                                                        </div>
+                                                        <div style="text-align: right;" class="col-lg-2">
+                                                            <label>Meta %:</label>
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <input type="text" class="form-control" autocomplete="off" name="goalPercCity" readonly="true">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <table id="cityDataTable" class="table table-hover">
+                                                                <thead>
+                                                                    <tr style="text-align: center" class="table-active">
+                                                                        <th style="width: 20%;">Ciudad</th>
+                                                                        <th style="width: 30%;">Última venta</th>
+                                                                        <th style="width: 15%;">Pronóstico venta</th>
+                                                                        <th style="width: 15%;">Meta $</th>
+                                                                        <th style="width: 15%;">Meta %</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-lg-3">
+                                                            <label>
+                                                                <input type="checkbox" class="cbAct" value="0">
+                                                                Establecer meta por ciudad
+                                                            </label>            
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <a href="" type="button" data-toggle="collapse" data-target="#cityGraphCollapse" aria-expanded="false" aria-controls="cityGraphCollapse">
+                                                                <label>
+                                                                    Ver gráfico
+                                                                </label>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <div class="collapse" id="cityGraphCollapse">
+                                                                <div id="containerCity"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header" id="headingTwo">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link collapsed zoneRun" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                        Zona
+                                                    </button>
+                                                </h5>
+                                            </div>
+                                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <table id="dataZone" class="display table table-hover" width="100%"></table>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div id="containerZone"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header" id="headingThree">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link collapsed advisorRun" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                        Asesor
+                                                    </button>
+                                                </h5>
+                                            </div>
+                                            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <table id="dataAdvisor" class="display table table-hover" width="100%"></table>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div id="containerAdvisor"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header" id="headingFour">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link collapsed catCustRun" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                                        Categoría clientes
+                                                    </button>
+                                                </h5>
+                                            </div>
+                                            <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <table id="dataCustCat" class="display table table-hover" width="100%"></table>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div id="containerCustCat"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header" id="headingFive">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link collapsed custRun" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                                        Clientes
+                                                    </button>
+                                                </h5>
+                                            </div>
+                                            <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <table id="dataCust" class="display table table-hover" width="100%"></table>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div id="containerCust"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>    
+                                </div>
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-outline-primary">Guardar Planeación</button>
+                                </div>
+                            </div>                  
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.card -->
+    </form>
+</div>
+{% endblock content-window %}
+{% block extrajs %}  
+    <script src="{% static 'js/planeacion/plan_comercial.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+{% endblock %}

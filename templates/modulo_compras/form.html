@@ -1,0 +1,83 @@
+{% extends 'bia/modulo_compras.html' %}
+{% load static %}
+{% block extra_css %}
+    
+{% endblock extra_css %}
+
+{% block title-header %}
+{% endblock title-header %}
+
+{% block menu-header %}
+    {% block menu %}
+    {% endblock menu %}
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+        </a>
+    </li>
+{% endblock menu-header %}
+
+{% block content-window %}
+    <form method="post" action="." enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-12">
+            <!-- card -->
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        {% if action == 'add' %}
+                            <i class="fas fa-plus"></i>
+                        {% else %}
+                            <i class="fas fa-edit"></i>
+                        {% endif %}
+                        {{ title }}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="{{ action }}">
+                    {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h5><i class="icon fas fa-ban"></i> Ha ocurrido un error al querer guardar el registro</h5>
+                            <ul>
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    {% block form %}    
+                    {% endblock form %}  
+                </div>
+            </div>
+        </form>
+        <script>
+            {% if form.errors %}
+                var errors = '';
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        errors += '{{ error }}\n';
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    errors += '{{ error }}\n';
+                {% endfor %}
+                Swal.fire({
+                    title: 'Error!',
+                    text: errors,
+                    icon: 'error'
+                });
+            {% endif %}
+
+            $('form').on('submit', function (e) {
+                e.preventDefault();
+                var parameters = new FormData(this);
+                submit_with_ajax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
+                    location.href = '{{ list_url }}';
+                });
+            });
+        </script>
+{% endblock content-window %}

@@ -1,0 +1,190 @@
+{% extends 'modulo_logistica/form.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} BIA | Crear bodega {% endblock title %}
+{% block extra_css %}
+{% endblock extra_css %}
+{% block title-header %}
+{% endblock title-header %}
+
+    {% block menu-header %}
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            <i class="fas fa-list-ul"></i> Listado bodegas
+        </a>
+    </li>
+    {% endblock menu-header %}
+    {% block content-window %}
+    <form id="formWarehouse" method="post"> 
+        <div class="col-lg-12">
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-plus"></i>
+                        Crear bodega
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <input type="hidden" name="action" value="{{ action }}">
+                    <div class="row">
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label>* Nombre:</label>
+                                {{ form.name }}
+                            </div>
+                        </div>
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label>* Ciudad:</label>
+                                {{ form.city }}
+                            </div>
+                        </div>
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label>* Dirección:</label>
+                                <div class="input-group">
+                                    {{ form.address }}
+                                    <div class="input-group-append">
+                                        <button class="btn btn-success btn-flat btnAddAddress" type="button">
+                                            <i class="fas fa-plus-circle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>* Código postal:</label>
+                                {{ form.postal_code }}
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>* Estado:</label>
+                                {{ form.state }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button type="submit" class="btn btn-outline-primary btn-block btn-block">
+                                <i class="fas fa-save"></i> Guardar
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <a href="{% url 'logistica:catalogo_bodegas' %}" class="btn btn-outline-danger btn-block" type="button">
+                                <i class="fas fa-window-close"></i> Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="modal fade bd-example-modal-xl" id="myModalAddress" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+         aria-hidden="true">
+        <form id="frmAddress" enctype="multipart/form-data" method="post">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                            <b><i class="fas fa-map-marked-alt"></i> Registrar dirección</b>
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="row">
+                                <select name="addressType" id="addressType">
+                                    <option></option>
+                                    <option>Calle</option>
+                                    <option>Carrera</option>
+                                    <option>Avenida</option>
+                                    <option>Transversal</option>
+                                </select>
+                                <input type="text" autocomplete="off" name="streetNumber" required>
+                                <select name="addressLet" id="addressLet">
+                                    <option></option>
+                                    <option>A</option>
+                                    <option>B</option>
+                                    <option>C</option>
+                                    <option>D</option>
+                                    <option>E</option>
+                                    <option>F</option>
+                                    <option>G</option>
+                                    <option>H</option>
+                                    <option>I</option>
+                                    <option>J</option>
+                                    <option>K</option>
+                                </select>
+                                <select name="addressBis" id="addressBis">
+                                    <option></option>
+                                    <option>BIS</option>
+                                </select>
+                                <input type="text" required name="number" autocomplete="off">
+                                <select name="numberLet">
+                                    <option></option>
+                                    <option>A</option>
+                                    <option>B</option>
+                                    <option>C</option>
+                                    <option>D</option>
+                                    <option>E</option>
+                                    <option>F</option>
+                                    <option>G</option>
+                                    <option>H</option>
+                                    <option>I</option>
+                                    <option>J</option>
+                                    <option>K</option>
+                                </select>
+                                <select name="numberBis">
+                                    <option></option>
+                                    <option>BIS</option>
+                                </select>
+                                <input type="text" name="nomStreet" required autocomplete="off">
+                                <select name="addressSur" id="addressSur">
+                                    <option></option>
+                                    <option>Sur</option>
+                                    <option>Este</option>
+                                    <option>Oeste</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">
+                            <i class="fas fa-save"></i> Registrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endblock content-window %}
+    {% block extrajs %}
+        <script src="{% static 'js/logistica/crear_bodega.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
+        <script>
+            {% if form.errors %}
+                var errors = '';
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        errors += '{{ error }}\n';
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    errors += '{{ error }}\n';
+                {% endfor %}
+                Swal.fire({
+                    title: 'Error!',
+                    text: errors,
+                    icon: 'error'
+                });
+            {% endif %}
+        </script>
+    {% endblock extrajs %}  

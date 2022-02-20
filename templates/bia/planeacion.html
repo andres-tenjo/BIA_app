@@ -1,0 +1,239 @@
+{% extends 'bia/base_home_sidebar.html' %}
+{% load static %}
+{% block title %} BIA | Planeación{% endblock title %}
+{% block brand-logo %}
+<!-- Brand Logo -->
+<a href="" class="brand-link">
+    <img src="{% static 'img/home/modulo_config.png' %}" alt="configuracion" class="brand-image img-circle elevation-3"
+    style="opacity: .8">
+    <span class="brand-text font-weight-light">Planeación</span>
+</a>
+{% endblock brand-logo %}
+{% block sidebar-menu %}
+<!-- Sidebar Menu -->
+    <nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <li class="nav-item has-treeview
+            {% if request.resolver_match.view_name == 'planeacion:plan_comercial' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:hist_plan_comercial' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:planeacion_comercial' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:plan_act_comercial' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_cump_act_ventas' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:promociones' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:crear_promocion' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:listar_promociones' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:cartera_clientes' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:novedades_ventas' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:tuberia_clientes' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_cartera_clientes' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_indicadores_ventas' %}menu-open{% endif %}">
+            <a href="#" class="nav-link
+                {% if request.resolver_match.view_name == 'planeacion:plan_comercial' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:hist_plan_comercial' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:planeacion_comercial' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:plan_act_comercial' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_cump_act_ventas' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:promociones' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:crear_promocion' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:listar_promociones' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:cartera_clientes' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:novedades_ventas' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:tuberia_clientes' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_cartera_clientes' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_indicadores_ventas' %}active{% endif %}">
+                <i class="nav-icon fas fa-cart-plus"></i>
+                <p>
+                    Módulo comercial
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{% url 'planeacion:plan_comercial' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'planeacion:plan_comercial' %}active{% endif %}
+                        {% if request.resolver_match.view_name == 'planeacion:hist_plan_comercial' %}active{% endif %}
+                        {% if request.resolver_match.view_name == 'planeacion:planeacion_comercial' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Planificación comercial</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'planeacion:plan_act_comercial' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'planeacion:plan_act_comercial' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Planificación de actividades</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'planeacion:promociones' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'planeacion:promociones' %}active{% endif %}
+                        {% if request.resolver_match.view_name == 'planeacion:crear_promocion' %}active{% endif %}
+                        {% if request.resolver_match.view_name == 'planeacion:listar_promociones' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Promociones</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'planeacion:cartera_clientes' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'planeacion:cartera_clientes' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Cartera de clientes</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item has-treeview
+            {% if request.resolver_match.view_name == 'planeacion:plan_compras' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:plan_act_compras' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_cump_act_compras' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:novedades_compras' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:cartera_proveedores' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_indicadores_compras' %}menu-open{% endif %}">
+            <a href="#" class="nav-link
+                {% if request.resolver_match.view_name == 'planeacion:plan_compras' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:plan_act_compras' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_cump_act_compras' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:novedades_compras' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:cartera_proveedores' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_indicadores_compras' %}active{% endif %}">
+                <i class="nav-icon far fa-handshake"></i>
+                <p>
+                    Módulo compras
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{% url 'planeacion:plan_compras' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'planeacion:plan_compras' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Planificación compras</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'planeacion:plan_act_compras' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'planeacion:plan_act_compras' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Planificación de actividades</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'planeacion:cartera_proveedores' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'planeacion:cartera_proveedores' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Cartera de proveedores</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item has-treeview
+            {% if request.resolver_match.view_name == 'planeacion:config_inventario' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_asign_act_almacen' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_cump_act_almacen' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_ingreso_nov_almacen' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_indicadores_almacen' %}menu-open{% endif %}">
+            <a href="#" class="nav-link
+                {% if request.resolver_match.view_name == 'planeacion:config_inventario' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_asign_act_almacen' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_cump_act_almacen' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_ingreso_nov_almacen' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_indicadores_almacen' %}active{% endif %}">
+                <i class="nav-icon fas fa-warehouse"></i>
+                <p>
+                    Almacén
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="" class="nav-link
+                        {% if request.resolver_match.view_name == 'planeacion:config_asign_act_almacen' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Planificación de almacén</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="" class="nav-link
+                        {% if request.resolver_match.view_name == 'planeacion:config_asign_act_almacen' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Planificación de actividades</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item has-treeview
+            {% if request.resolver_match.view_name == 'planeacion:config_asign_act_transp' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_cump_act_transp' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_ingreso_nov_transp' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'planeacion:config_indicadores_transp' %}menu-open{% endif %}">
+            <a href="#" class="nav-link
+                {% if request.resolver_match.view_name == 'planeacion:config_asign_act_transp' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_cump_act_transp' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_ingreso_nov_transp' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'planeacion:config_indicadores_transp' %}active{% endif %}">
+                <i class="nav-icon fas fa-truck-moving"></i>
+                <p>
+                    Transporte
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="" class="nav-link
+                        {% if request.resolver_match.view_name == 'planeacion:config_asign_act_transp' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Planificación de transporte</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="" class="nav-link
+                        {% if request.resolver_match.view_name == 'planeacion:config_asign_act_transp' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Planificación de actividades</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+</div>
+<!-- /.sidebar -->
+{% endblock sidebar-menu %}
+
+    {% block content-header %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1 class="m-0 text-dark">
+                {% block title-header %}
+                Bienvenido al Módulo Planeación de BIA
+                {% endblock title-header %}
+                {% block button_list%}
+                {% endblock button_list%}
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            {% block menu-header %}
+            {% endblock menu-header %}
+            </ol>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- /.content-header -->
+    {% endblock content-header %}
+    {% block content-body %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            {% block content-window %}
+            {% endblock content-window %}
+        </div>
+    </section>
+    {% endblock content-body %}
+</div>
+<!-- /.content-wrapper -->

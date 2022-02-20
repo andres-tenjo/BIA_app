@@ -1,0 +1,69 @@
+{% extends 'modulo_configuracion/form.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Parametrización | Crear bodega {% endblock title %}
+{% block title-header %}
+{% endblock title-header %}
+
+    {% block menu-header %}
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            Ver bodega
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+            Ver instructivo
+        </a>
+    </li>
+    {% endblock menu-header %}
+
+    {% block form %}
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Nombre bodega:</label>
+                {{ form.warehouse_name }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Departamento:</label>
+                <div class="input-group">
+                    {{ form.department }}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Ciudad:</label>
+                <div class="input-group">
+                    {{ form.city }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Dirección bodega:</label>
+                <div class="input-group">
+                    {{ form.warehouse_address }}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Nombre de responsable:</label>
+                {{ form.contact_name }}
+            </div>
+        </div>
+    </div>
+    <br>
+    <h6 class="text-primary">Los campos marcados con * son obligatorios</h6>
+    {% endblock form %}
+    {% block extrajs %}  
+    <script src="{% static 'js/parametrizacion/crear_bodega.js' %}"></script>
+    <script src="{% static 'js/parametrizacion/main.js' %}"></script>
+    {% endblock extrajs %}

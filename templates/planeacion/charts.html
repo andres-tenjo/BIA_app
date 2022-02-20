@@ -1,0 +1,21 @@
+{% extends 'bia/modulo_configuracion.html' %}
+{% load static %}
+{% block title %}
+    BIA | Parametrización
+{% endblock title %}
+{% block title-header %}
+{% endblock title-header %}
+{% block content-window %}
+
+<h1>Django matplotlip</h1>
+
+
+    {% if chart %}
+        <img src="data:image/png;base64, {{chart|safe}}">
+
+        
+        
+    {% endif %}
+    
+
+{% endblock content-window %}

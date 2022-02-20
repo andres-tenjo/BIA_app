@@ -1,0 +1,121 @@
+{% extends 'bia/base_home_sidebar.html' %}
+{% load static %}
+{% block title %}BIA | Reportes{% endblock title %}
+{% block brand-logo %}
+<!-- Brand Logo -->
+<a href="{% url 'modulo_reportes' %}" class="brand-link">
+    <img src="{% static 'img/home/modulo_reportes.png' %}" alt="Reportes" class="brand-image img-circle elevation-3"
+    style="opacity: .8">
+    <span class="brand-text font-weight-light">Reportes</span>
+</a>
+{% endblock brand-logo %}
+{% block sidebar-menu %}
+<!-- Sidebar Menu -->
+    <nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <li class="nav-item">
+            <a href="{% url 'reportes:reportes_generales' %}" class="nav-link 
+                {% if request.resolver_match.view_name == 'reportes:reportes_generales' %}active{% endif %}">
+                <i class="nav-icon fas fa-file-excel"></i>
+                <p>Reportes generales</p>
+            </a>
+        </li>
+        <li class="nav-item has-treeview
+            {% if request.resolver_match.view_name == 'reportes:reportes_modulo_comercial' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'reportes:reportes_modulo_compras' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'reportes:reportes_modulo_almacen' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'reportes:reportes_modulo_transporte' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'reportes:reportes_costos' %}menu-open{% endif %}">
+            <a href="#" class="nav-link
+                {% if request.resolver_match.view_name == 'reportes:reportes_modulo_comercial' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'reportes:reportes_modulo_compras' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'reportes:reportes_modulo_almacen' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'reportes:reportes_modulo_transporte' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'reportes:reportes_costos' %}active{% endif %}">
+                <i class="nav-icon fas fa-file-export"></i>
+                <p>
+                    Reportes por área
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{% url 'reportes:reportes_modulo_comercial' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'reportes:reportes_modulo_comercial' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Comercial</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'reportes:reportes_modulo_compras' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'reportes:reportes_modulo_compras' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Compras</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'reportes:reportes_modulo_almacen' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'reportes:reportes_modulo_almacen' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Almacén</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'reportes:reportes_modulo_transporte' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'reportes:reportes_modulo_transporte' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Transporte</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'reportes:reportes_costos' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'reportes:reportes_costos' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Costos</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+</div>
+<!-- /.sidebar -->
+{% endblock sidebar-menu %}
+
+    {% block content-header %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1 class="m-0 text-dark">
+                {% block title-header %}
+                Bienvenido al Módulo Reportes de BIA
+                {% endblock title-header %}
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            {% block menu-header %}
+            <li class="breadcrumb-item"><a href="#">Instructivo módulo reportes V 1.0</a></li>
+            {% endblock menu-header %}
+            </ol>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- /.content-header -->
+    {% endblock content-header %}
+    {% block content-body %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            {% block content-window %}
+            {% endblock content-window %}
+        </div>
+    </section>
+    {% endblock content-body %}
+</div>
+<!-- /.content-wrapper -->
+

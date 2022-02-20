@@ -1,0 +1,53 @@
+{% extends 'bia/modulo_configuracion.html' %}
+{% load static %}
+{% block title %}
+    BIA | Parametrización
+{% endblock title %}
+{% block title-header %}
+{% endblock title-header %}
+{% block content-window %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="container"></div>
+        </div>
+    </div>
+{% block extrajs %}  
+    <script type="application/javascript">
+        Highcharts.chart('container', {
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: 'Pronóstico de la demanda'
+        },
+        subtitle: {
+            text: 'Pronóstico por semana'
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
+        },
+        yAxis: {
+            title: {
+                text: 'Valor'
+            }
+        },
+        plotOptions: {
+            line: {
+                dataLabels: {
+                    enabled: true
+                },
+                enableMouseTracking: false
+            }
+        },
+        series: [{
+            name: 'Historico',
+            data: [7.0, 6.9, 9.5, 14.5, 18.4, 21.5]
+        }, {
+            name: 'Pronóstico',
+            data: [21.5, 23.5, 24.5, 26.5, 10.5, 11]
+        }]
+    });
+    </script>
+{% endblock extrajs %}
+
+{% endblock content-window %}

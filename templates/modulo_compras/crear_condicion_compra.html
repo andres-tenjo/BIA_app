@@ -1,0 +1,124 @@
+{% extends 'bia/modulo_compras.html' %}
+
+{% load static %}
+
+{% block title %}
+    mod_com_cat_prod_comp
+{% endblock title %}
+
+{% block content %}
+    
+    <div class="container-fluid">
+        <h2 class="mt-5" style="text-align:center;">Crear condición de compra</h2>
+        <form method="POST" class="mt-5">
+            {% csrf_token %}
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.cod_prod.label }}
+                    {{ form.cod_prod }}
+                </div>
+                <div class="col-sm">
+                    {{ form.descuento_volumen.label }}
+                    {{ form.descuento_volumen }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.cantidad_minima.label }}
+                    {{ form.cantidad_minima }}
+                </div>
+                <div class="col-sm">
+                    {{ form.porcentaje_descuento_ctd.label }}
+                    {{ form.porcentaje_descuento_ctd }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.descuento_monto.label }}
+                    {{ form.descuento_monto }}
+                </div>
+                <div class="col-sm">
+                    {{ form.monto_minimo.label }}
+                    {{ form.monto_minimo }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.porcentaje_descuento_mto.label }}
+                    {{ form.porcentaje_descuento_mto }}
+                </div>
+                <div class="col-sm">
+                    {{ form.pronto_pago.label }}
+                    {{ form.pronto_pago }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.porcentaje_descuento_pto.label }}
+                    {{ form.porcentaje_descuento_pto }}
+                </div>
+                <div class="col-sm">
+                    {{ form.rebate.label }}
+                    {{ form.rebate }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.monto_minimo_rebate.label }}
+                    {{ form.monto_minimo_rebate }}
+                </div>
+                <div class="col-sm">
+                    {{ form.porcentaje_descuento_reb.label }}
+                    {{ form.porcentaje_descuento_reb }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.entrega_compra_minima.label }}
+                    {{ form.entrega_compra_minima }}
+                </div>
+                <div class="col-sm">
+                    {{ form.valor_orden_compra.label }}
+                    {{ form.valor_orden_compra }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.compra_cantidad_minima.label }}
+                    {{ form.compra_cantidad_minima }}
+                </div>
+                <div class="col-sm">
+                    {{ form.cantidad.label }}
+                    {{ form.cantidad }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.usuario_creacion.label }}
+                    {{ form.usuario_creacion }}
+                </div>
+                <div class="col-sm">
+                    {{ form.usuario_modificacion.label }}
+                    {{ form.usuario_modificacion }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    <button class="btn btn-dark mt-3 btn-block" type="submit">Registrar</button>
+                </div>
+                <div class="col-sm">
+                    <a href="{% url 'ver_productos' %}">
+                        <button class="btn btn-dark mt-3 btn-block" type="button">Cancelar</button>
+                    </a>
+                </div>
+            </div>  
+        </form>
+        <h4 class="mt-3" style="text-align:center;">
+            <a href="">Editar condición de compra</a>
+        </h4>
+    </div>
+{% endblock content %}
+
+{% block extrajs %}
+
+{% endblock extrajs %}

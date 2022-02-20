@@ -1,0 +1,76 @@
+{% extends 'bia/modulo_configuracion.html' %}
+{% load static %}
+{% block title-header %}
+{% endblock title-header %}
+{% block menu-header %}
+    {% block menu %}
+    {% endblock menu %}
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+        </a>
+    </li>
+{% endblock menu-header %}
+{% block content-window %}
+    <div class="card card-primary card-outline">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fas fa-plus"></i>
+                Novedades de compras
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Proveedor:</label>
+                        <input type="text" class="form-control" name="">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Orden Nº:</label>
+                        <input type="text" class="form-control" name="">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Tipo de novedad:</label>
+                        <input type="text" class="form-control" name="">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Descripción:</label>
+                        <input type="text" class="form-control" name="">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Obervaciones:</label>
+                        <input type="text" class="form-control" name="">
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <input type="hidden" name="action" value="">
+                        <button class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" data-target="#forecastCollapse" aria-expanded="false" aria-controls="forecastCollapse">Envíar novedad</button>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <input type="hidden" name="action" value="">
+                        <button class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" data-target="#actCollapse" aria-expanded="false" aria-controls="actCollapse">Ver novedades</button>
+                    </div>
+                </div>
+            </div>    
+        </div>
+    </div>
+{% endblock content-window %}
+{% block extrajs %}  
+{% endblock %}

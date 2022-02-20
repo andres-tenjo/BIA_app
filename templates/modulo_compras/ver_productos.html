@@ -1,0 +1,67 @@
+
+{% extends 'bia/modulo_compras.html' %}
+
+{% load static %}
+
+{% block title %}
+    mod_com_cat_prod_comp
+{% endblock title %}
+
+{% block content %}
+    
+    <div class="container-fluid">
+        <h1 class="mt-5" style="text-align:center;">Catálogo de productos</h1>
+        <h6 class="mt-5" style="text-align:center;">Ingrese el código, nombre o marca del producto que desea búscar</h6>
+        <div class="container mt-3">
+            <div class="row">
+                <div class="col-md-12 search">
+                    <form method="get">
+                        <div id="custom-search-input">
+                            <div class="input-group col-md-12">
+                                <input type="text" class="form-control" placeholder="Buscar" name="buscar">
+                                <span class="input group-list">
+                                    <button type="submit" class="boton btn-primary">Buscar</button>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+                {% if object_list %}
+                    <table class="table table-hover mt-5">
+                        <thead>
+                          <tr>
+                            <th scope="col" style="text-align: center;">Código</th>
+                            <th scope="col" style="text-align: center;">Nombre</th>
+                            <th scope="col" style="text-align: center;">Marca</th>
+                            <th scope="col" style="text-align: center;">Cantidad</th>
+                            <th scope="col" style="text-align: center;">Opciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for object in object_list%}
+                            <tr>
+                                <td style="text-align: center;">{{ object.codigo_producto }}</td>
+                                <td style="text-align: center;">{{ object.nombre_producto }}</td>
+                                <td style="text-align: center;">{{ object.marca }}</td>
+                                <td style="text-align: center;">{{ object.cantidad_udc }}</td>
+                                <td style="text-align: center;">
+                                    <a href="{% url 'editar_producto' object.codigo_producto %}">Editar</a>
+                                </td>
+                            {% endfor %}
+                            </tr>
+                        </tbody>
+                      </table>
+                    
+                {% endif %}
+        </div>
+    </div>
+    <div class="modal fade" id="crear_producto" role="dialog">
+
+    </div>
+    
+{% endblock content %}
+
+{% block extrajs %}
+
+{% endblock extrajs %}

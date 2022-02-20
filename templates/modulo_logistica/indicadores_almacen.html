@@ -1,0 +1,175 @@
+{% extends 'bia/modulo_indicadores.html' %}
+{% load static %}
+{% block title-header %}
+{% endblock title-header %}
+{% block menu-header %}
+    {% block menu %}
+    {% endblock menu %}
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+        </a>
+    </li>
+{% endblock menu-header %}
+{% block content-window %}
+    <div class="card card-primary card-outline">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fas fa-plus"></i>
+                Indicadores de gestión logistica
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2 style="text-align: center;">
+                        <i class="fas fa-warehouse"></i>
+                        Indicadores de almacén
+                    </h2>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>98 %</h3>
+                            <p>Capacidad de almacenamiento</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-bag"></i>
+                        </div>
+                        <a href="#" class="small-box-footer"> <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>10 %</h3>
+                            <p>Error en la precisión del inventario</p>
+                        </div>
+                        <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                        </div>
+                        <a href="#" class="small-box-footer"> <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>$ 658.000</h3>
+                            <p>Bajas de inventario</p>
+                        </div>
+                        <div class="icon">
+                        <i class="ion ion-person-add"></i>
+                        </div>
+                        <a href="#" class="small-box-footer"> <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>95 %</h3>
+                            <p>Cumplimiento de actividades</p>
+                        </div>
+                        <div class="icon">
+                        <i class="ion ion-pie-graph"></i>
+                        </div>
+                        <a href="#" class="small-box-footer"> <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-pie mr-1"></i>
+                                Capacidad de almacenamiento
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <figure class="highcharts-figure">
+                                <div id="storageCapacity"></div>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-pie mr-1"></i>
+                                Error en precisión de inventario
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <figure class="highcharts-figure">
+                                <div id="inventoryError"></div>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-pie mr-1"></i>
+                                Bajas de inventario
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <figure class="highcharts-figure">
+                                <div id="inventoryDrops"></div>
+                            </figure>  
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-pie mr-1"></i>
+                                Entregas incumplidas
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <figure class="highcharts-figure">
+                                <div id="deliveriesUnfulfilled"></div>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-pie mr-1"></i>
+                                Cumplimiento de actividades
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <figure class="highcharts-figure">
+                                <div id="fullActivities"></div>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content-window %}
+{% block extrajs %}
+    <script src="{% static 'js/logistica/indicadores_almacen.js' %}"></script>
+{% endblock extrajs %}

@@ -1,0 +1,294 @@
+{% extends 'modulo_logistica/form.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Logística | Salidas de almacén {% endblock title %}
+{% block extra_css %}
+{% endblock extra_css %}
+{% block title-header %}
+{% endblock title-header %}
+
+    {% block menu-header %}
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            Listado de salidas
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+        </a>
+    </li>
+    {% endblock menu-header %}
+
+    {% block content-window %}
+    <div id="app">
+        <form id="frmOrder" method="post">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card card-primary card-outline">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-plus"></i>
+                                Generar salida de almacén
+                            </h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Salida:</label>
+                                        <div class="input-group">
+                                            {{ form.customer }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div hidden="true" id="dataOrder">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label>Identificación Nº:</label>
+                                            <input 
+                                                type="text" 
+                                                class="form-control" 
+                                                autocomplete="off" 
+                                                readonly="true" 
+                                                name="id_number">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label>Documento Nº:</label>
+                                            <input
+                                                type="text" 
+                                                class="form-control" 
+                                                autocomplete="off" 
+                                                readonly="true" 
+                                                name="crossingDoc">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label>Subtotal:</label>
+                                            <input
+                                                type="text" 
+                                                class="form-control" 
+                                                autocomplete="off" 
+                                                readonly="true" 
+                                                name="subtotal">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label>Iva:</label>
+                                            <input
+                                                type="text" 
+                                                class="form-control" 
+                                                autocomplete="off" 
+                                                readonly="true" 
+                                                name="iva">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label>Descuento:</label>
+                                            <input 
+                                                type="text" 
+                                                class="form-control" 
+                                                autocomplete="off" 
+                                                readonly="true" 
+                                                name="discount">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label>Total:</label>
+                                            <input
+                                                type="text" 
+                                                class="form-control" 
+                                                autocomplete="off" 
+                                                readonly="true" 
+                                                name="total">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <table class="table table-bordered table-hover" id="tblProducts">
+                                        <thead>
+                                        <tr style="text-align: center;">
+                                            <th style="width: 5%;">Código</th>
+                                            <th style="width: 30%;">Producto</th>
+                                            <th style="width: 10%;">Unidad de compra</th>
+                                            <th style="width: 10%;">Precio</th>
+                                            <th style="width: 10%;">Cantidad</th>
+                                            <th style="width: 10%;">Subtotal</th>
+                                            <th style="width: 5%;">Iva</th>
+                                            <th style="width: 10%;">Descuento</th>
+                                            <th style="width: 10%;">Opciones</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="collapse" id="resumeOrder">
+                        <div class="card card-primary card-outline">
+                            <div class="card-header">
+                                <h2 class="card-title">
+                                    <i class="fas fa-shopping-cart"></i> 
+                                    Resúmen de pedido
+                                </h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Ciudad:</label>
+                                            <input 
+                                                type="text" 
+                                                class="form-control" 
+                                                autocomplete="off" 
+                                                readonly="true" 
+                                                name="city">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Zona:</label>
+                                            <input 
+                                                type="text" 
+                                                class="form-control" 
+                                                autocomplete="off" 
+                                                readonly="true" 
+                                                name="zone">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Dirección de entrega:</label>
+                                            {{ form.delivery_address }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Fecha de pedido:</label>
+                                            {{ form.order_date }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Fecha de entrega:</label>
+                                            {{ form.deliver_date }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label>Metodo de pago:</label>
+                                            {{ form.payment_method }}
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label>Observaciones:</label>
+                                            {{ form.observations }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <button 
+                                            class="btn btn-outline-primary btn-block btnSubmit" 
+                                            type="submit">
+                                            <i class="fas fa-plus"></i> 
+                                            Guardar e imprimir pedido
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    {% endblock content-window %}
+
+    {% block extrajs %}  
+        <script src="{% static 'js/logistica/salidas_almacen.js' %}"></script>
+        <script src="{% static 'js/main.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+        <script>
+            {% if form.errors %}
+                var errors = '';
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        errors += '{{ error }}\n';
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    errors += '{{ error }}\n';
+                {% endfor %}
+                Swal.fire({
+                    title: 'Error!',
+                    text: errors,
+                    icon: 'error'
+                });
+            {% endif %}
+        </script>
+        <div 
+            class="modal fade" 
+            id="modalCustomer" 
+            tabindex="-1" 
+            role="dialog" 
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <form 
+                id="formCustomer" 
+                enctype="multipart/form-data" 
+                method="post">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                <b><i class="fas fa-user-plus"></i> Crear cliente</b>
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% for field in frmCust.visible_fields %}
+                                <div class="form-group">
+                                    <label for="email">{{ field.label }}:</label>
+                                    {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat">
+                                <i class="fas fa-save"></i> Guardar cliente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endblock %}

@@ -1,0 +1,183 @@
+{% extends 'bia/modulo_compras.html' %}
+
+{% load static %}
+
+{% block title %}
+    mod_com_cat_prod_comp
+{% endblock title %}
+
+{% block content %}
+    
+    <div class="container-fluid">
+        <h1 class="mt-5" style="text-align:center;">Crear producto</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.nombre_producto.label }}
+                    {{ form.nombre_producto }}
+                </div>
+                <div class="col-sm">
+                    {{ form.categoria_producto.label }}
+                    {{ form.categoria_producto }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.subcategoria_producto.label }}
+                    {{ form.subcategoria_producto }}
+                </div>
+                <div class="col-sm">
+                    {{ form.marca.label }}
+                    {{ form.marca }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.unidad_compra.label }}
+                    {{ form.unidad_compra }}
+                </div>
+                <div class="col-sm">
+                    {{ form.cantidad_udc.label }}
+                    {{ form.cantidad_udc }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.ultimo_costo.label }}
+                    {{ form.ultimo_costo }}
+                </div>
+                <div class="col-sm">
+                    {{ form.peso_udc.label }}
+                    {{ form.peso_udc }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.alto_udc.label }}
+                    {{ form.alto_udc }}
+                </div>
+                <div class="col-sm">
+                    {{ form.ancho_udc.label }}
+                    {{ form.ancho_udc }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.largo_udc.label }}
+                    {{ form.largo_udc }}
+                </div>
+                <div class="col-sm">
+                    {{ form.orientacion_udc.label }}
+                    {{ form.orientacion_udc }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.apilamiento_udc.label }}
+                    {{ form.apilamiento_udc }}
+                </div>
+                <div class="col-sm">
+                    {{ form.unidad_venta.label }}
+                    {{ form.unidad_venta }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.cantidad_udv.label }}
+                    {{ form.cantidad_udv }}
+                </div>
+                <div class="col-sm">
+                    {{ form.precio_udv.label }}
+                    {{ form.precio_udv }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.peso_udv.label }}
+                    {{ form.peso_udv }}
+                </div>
+                <div class="col-sm">
+                    {{ form.alto_udv.label }}
+                    {{ form.alto_udv }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.ancho_udv.label }}
+                    {{ form.ancho_udv }}
+                </div>
+                <div class="col-sm">
+                    {{ form.largo_udv.label }}
+                    {{ form.largo_udv }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.orientacion_udv.label }}
+                    {{ form.orientacion_udv }}
+                </div>
+                <div class="col-sm">
+                    {{ form.apilamiento_udv.label }}
+                    {{ form.apilamiento_udv }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.codigo_barras.label }}
+                    {{ form.codigo_barras }}
+                </div>
+                <div class="col-sm">
+                    {{ form.equivalencia.label }}
+                    {{ form.equivalencia }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.margen.label }}
+                    {{ form.margen }}
+                </div>
+                <div class="col-sm">
+                    {{ form.indicador_rotacion.label }}
+                    {{ form.indicador_rotacion }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.iva.label }}
+                    {{ form.iva }}
+                </div>
+                <div class="col-sm">
+                    {{ form.condiciones_compra.label }}
+                    {{ form.condiciones_compra }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    {{ form.condiciones_almacenamiento.label }}
+                    {{ form.condiciones_almacenamiento }}
+                </div>
+                <div class="col-sm">
+                    {{ form.estado_producto.label }}
+                    {{ form.estado_producto }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm">
+                    <button class="btn btn-dark mt-3 btn-block" type="submit">Registrar</button>
+                </div>
+                <div class="col-sm">
+                    <a href="{% url 'ver_productos' %}">
+                        <button class="btn btn-dark mt-3 btn-block" type="button">Cancelar</button>
+                    </a>
+                </div>
+            </div>  
+        </form>
+    </div>
+{% endblock content %}
+
+{% block extrajs %}
+
+{% endblock extrajs %}
+
+

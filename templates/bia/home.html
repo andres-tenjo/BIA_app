@@ -1,0 +1,144 @@
+{% extends 'bia/base_home_sidebar.html' %}
+{% load static %}
+{% block title %}BIA | Home{% endblock title %}
+{% block brand-logo %}
+<!-- Brand Logo -->
+<a href="{% url 'home' %}" class="brand-link">
+    <img
+        src= "{% static 'img/home/logo.png' %}" 
+        alt="Home" 
+        class="brand-image img-circle elevation-3"
+        style="opacity: .8">
+    </img>
+    <span class="brand-text font-weight-light">
+        BIA
+    </span>
+</a>
+{% endblock brand-logo %}
+{% block sidebar-menu %}
+<!-- Sidebar Menu -->
+    <nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <li class="nav-item">
+            <a href="" class="nav-link 
+                {% if request.resolver_match.view_name == 'comercial:listar_promociones' %}active{% endif %}">
+                <i class="nav-icon fas fa-comment-dots"></i>
+                <p>Mensajes</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="" class="nav-link
+                {% if request.resolver_match.view_name == 'comercial:crear_pedido' %}active{% endif %}">
+                <i class="nav-icon far fa-bell"></i>
+                <p>Notificaciones</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="" class="nav-link
+                {% if request.resolver_match.view_name == 'comercial:crear_cotizacion_comercial' %}active{% endif %}">
+                <i class="nav-icon fas fa-sort-amount-down-alt"></i>
+                <p>Accesos rapidos</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="" class="nav-link
+                {% if request.resolver_match.view_name == 'comercial:crear_cotizacion_comercial' %}active{% endif %}">
+                <i class="nav-icon far fa-user"></i>
+                <p>{{ user.username | title }}</p>
+            </a>
+        </li>
+    </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+</div>
+<!-- /.sidebar -->
+{% endblock sidebar-menu %}
+
+    {% block content-header %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1 class="display-4 m-0">
+                {% block title-header %}
+                    Bienvenido a BIA
+                {% endblock title-header %}
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            {% block menu-header %}
+            <li class="breadcrumb-item"><a href="#">
+                Instructivo BIA V 1.0.0
+            </a></li>
+            {% endblock menu-header %}
+            </ol>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- /.content-header -->
+    {% endblock content-header %}
+    {% block content-body %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            {% block content-window %}
+                <div class="container">
+                    <h2 class="display-5 text-center">
+                        Módulos
+                    </h2>
+                    <div class="row py-5">
+                        <div class="col-md-4 text-center">
+                            <a href="{% url 'comercial:promociones' %}" class="text-secondary">
+                                <img src="{% static 'img/home/modulo_comercial.png' %}" 
+                                alt="comercial" width="100" height="100" class="img-fluid">
+                                <h4>Comercial</h4>
+                            </a>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <a href="{% url 'compras:iniciar_negociacion' %}" class="text-secondary">
+                                <img src="{% static 'img/home/modulo_compras.png' %}" 
+                                alt="compras" width="100" height="100" class="img-fluid">
+                                <h4>Compras</h4>
+                            </a>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <a href="{% url 'logistica:catalogo_productos' %}" class="text-secondary">
+                                <img src="{% static 'img/home/modulo_logistica.png' %}" 
+                                alt="logistica" width="100" height="100" class="img-fluid">
+                                <h4>Almacén</h4>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row py-2">
+                        <div class="col-md-4 text-center">
+                            <a href="{% url 'planeacion:plan_comercial' %}" class="text-secondary">
+                                <img src="{% static 'img/home/modulo_indicadores.png' %}" 
+                                alt="planeacion" width="100" height="100" class="img-fluid">
+                                <h4>Planeación</h4>
+                            </a>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <a href="{% url 'indicadores:indicadores_comerciales' %}" class="text-secondary">
+                                <img src="{% static 'img/home/modulo_reportes.png' %}" 
+                                alt="indicadores" width="100" height="100" class="img-fluid">
+                                <h4>Indicadores</h4>
+                            </a>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <a href="{% url 'configuracion:crear_empresa' %}" class="text-secondary">
+                                <img src="{% static 'img/home/modulo_config.png' %}" 
+                                alt="parametrizacion" width="100" height="100" class="img-fluid">
+                                <h4>Parametrización</h4>
+                            </a>
+                        </div>
+                    </div>
+                </div>    
+            {% endblock content-window %}
+        </div>
+    </section>
+    {% endblock content-body %}
+</div>
+<!-- /.content-wrapper -->

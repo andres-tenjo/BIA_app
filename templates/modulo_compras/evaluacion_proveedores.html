@@ -1,0 +1,111 @@
+{% extends 'modulo_compras/form.html' %}
+{% load static %}
+{% block title %}
+    BIA | Parametrización
+{% endblock title %}
+    {% block menu %}
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            <i class="fas fa-list-ul"></i> Historico de evaluaciones
+        </a>
+    </li>
+    {% endblock menu %}
+    {% block form %}
+        <div class="row">
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Proveedor:</label>
+                    {{ form.supplier }}
+                </div>
+            </div>
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Tipo de evaluación:</label>
+                    {{ form.evaluation_type }}
+                </div>
+            </div>
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Comprador:</label>
+                    {{ form.buyer }}
+                </div>
+            </div>
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Puntaje general:</label>
+                    {{ form.general_score }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Puntaje de entrega:</label>
+                    {{ form.deliver_score }}
+                </div>
+            </div>
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Puntaje en cantidades:</label>
+                    {{ form.quantity_score }}
+                </div>
+            </div>
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Puntaje de calidad:</label>
+                    {{ form.quality_score }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Puntaje en productos:</label>
+                    {{ form.products_score }}
+                </div>
+            </div>
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Puntaje en precio:</label>
+                    {{ form.price_score }}
+                </div>
+            </div>
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Puntaje de pago:</label>
+                    {{ form.pay_score }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Puntaje en demanda:</label>
+                    {{ form.demand_score }}
+                </div>
+            </div>
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Puntaje en documentación:</label>
+                    {{ form.doc_score }}
+                </div>
+            </div>
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Estado:</label>
+                    {{ form.state }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg">
+                <div class="form-group">
+                    <label>Observaciones:</label>
+                    {{ form.obs }}
+                </div>
+            </div>
+        </div>
+    {% endblock form %} 
+    {% block window-js %}
+        <script src="{% static 'js/modulo_comercial/.js' %}"></script>
+    {% endblock window-js %}

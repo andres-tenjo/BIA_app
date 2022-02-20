@@ -1,0 +1,151 @@
+{% extends 'bia/base_home_sidebar.html' %}
+{% load static %}
+{% block title %}BIA | Compras{% endblock title %}
+{% block brand-logo %}
+<!-- Brand Logo -->
+<a href="{% url 'modulo_compras' %}" class="brand-link">
+    <img src="{% static 'img/home/modulo_compras.png' %}" alt="Compras" class="brand-image img-circle elevation-3"
+    style="opacity: .8">
+    <span class="brand-text font-weight-light">Compras</span>
+</a>
+{% endblock brand-logo %}
+{% block sidebar-menu %}
+<!-- Sidebar Menu -->
+    <nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <li class="nav-item">
+            <a href="{% url 'compras:iniciar_negociacion' %}" class="nav-link 
+                {% if request.resolver_match.view_name == 'compras:iniciar_negociacion' %}active{% endif %}">
+                <i class="nav-icon fas fa-business-time"></i>
+                <p>Iniciar negociación</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'compras:crear_orden_compra' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'compras:crear_orden_compra' %}active{% endif %}">
+                <i class="nav-icon far fa-plus-square"></i>
+                <p>Crear orden de compra</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'compras:sol_cotizacion' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'compras:sol_cotizacion' %}active{% endif %}">
+                <i class="nav-icon far fa-handshake"></i>
+                <p>Solicitar cotización</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'compras:cat_prod' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'compras:cat_prod' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'compras:crear_producto' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'compras:cargar_productos' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'compras:listar_productos' %}active{% endif %}">
+                <i class="nav-icon fas fa-shopping-bag"></i>
+                <p>Catálogo de productos</p>
+            </a>
+        </li>
+        <li class="nav-item has-treeview
+            {% if request.resolver_match.view_name == 'compras:proximas_entregas' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'compras:entregas_incumplidas' %}menu-open{% endif %}
+            {% if request.resolver_match.view_name == 'compras:novedades_ordenes_compra' %}menu-open{% endif %}">
+            <a href="#" class="nav-link
+                {% if request.resolver_match.view_name == 'compras:proximas_entregas' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'compras:entregas_incumplidas' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'compras:novedades_ordenes_compra' %}active{% endif %}">
+                <i class="nav-icon fas fa-folder-open"></i>
+                <p>
+                    Gestión ordenes
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{% url 'compras:proximas_entregas' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'compras:proximas_entregas' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Próximas entregas</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'compras:entregas_incumplidas' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'compras:entregas_incumplidas' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Entregas incumplidas</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'compras:novedades_ordenes_compra' %}" class="nav-link
+                        {% if request.resolver_match.view_name == 'compras:novedades_ordenes_compra' %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Registrar novedades</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'compras:cat_proveedores' %}" class="nav-link 
+                {% if request.resolver_match.view_name == 'compras:cat_proveedores' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'compras:crear_proveedor' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'compras:cargar_proveedores' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'compras:listar_proveedores' %}active{% endif %}">
+                <i class="nav-icon far fa-plus-square"></i>
+                <p>Catálogo proveedores</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'compras:evaluacion_proveedores' %}" class="nav-link 
+                {% if request.resolver_match.view_name == 'compras:evaluacion_proveedores' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'compras:listar_evaluaciones' %}active{% endif %}">
+                <i class="nav-icon fas fa-search-location"></i>
+                <p>Gestionar proveedores</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'compras:cartera_proveedores' %}" class="nav-link 
+                {% if request.resolver_match.view_name == 'compras:cartera_proveedores' %}active{% endif %}">
+                <i class="nav-icon fas fa-search-location"></i>
+                <p>Cartera proveedores</p>
+            </a>
+        </li>
+    </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+</div>
+<!-- /.sidebar -->
+{% endblock sidebar-menu %}
+
+    {% block content-header %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1 class="m-0 text-dark">
+                {% block title-header %}
+                Bienvenido al Módulo Compras de BIA
+                {% endblock title-header %}
+            </h1>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            {% block menu-header %}
+            <li class="breadcrumb-item"><a href="#">Instructivo módulo compras V 1.0</a></li>
+            {% endblock menu-header %}
+            </ol>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- /.content-header -->
+    {% endblock content-header %}
+    {% block content-body %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            {% block content-window %}
+            {% endblock content-window %}
+        </div>
+    </section>
+    {% endblock content-body %}
+</div>
+<!-- /.content-wrapper -->

@@ -1,0 +1,236 @@
+{% extends 'usuarios/list_view.html' %}
+{% load static %}
+{% block title %}
+    BIA | Usuarios
+{% endblock title %}
+{% block menu %}
+    <li class="breadcrumb-item">
+        <a href="{{ create_url }}">
+            Crear grupo
+        </a>
+    </li>    
+    <li class="breadcrumb-item">
+        <a href="{{ user_create_url }}">
+            Crear usuario
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ list_user_url }}">
+            Ver usuarios
+        </a>
+    </li>
+    
+{% endblock menu %}
+    
+{% block content %}
+    {% if query_group %}
+    <div class="card card-primary card-outline">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fas fa-search"></i>
+                Grupos
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="row justify">
+                <div class="col-lg-6">
+                    <div 
+                        class="accordion" 
+                        id="accordionExample">
+                        {% for i in query_group %}
+                        <div class="card">
+                            <div class="card-header" 
+                                id="heading{{ i.id }}">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-block text-left" 
+                                        data-toggle="collapse" 
+                                        data-target="#collapse{{ i.id }}"  
+                                        aria-controls="collapse{{i.id}}">
+                                        {{ i.name }}
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse{{i.id}}" 
+                                class="collapse" 
+                                aria-labelledby="heading{{ i.id }}" 
+                                data-parent="#accordionExample">
+                                <div class="card-body">
+                                    {% if i.all %}
+                                        <div class="row px-5">
+                                            <label class="text-primary">
+                                                Todos los permisos
+                                            </label>
+                                        </div>
+                                    {% else %}
+                                        {% if i.com_permission %}
+                                            <div class="row px-5">
+                                                <label>
+                                                    Módulo Comercial        
+                                                </label>
+                                            </div>
+                                            {% if i.commercial %}
+                                                <div class="row px-5">
+                                                    <label class="text-primary">
+                                                        Todos los permisos del módulo
+                                                    </label>
+                                                </div>
+                                            {% else %}
+                                                {% for j in i.com_permission.all %}
+                                                    <div class="row px-5">
+                                                        <li>
+                                                            {{ j.name }}
+                                                        </li>
+                                                    </div>
+                                                {% empty %}
+                                                    <div class="row px-5">
+                                                        <label class="text-danger">
+                                                            No tiene permisos para este módulo
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        <hr>
+                                        {% endif %}
+                                        {% if i.pur_permission %}
+                                            <div class="row px-5">
+                                                <label>
+                                                    Módulo Compras
+                                                </label>
+                                            </div>
+                                            {% if i.purchase %}
+                                                <div class="row px-5">
+                                                    <label class="text-primary">
+                                                        Todos los permisos del módulo
+                                                    </label>
+                                                </div>
+                                            {% else %}
+                                                {% for j in i.pur_permission.all %}
+                                                    <div class="row px-5">
+                                                        <li>
+                                                            {{ j.name }}
+                                                        </li>
+                                                    </div>
+                                                {% empty %}
+                                                    <div class="row px-5">
+                                                        <label class="text-danger">
+                                                            No tiene permisos para este módulo
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        <hr>
+                                        {% endif %}
+                                        {% if i.log_permission %}
+                                            <div class="row px-5">
+                                                <label>
+                                                    Módulo Logística
+                                                </label>
+                                            </div>
+                                            {% if i.logistics %}
+                                                <div class="row px-5">
+                                                    <label class="text-primary">
+                                                        Todos los permisos del módulo
+                                                    </label>
+                                                </div>
+                                            {% else %}
+                                                {% for j in i.log_permission.all %}
+                                                    <div class="row px-5">
+                                                        <li>
+                                                            {{ j.name }}
+                                                        </li>
+                                                    </div>
+                                                {% empty %}
+                                                    <div class="row px-5">
+                                                        <label class="text-danger">
+                                                            No tiene permisos para este módulo
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        <hr>
+                                        {% endif %}
+                                        {% if i.adm_permission %}
+                                            <div class="row px-5">
+                                                <label>
+                                                    Módulo Administración
+                                                </label>
+                                            </div>
+                                            {% if i.admin %}
+                                                <div class="row px-5">
+                                                    <label class="text-primary">
+                                                        Todos los permisos del módulo
+                                                    </label>
+                                                </div>
+                                            {% else %}
+                                                {% for j in i.adm_permission.all %}
+                                                    <div class="row px-5">
+                                                        <li>
+                                                            {{ j.name }}
+                                                        </li>
+                                                    </div>
+                                                {% empty %}
+                                                    <div class="row px-5">
+                                                        <label class="text-danger">
+                                                            No tiene permisos para este módulo
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        <hr>
+                                        {% endif %}
+                                    {% endif %}
+                                    <hr>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="row px-5 py-3">
+                                        <div class="col-lg">
+                                            <a 
+                                                type="button" 
+                                                id="{{ i.id }}"
+                                                href="{% url 'usuarios:editar_grupos' i.id %}"
+                                                class="btn btn-outline-success btn-block">
+                                                <i class="fas fa-edit"></i> 
+                                                Editar
+                                            </a>
+                                        </div>
+                                        <div class="col-lg">
+                                            <a 
+                                                type="button" 
+                                                id="{{ i.id }}"
+                                                href="#"
+                                                class="btn btn-outline-danger btn-block delGroup">
+                                                <i class="fas fa-ban"></i> 
+                                                Eliminar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>  
+        </div>  
+    </div>
+    {% else %}
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-search"></i>
+                    Grupos
+                </h2>
+            </div>
+            <div class="card-body">
+                <h4>
+                    No hay grupos creados,
+                    <a href="{{ groups_create_url }}">haga click para crear uno!</a>
+                </h4>
+            </div>
+        </div>
+    {% endif %}
+{% endblock content %}
+
+{% block window-js %}
+    <script src="{% static 'js/usuarios/listar_grupos.js' %}"></script>
+{% endblock window-js %}
