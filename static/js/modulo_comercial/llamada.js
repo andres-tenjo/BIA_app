@@ -8,7 +8,7 @@ $(function(){
     $('form').on('submit', function (e) {
         e.preventDefault();
         var parameters = new FormData(this);
-        submit_with_ajax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
             location.href = '/comercial/listar_llamadas';
         });
     });

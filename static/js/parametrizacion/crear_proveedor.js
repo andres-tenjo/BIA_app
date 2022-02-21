@@ -60,30 +60,30 @@ $(function () {
         e.preventDefault();
         if (str_metodo_pago.value === 'CR'){
             if (flt_cupo_credito.value === ''){
-                message_error('Debe ingresar el cupo de crédito');
+                fncMensajeErrormns('Debe ingresar el cupo de crédito');
                 return;
             }
             else if(int_dias_credito.value === ''){
-                message_error('Debe ingresar los días de crédito');
+                fncMensajeErrormns('Debe ingresar los días de crédito');
                 return;
             }
             else if(flt_cupo_credito.value == 0){
-                message_error('El cupo de crédito debe ser diferente de 0');
+                fncMensajeErrormns('El cupo de crédito debe ser diferente de 0');
                 return;
             }
             else if(int_dias_credito.value == 0){
-                message_error('Los días de crédito deben ser diferente de 0');
+                fncMensajeErrormns('Los días de crédito deben ser diferente de 0');
                 return;
             }
             else{
                 var parameters = new FormData(this);
-                submit_with_ajax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
+                fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
                 location.href = '/configuracion/listar_proveedores/';
             });       
             }
         }else if (str_metodo_pago.value === 'CO'){
             var parameters = new FormData(this);
-            submit_with_ajax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
+            fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
             location.href = '/configuracion/listar_proveedores/';
         });
         }

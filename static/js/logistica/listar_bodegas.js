@@ -72,7 +72,7 @@ $(function () {
             var parameters = new FormData();
             parameters.append('action', 'delete');
             parameters.append('id', data.id);
-            submit_with_ajax(window.location.pathname, 'Notificación','¿Estas seguro de eliminar el registro?', parameters, function () {
+            fncGuardarFormularioAjax(window.location.pathname, 'Notificación','¿Estas seguro de eliminar el registro?', parameters, function () {
                 tblWare.ajax.reload();
         });
     });

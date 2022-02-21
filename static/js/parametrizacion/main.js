@@ -43,10 +43,10 @@ function fncFiltrarCiudades(strDepartamento, strCiudad) {
                 });
                 return false;
             }
-            message_error(request.error);
+            fncMensajeErrormns(request.error);
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            message_error(errorThrown + ' ' + textStatus);
+            fncMensajeErrormns(errorThrown + ' ' + textStatus);
         }
     });
 }

@@ -256,7 +256,7 @@ $(function () {
                 strUnidadCompra.value = '';
                 fltCostoUnitario.value = '';
                 fltCostoTotalUnitario.value = '';
-                message_error(data.error);
+                fncMensajeErrormns(data.error);
             }
         }).fail(function (jqXHR, textStatus, errorThrown) {
             alert(textStatus +': '+errorThrown);
@@ -373,7 +373,7 @@ $(function () {
                 });            
             }
             else if(data.hasOwnProperty('error')){
-                message_error(data.error);
+                fncMensajeErrormns(data.error);
             }
         }).fail(function (jqXHR, textStatus, errorThrown) {
             alert(textStatus +': '+errorThrown);

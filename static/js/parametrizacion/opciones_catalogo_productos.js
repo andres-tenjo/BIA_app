@@ -446,7 +446,7 @@ $(function () {
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', $('#act_cat').val());
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 $('#myModalCategory').modal('hide');
                 tblCategoriaProducto.ajax.reload();
@@ -460,6 +460,7 @@ $(function () {
         modal_title.find('span').html('Crear subcategoría de producto');
         modal_title.find('i').removeClass().addClass('fas fa-plus');
         $('#act_subc').val('frmCrearSubcategoriaProductojsn');
+        dctOpcionesCatalogoProductos.fncCategoriaProductoslc();
         $('#myModalSubcategory').modal('show');
     });
 
@@ -478,7 +479,7 @@ $(function () {
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', $('#act_subc').val());
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 $('#myModalSubcategory').modal('hide');
                 tblSubcategoriaProducto.ajax.reload();
@@ -509,7 +510,7 @@ $(function () {
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', $('#act_udc').val());
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Está seguro de guardar el registro?', parameters, function (response) {
                 $('#myModalUdc').modal('hide');
                 tblUnidadesCompra.ajax.reload();
@@ -540,7 +541,7 @@ $(function () {
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', $('#act_udv').val());
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Está seguro de guardar el registro?', parameters, function (response) {
                 $('#myModalUdv').modal('hide');
                 tblUnidadesVenta.ajax.reload();
@@ -564,11 +565,11 @@ $(function () {
                     location.href = '/configuracion/export_products/';
                 }
                 else if (request.hasOwnProperty('error')){
-                    message_error(request.error);
+                    fncMensajeErrormns(request.error);
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                message_error(errorThrown + ' ' + textStatus);
+                fncMensajeErrormns(errorThrown + ' ' + textStatus);
             }
         });
     });

@@ -1014,11 +1014,11 @@ $(function () {
             msg = data.msg;
             if (!data.hasOwnProperty('last_planning')) {
                 if(week == 0){
-                    message_info(msg);
+                    fncMensajeInformacionmns(msg);
                     comercial_planning.var.perc_goal = "";
                     return false;
                 }else if(week > 0){
-                    message_info(msg);
+                    fncMensajeInformacionmns(msg);
                     $('input[name="perc_goal"]').removeAttr('type');
                     $('label[name="percLabelGoal"]').removeAttr('hidden');
                     $("input[name='perc_goal']").TouchSpin({
@@ -1037,7 +1037,7 @@ $(function () {
             comercial_planning.var.perc_goal = inc_calc;
             comercial_planning.var.monet_real = data.last_sale;
             comercial_planning.var.perc_act = 1;
-            message_info(msg);
+            fncMensajeInformacionmns(msg);
             $('input[name="perc_goal"]').removeAttr('type');
             $('label[name="percLabelGoal"]').removeAttr('hidden');
             $('input[name="monetary_goal"]').val(data.last_planning);
@@ -1072,7 +1072,7 @@ $(function () {
         $('input[name="perc_goal"]').attr('readonly', true);
         $('input[name="monetary_goal"]').attr('readonly', true);
         $('input[name="perc_deep_clients"]').focus();
-        message_info('Ingrese el valor total de la meta en los indicadores')
+        fncMensajeInformacionmns('Ingrese el valor total de la meta en los indicadores')
         } else if(cbValue == 1){
         $('.cbGoal').val(0);
         $('input[name="perc_goal"]').attr('readonly', false);
@@ -1106,7 +1106,7 @@ $(function () {
     $('.cbIndex').on('click', function () {
         cbValue = parseFloat($('.cbGoal').val());
         if(cbValue == 0){
-            message_info('Seleccione la opción "Establecer meta" antes de establecer indicadores')
+            fncMensajeInformacionmns('Seleccione la opción "Establecer meta" antes de establecer indicadores')
             return false;
         }
         cbIndex = parseFloat($('.cbIndex').val());
@@ -1121,14 +1121,14 @@ $(function () {
                 $('input[name="perc_new_clients"]').attr('readonly', true);
                 comercial_planning.var.deepClientIndex = $('input[name="perc_deep_clients"]').val();
                 comercial_planning.var.newClientIndex = $('input[name="perc_new_clients"]').val();
-                message_info('Ingrese las actividades para cumplimiento de meta y el % que representa en cada indicador')
+                fncMensajeInformacionmns('Ingrese las actividades para cumplimiento de meta y el % que representa en cada indicador')
                 $('input[name="perc_new_clients"]').focus();
             }
             else if(indTotal < comercial_planning.var.perc_goal){
-                message_info('Los valores ingresados son menores que la meta')
+                fncMensajeInformacionmns('Los valores ingresados son menores que la meta')
                 return false;
             }else if(indTotal > comercial_planning.var.perc_goal){
-                message_info('Los valores ingresados son mayores que la meta')
+                fncMensajeInformacionmns('Los valores ingresados son mayores que la meta')
                 return false;
             }
             $('.cbIndex').val(1);
@@ -1136,7 +1136,7 @@ $(function () {
             $('input[name="perc_new_clients"]').attr('readonly', true);
             comercial_planning.var.deepClientIndex = $('input[name="perc_deep_clients"]').val();
             comercial_planning.var.newClientIndex = $('input[name="perc_new_clients"]').val();
-            message_info('Ingrese las actividades para cumplimiento de meta y el % que representa en cada indicador')
+            fncMensajeInformacionmns('Ingrese las actividades para cumplimiento de meta y el % que representa en cada indicador')
             $('input[name="perc_new_clients"]').focus();
         } else if(cbIndex == 1){
             $('.cbIndex').val(0);
@@ -1162,7 +1162,7 @@ $(function () {
                         dataType: 'json',
                     }).done(function (data) {
                         if (!data.hasOwnProperty('forecast_table')) {
-                            message_info(data.msg);
+                            fncMensajeInformacionmns(data.msg);
                             msgFalse = data.msg;
                             // pendiente cerrar collapse de pronostico
                             return false;
@@ -1171,7 +1171,7 @@ $(function () {
                         //comercial_planning.var.forecastGraph = data.forecast_graph;
                         comercial_planning.getForecastTable();
                         comercial_planning.getForecastGraph();
-                        message_info(data.msg);
+                        fncMensajeInformacionmns(data.msg);
                         msgTrue = data.msg;
                     }).fail(function (jqXHR, textStatus, errorThrown) {
                         alert(textStatus + ': ' + errorThrown);
@@ -1181,7 +1181,7 @@ $(function () {
                 });    
             }
         }else if (msgFalse != '' ){
-            message_info(msgFalse)
+            fncMensajeInformacionmns(msgFalse)
             return false;
         }else if (msgTrue != '' ){
             comercial_planning.getForecastTable();
@@ -1284,7 +1284,7 @@ $(function () {
         $('input[name="actAcumDeep"]').val(0);
         $('input[name="actAcumNew"]').val(0);
         if(cbTotal <= 1){
-            message_info('Debe establecer meta e indicadores antes de realizar el ajuste manual')
+            fncMensajeInformacionmns('Debe establecer meta e indicadores antes de realizar el ajuste manual')
             return false;
         }
     });    
@@ -1321,13 +1321,13 @@ $(function () {
         acumDeep = parseInt($('input[name="actAcumDeep"]').val());
         acumNew = parseInt($('input[name="actAcumNew"]').val());
         if(comercial_planning.var.dataActTable.length === 0 ){
-            message_info('Debe agregar al menos una actividad ')
+            fncMensajeInformacionmns('Debe agregar al menos una actividad ')
             return false;
         }else if(realDeep != acumDeep){
-            message_info('El porcentaje en el indicador de profundización debe ser igual al acumulado de sus actividades para este indicador')
+            fncMensajeInformacionmns('El porcentaje en el indicador de profundización debe ser igual al acumulado de sus actividades para este indicador')
             return false;
         }else if(realNew != acumNew){
-            message_info('El porcentaje en el indicador de clientes nuevos debe ser igual al acumulado de sus actividades para este indicador')
+            fncMensajeInformacionmns('El porcentaje en el indicador de clientes nuevos debe ser igual al acumulado de sus actividades para este indicador')
             return false;
         }
     });
@@ -1378,7 +1378,7 @@ $(function () {
     // Función para establecer estacionalidades checkbutton
     $('.cbSta').on('click', function () {
         if(comercial_planning.var.dataStaTable.length === 0 ){
-            message_info('Debe agregar al menos una estacionalidad')
+            fncMensajeInformacionmns('Debe agregar al menos una estacionalidad')
             return false;
         }
     });
@@ -1399,7 +1399,7 @@ $(function () {
                     dataType: 'json',
                 }).done(function (data) {
                     if (!data.hasOwnProperty('table_city')) {
-                        message_info(data.msg);
+                        fncMensajeInformacionmns(data.msg);
                         msgFalse = data.msg;
                         return false;
                     }
@@ -1407,7 +1407,7 @@ $(function () {
                     //comercial_planning.var.forecastGraph = data.forecast_graph;
                     comercial_planning.getCityTable();
                     comercial_planning.getCityGraph();
-                    message_info(data.msg);
+                    fncMensajeInformacionmns(data.msg);
                     msgTrue = data.msg;
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     alert(textStatus + ': ' + errorThrown);
@@ -1417,7 +1417,7 @@ $(function () {
             }
 
         }else if (msgFalse != '' ){
-            message_info(msgFalse)
+            fncMensajeInformacionmns(msgFalse)
             return false;
         }else if (msgTrue != '' ){
             comercial_planning.getCityTable();
@@ -1453,7 +1453,7 @@ $(function () {
             dataType: 'json',
         }).done(function (data) {
             if(data.msj === 'No puede ejecutar este filtro'){
-                message_error(data)
+                fncMensajeErrormns(data)
                 return false;
             }
             comercial_planning.get_zone_data();
@@ -1475,7 +1475,7 @@ $(function () {
             dataType: 'json',
         }).done(function (data) {
             if(data.msj === 'No puede ejecutar este filtro'){
-                message_error(data)
+                fncMensajeErrormns(data)
                 return false;
             }
             comercial_planning.get_advisor_data();
@@ -1497,7 +1497,7 @@ $(function () {
             dataType: 'json',
         }).done(function (data) {
             if(data.msj === 'No puede ejecutar este filtro'){
-                message_error(data)
+                fncMensajeErrormns(data)
                 return false;
             }
             comercial_planning.get_cust_cat_data();
@@ -1519,7 +1519,7 @@ $(function () {
             dataType: 'json',
         }).done(function (data) {
             if(data.msj === 'No puede ejecutar este filtro'){
-                message_error(data)
+                fncMensajeErrormns(data)
                 return false;
             }
             comercial_planning.get_cust_data();

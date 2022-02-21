@@ -242,7 +242,6 @@ urlpatterns = [
         name='crear_ajuste_inventario'
         ),
     
-
     path(
         'descargar_excel/',
         clsExportarPlantillaPrueba.as_view(), 

@@ -11,7 +11,7 @@ $('#userButton').on('click', function (e) {
     }).done(function(data) {
         if(data.hasOwnProperty('error')){
             error = data.error;
-            message_error(error);
+            fncMensajeErrormns(error);
         }
         else{
             location.href = '/configuracion/vista_usuarios';
@@ -35,7 +35,7 @@ $('#productsButton').on('click', function (e) {
     }).done(function(data) {
         if(data.hasOwnProperty('error')){
             error = data.error;
-            message_error(error);
+            fncMensajeErrormns(error);
         }
         else{
             location.href = '/configuracion/product_catalogue/';
@@ -59,7 +59,7 @@ $('#suppliersButton').on('click', function (e) {
     }).done(function(data) {
         if(data.hasOwnProperty('error')){
             error = data.error;
-            message_error(error);
+            fncMensajeErrormns(error);
         }
         else{
             location.href = '/configuracion/cat_sup/';
@@ -83,7 +83,7 @@ $('#customersButton').on('click', function (e) {
     }).done(function(data) {
         if(data.hasOwnProperty('error')){
             error = data.error;
-            message_error(error);
+            fncMensajeErrormns(error);
         }
         else{
             location.href = '/configuracion/cat_cli/';
@@ -107,7 +107,7 @@ $('#warehouseButton').on('click', function (e) {
     }).done(function(data) {
         if(data.hasOwnProperty('error')){
             error = data.error;
-            message_error(error);
+            fncMensajeErrormns(error);
         }
         else{
             location.href = '/configuracion/catalogo_bodegas/';
@@ -131,7 +131,7 @@ $('#historicoMovimientosButton').on('click', function (e) {
     }).done(function(data) {
         if(data.hasOwnProperty('error')){
             error = data.error;
-            message_error(error);
+            fncMensajeErrormns(error);
         }
         else{
             location.href = '/configuracion/importar_historico_movimientos/';

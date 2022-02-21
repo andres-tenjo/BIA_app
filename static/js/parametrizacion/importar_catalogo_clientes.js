@@ -83,7 +83,7 @@ $('#form').on('submit', function (e) {
         }
         else if (data.hasOwnProperty('error')){
             spinnerBox.prop('hidden', true);
-            message_error(data.error);
+            fncMensajeErrormns(data.error);
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(textStatus +': '+errorThrown);

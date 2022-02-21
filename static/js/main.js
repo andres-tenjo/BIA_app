@@ -1,4 +1,10 @@
-function getCookie(name) {
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////// FUNCIONES JS PARA EVENTOS GENERALES DE BIA //////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+
+
+// Función para cumplir mecanismo de protección CSRF token de django para peticiones Ajax
+function fncObtenerCsrfAjax(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
         const cookies = document.cookie.split(';');
@@ -13,10 +19,11 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-
-var csrftoken = getCookie('csrftoken');
+var csrftoken = fncObtenerCsrfAjax('csrftoken');
 
 // Función para cargar libreria select2
+// strClase: Clase html del widget que recibe la librería
+// strPlaceholder: Cadena de texto para el placeholder del widget
 function fncCargarLibreriaSelect2(strClase, strPlaceholder) {
     $(strClase).select2({
         theme: "bootstrap4",
@@ -32,7 +39,7 @@ function fncCargarLibreriaDateTimePicker() {
     });
 }
 
-// Función para cargar libreria TouchSpin clase entero
+// Función para cargar libreria TouchSpin tipo entero
 function fncCargarLibreriaTouchSpinFormatoEntero() {
     $(".touchNumber").TouchSpin({
         min: 0,
@@ -41,7 +48,7 @@ function fncCargarLibreriaTouchSpinFormatoEntero() {
     });
 }
 
-// Función para cargar libreria TouchSpin clase decimal 
+// Función para cargar libreria TouchSpin tipo decimal 
 function fncCargarLibreriaTouchSpinFormatoDecimal() {
     $(".touchPerc").TouchSpin({
         min: 0,
@@ -54,7 +61,7 @@ function fncCargarLibreriaTouchSpinFormatoDecimal() {
     });
 }
 
-// Función para cargar libreria TouchSpin clase moneda
+// Función para cargar libreria TouchSpin tipo moneda
 function fncCargarLibreriaTouchSpinFormatoMoneda() {
     $(".touchPrice").TouchSpin({
         min: 0,
@@ -65,18 +72,19 @@ function fncCargarLibreriaTouchSpinFormatoMoneda() {
     });
 }
 
-// Mensaje de error en ventana
-function message_error(obj) {
+// Función que muestra un mensaje de error en ventana
+// strMensaje: Cadena de texto del mesnaje que se desea visualizar
+function fncMensajeErrormns(strMensaje) {
     var html = '';
-    if (typeof (obj) === 'object') {
+    if (typeof (strMensaje) === 'object') {
         var html = '<ul style="text-align: left;">';
-        $.each(obj, function (key, value) {
+        $.each(strMensaje, function (key, value) {
             html+='<li>'+key+': '+value+'</li>';
         });
         html+='</ul>';
     }
     else{
-        html = '<p>'+obj+'</p>';
+        html = '<p>'+strMensaje+'</p>';
     }
     Swal.fire({
         title: 'Error!',
@@ -85,18 +93,19 @@ function message_error(obj) {
     });
 }
 
-// Mensaje de información en ventana
-function message_info(obj) {
+// Función que muestra un mensaje de información en ventana
+// strMensaje: Cadena de texto del mesnaje que se desea visualizar
+function fncMensajeInformacionmns(strMensaje) {
     var html = '';
-    if (typeof (obj) === 'object') {
+    if (typeof (strMensaje) === 'object') {
         var html = '<ul style="text-align: left;">';
-        $.each(obj, function (key, value) {
+        $.each(strMensaje, function (key, value) {
             html+='<li>'+key+': '+value+'</li>';
         });
         html+='</ul>';
     }
     else{
-        html = '<p>'+obj+'</p>';
+        html = '<p>'+strMensaje+'</p>';
     }
     Swal.fire({
         html: html,
@@ -104,34 +113,18 @@ function message_info(obj) {
     });
 }
 
-// Mensaje de confirmación
-function message_success(obj) {
-    var html = '';
-    if (typeof (obj) === 'object') {
-        var html = '<ul style="text-align: left;">';
-        $.each(obj, function (key, value) {
-            html+='<li>'+key+': '+value+'</li>';
-        });
-        html+='</ul>';
-    }
-    else{
-        html = '<p>'+obj+'</p>';
-    }
-    Swal.fire({
-        html: html,
-        icon: 'success',
-        timer: 4000,
-        timerProgressBar: true,
-    });
-}
-
-// Envío de data con Ajax
-function submit_with_ajax(url, title, content, parameters, callback) {
+// Función que ejecuta el envío de un formulario a través de petición Ajax por medio de un mensaje de confirmación
+// url: Url de la vista que ejecutara la acción
+// strTituloMensaje: Titulo del mensaje para la confirmación del envío del formulario
+// strContenidoMensaje: Contenido del mensaje para la confirmación del envío del formulario
+// jsnParametros: Diccionario jsn con los parametros que serán enviado al servidor para ejecutar la acción
+// fncRetorno: Función que se ejecutara una vez se haya confirmado la acción
+function fncGuardarFormularioAjax(url, strTituloMensaje, strContenidoMensaje, jsnParametros, fncRetorno) {
     $.confirm({
         theme: 'material',
-        title: title,
+        title: strTituloMensaje,
         icon: 'fa fa-info',
-        content: content,
+        content: strContenidoMensaje,
         columnClass: 'small',
         typeAnimated: true,
         cancelButtonClass: 'btn-primary',
@@ -144,7 +137,7 @@ function submit_with_ajax(url, title, content, parameters, callback) {
                 action: function () {
                     $.ajax({
                         url: url,
-                        data: parameters,
+                        data: jsnParametros,
                         type: 'POST',
                         dataType: 'json',
                         headers: {
@@ -154,13 +147,13 @@ function submit_with_ajax(url, title, content, parameters, callback) {
                         contentType: false,
                         success: function (request) {
                             if (!request.hasOwnProperty('error')) {
-                                callback(request);
+                                fncRetorno(request);
                                 return false;
                             }
-                            message_error(request.error);
+                            fncMensajeErrormns(request.error);
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            message_error(errorThrown + ' ' + textStatus);
+                            fncMensajeErrormns(errorThrown + ' ' + textStatus);
                         }
                     });
                 }
@@ -176,8 +169,10 @@ function submit_with_ajax(url, title, content, parameters, callback) {
     })
 }
 
-// Eliminar una fila de una tabla
-function delete_action_foreign_key(url, parameters, callback) {
+// Función para eliminar un item que tiene relación con otras tablas
+// jsnParametros: Diccionario jsn con los parametros que serán enviado al servidor para ejecutar la acción
+// fncRetorno: Función que se ejecutara una vez se haya confirmado la acción
+function delete_action_foreign_key(url, jsnParametros, fncRetorno) {
     $.confirm({
         columnClass: 'col-md-12',
         title: 'Alerta',
@@ -188,7 +183,7 @@ function delete_action_foreign_key(url, parameters, callback) {
             Continuar: function () {
                 $.ajax({
                     url: url,
-                    data: parameters,
+                    data: jsnParametros,
                     type: 'POST',
                     dataType: 'json',
                     headers: {
@@ -198,13 +193,13 @@ function delete_action_foreign_key(url, parameters, callback) {
                     contentType: false,
                     success: function (request) {
                         if (!request.hasOwnProperty('error')) {
-                            callback(request);
+                            fncRetorno(request);
                             return false;
                         }
-                        message_error(request.error);
+                        fncMensajeErrormns(request.error);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        message_error(errorThrown + ' ' + textStatus);
+                        fncMensajeErrormns(errorThrown + ' ' + textStatus);
                     }
                 });
             },
@@ -239,10 +234,10 @@ function delete_action(url, parameters, callback) {
                             callback(request);
                             return false;
                         }
-                        message_error(request.error);
+                        fncMensajeErrormns(request.error);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        message_error(errorThrown + ' ' + textStatus);
+                        fncMensajeErrormns(errorThrown + ' ' + textStatus);
                     }
                 });
             },

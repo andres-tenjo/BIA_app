@@ -369,7 +369,7 @@ $(function(){
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', 'create_customer');
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 var newOption = new Option(response.name, false, true);
                 $('#identification').append(newOption).trigger('change');
@@ -382,11 +382,11 @@ $(function(){
         cust = $('#identification').val();
         cart = $('#stateCart').val();
         if(cust == ''){
-            message_info('Debe ingresar un cliente a la venta');
+            fncMensajeInformacionmns('Debe ingresar un cliente a la venta');
             $('select[name="customer"]').focus();
             return false;
         }else if(cart == 'Vencida'){
-            message_info('El cliente presenta una cartera vencida');
+            fncMensajeInformacionmns('El cliente presenta una cartera vencida');
             return false;
         }
     });
@@ -599,7 +599,7 @@ $(function(){
                                                 $('input[name="cantSol"]').val(0);
                                                 return false;
                                             }
-                                            message_error(data.error);
+                                            fncMensajeErrormns(data.error);
                                         }).fail(function (jqXHR, textStatus, errorThrown) {
                                             alert(textStatus +': '+errorThrown);
                                         }).always(function(data) {                
@@ -642,7 +642,7 @@ $(function(){
                                                     product = '';
                                                     return false;
                                                 }
-                                                message_error(data.error);
+                                                fncMensajeErrormns(data.error);
                                             }).fail(function (jqXHR, textStatus, errorThrown) {
                                                 alert(textStatus +': '+errorThrown);
                                             }).always(function(data) {                
@@ -702,7 +702,7 @@ $(function(){
                                                 $('input[name="cantSol"]').val(0);
                                                 return false;
                                             }
-                                            message_error(data.error);
+                                            fncMensajeErrormns(data.error);
                                         }).fail(function (jqXHR, textStatus, errorThrown) {
                                             alert(textStatus +': '+errorThrown);
                                         }).always(function(data) {                
@@ -745,7 +745,7 @@ $(function(){
                                                     product = '';
                                                     return false;
                                                 }
-                                                message_error(data.error);
+                                                fncMensajeErrormns(data.error);
                                             }).fail(function (jqXHR, textStatus, errorThrown) {
                                                 alert(textStatus +': '+errorThrown);
                                             }).always(function(data) {                
@@ -808,7 +808,7 @@ $(function(){
                                         $('input[name="cantSol"]').val(0);
                                         return false;
                                     }
-                                    message_error(data.error);
+                                    fncMensajeErrormns(data.error);
                                 }).fail(function (jqXHR, textStatus, errorThrown) {
                                     alert(textStatus +': '+errorThrown);
                                 }).always(function(data) {                
@@ -851,7 +851,7 @@ $(function(){
                                             product = '';
                                             return false;
                                         }
-                                        message_error(data.error);
+                                        fncMensajeErrormns(data.error);
                                     }).fail(function (jqXHR, textStatus, errorThrown) {
                                         alert(textStatus +': '+errorThrown);
                                     }).always(function(data) {                
@@ -872,7 +872,7 @@ $(function(){
     $('.btnAddP').on('click', function () {
         
         if (product == ''){
-            message_info('Ingrese un producto');
+            fncMensajeInformacionmns('Ingrese un producto');
             $('select[name="search"]').focus();
             return false;
         }else if (product != ''){
@@ -923,11 +923,11 @@ $(function(){
         dcto = sales.items.dcto;
         if(cbDesc == 0){
             if(sales.items.products.length === 0){
-                message_info('Agregue al menos un producto para aplicar el descuento')
+                fncMensajeInformacionmns('Agregue al menos un producto para aplicar el descuento')
                 return false;
             } else if(dcto >= 0){
                 $('.cbDesc').val(1);
-                message_info('ingrese el % de descuento que desea aplicar')
+                fncMensajeInformacionmns('ingrese el % de descuento que desea aplicar')
                 $('#inpDesc').attr('disabled', false)
                 $('#inpDesc').focus();
             }
@@ -988,7 +988,7 @@ $(function(){
     $('.genOrder').on('click', function (e) {
         e.preventDefault();
         if(sales.items.products.length === 0 ){
-            message_error('Debe agregar al menos un producto al pedido ')
+            fncMensajeErrormns('Debe agregar al menos un producto al pedido ')
             return false;
         }
     });
@@ -997,7 +997,7 @@ $(function(){
     $('form').on('submit', function (e) {
         e.preventDefault();
         if(sales.items.products.length === 0 ){
-            message_error('Debe agregar al menos un producto al pedido')
+            fncMensajeErrormns('Debe agregar al menos un producto al pedido')
             return false;
         }
         pay_method = $('#pay_method').val();

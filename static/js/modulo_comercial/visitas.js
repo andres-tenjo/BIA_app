@@ -101,7 +101,7 @@ $(function () {
             var parameters = new FormData();
             parameters.append('action', 'delete');
             parameters.append('id', data.id);
-            submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de eliminar registro?', parameters, function () {
+            fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Estas seguro de eliminar registro?', parameters, function () {
                 tblProd.ajax.reload();
             });
         });
@@ -112,7 +112,7 @@ $(function () {
     $('form').on('submit', function (e) {
         e.preventDefault();
         var parameters = new FormData(this);
-        submit_with_ajax(window.location.pathname, 'Notificación', '¿Desea guardar el registro?', parameters, function () {
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Desea guardar el registro?', parameters, function () {
             $('#ModalProd').modal('hide');
             tblProd.ajax.reload();
             //getData();

@@ -300,7 +300,7 @@ $(function () {
         parameters.append('action', 'frmCrearCategoriaClientejsn');
         parameters.append('customer_cat', $('input[name="cat_cust"]').val());
         parameters.append('margin_cat', JSON.stringify(dctOpcionesCrearCliente.dctVariables.lstCategorias));
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 var newOption = new Option(response.customer_cat, response.id, false, true);
                 dctOpcionesCrearCliente.fncCategoriaClienteslc();
@@ -339,7 +339,7 @@ $(function () {
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', 'frmCrearZonaClientejsn');
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 var newOption = new Option(response.customer_zone, response.id, false, true);
                 dctOpcionesCrearCliente.fncZonaClienteslc();
@@ -364,7 +364,7 @@ $(function () {
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', 'frmCrearAsesorComercialjsn');
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 var newOption = new Option(response.advisor, response.id, false, true);
                 dctOpcionesCrearCliente.fncAsesorComercialslc();
@@ -394,30 +394,30 @@ $(function () {
         e.preventDefault();
         if (strMetodoPago.value === 'CR'){
             if (fltCupoCredito.value === ''){
-                message_error('Debe ingresar el cupo de crédito');
+                fncMensajeErrormns('Debe ingresar el cupo de crédito');
                 return;
             }
             else if(intDiasCredito.value === ''){
-                message_error('Debe ingresar los días de crédito');
+                fncMensajeErrormns('Debe ingresar los días de crédito');
                 return;
             }
             else if(fltCupoCredito.value == 0){
-                message_error('El cupo de crédito debe ser diferente de 0');
+                fncMensajeErrormns('El cupo de crédito debe ser diferente de 0');
                 return;
             }
             else if(intDiasCredito.value == 0){
-                message_error('Los días de crédito deben ser diferente de 0');
+                fncMensajeErrormns('Los días de crédito deben ser diferente de 0');
                 return;
             }
             else{
                 var parameters = new FormData(this);
-                submit_with_ajax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
+                fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
                 location.href = '/configuracion/listar_clientes/';
                 });       
             }
         }else if (strMetodoPago.value === 'CO'){
             var parameters = new FormData(this);
-            submit_with_ajax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
+            fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
             location.href = '/configuracion/listar_clientes/';
         });
         }

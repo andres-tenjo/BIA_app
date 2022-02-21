@@ -5,7 +5,7 @@ $(".delGroup").on('click', function (e) {
     var parameters = new FormData();
     parameters.append('action', 'btnEliminarGrupojsn');
     parameters.append('id', id);
-    submit_with_ajax(window.location.pathname, 'Notificación','¿Estas seguro de eliminar el registro?', parameters, function () {
+    fncGuardarFormularioAjax(window.location.pathname, 'Notificación','¿Estas seguro de eliminar el registro?', parameters, function () {
         location.href = '/usuarios/listar_grupos';
     });
 });

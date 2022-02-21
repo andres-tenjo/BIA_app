@@ -167,7 +167,7 @@ $(function(){
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', 'frmCrearCategoriaProductojsn');
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 var newOption = new Option(response.product_cat, response.id, false, true);
                 dctOpcionesCrearProducto.fncCategoriaProductoslc();
@@ -196,7 +196,7 @@ $(function(){
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', 'frmCrearSubcategoriaProductojsn');
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 var newOption = new Option(response.product_subcat, response.id, false, true);
                 dctOpcionesCrearProducto.fncSubcategoriaProductoslc();
@@ -225,7 +225,7 @@ $(function(){
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', 'frmCrearUnidadComprajsn');
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Está seguro de guardar el registro?', parameters, function (response) {
                 var newOption = new Option(response.purchase_unit, response.id, false, true);
                 dctOpcionesCrearProducto.fncUnidadCompraslc();
@@ -254,7 +254,7 @@ $(function(){
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', 'frmCrearUnidadVentajsn');
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Está seguro de guardar el registro?', parameters, function (response) {
                 var newOption = new Option(response.sales_unit, response.id, false, true);
                 dctOpcionesCrearProducto.fncUnidadVentaslc();

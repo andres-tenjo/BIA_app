@@ -532,7 +532,7 @@ $(function () {
         parameters.append('action', $('#act_cat').val());
         parameters.append('customer_cat', $('#cat_cust').val());
         parameters.append('margin_cat', JSON.stringify(dctOpcionesCatalogoClientes.dctVariables.lstCategoriaProductoMargen));
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 $('#myModalCategory').modal('hide');
                 tblCategoriaCliente.ajax.reload();
@@ -569,7 +569,7 @@ $(function () {
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', $('#act_zone').val());
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 $('#myModalZone').modal('hide');
                 dctOpcionesCatalogoClientes.fncBuscarZonaslc();
@@ -664,7 +664,7 @@ $(function () {
         e.preventDefault();
         var parameters = new FormData(this);
         //parameters.append('action', $('#act_advisor').val());
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 $('#myModalAdvisor').modal('hide');
                 tblAsesorComercial.ajax.reload();
@@ -688,7 +688,7 @@ $(function () {
                 location.href = '/configuracion/export_customers/';
             }
             else if (data.hasOwnProperty('msg')){
-                message_error(data.msg);
+                fncMensajeErrormns(data.msg);
             }
         }).fail(function (jqXHR, textStatus, errorThrown) {
             alert(textStatus +': '+errorThrown);

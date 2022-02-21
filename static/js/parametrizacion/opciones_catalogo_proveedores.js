@@ -537,7 +537,7 @@ $(function () {
     // Función para agregar productos a la tabla cantidades mínimas
     $('#agregarProductoTblCantidades').on('click', function () {
         if (dctOpcionesCatalogoProveedores.dctVariables.dctProducto == ''){
-            message_info('Ingrese un producto');
+            fncMensajeInformacionmns('Ingrese un producto');
             $('#buscar_producto').select2('open');
             return false;
         }else if (dctOpcionesCatalogoProveedores.dctVariables.dctProducto != ''){
@@ -570,11 +570,11 @@ $(function () {
     $('#frmCantidades').on('submit', function (e) {
         e.preventDefault();
         if(dctOpcionesCatalogoProveedores.dctVariables.lstCantidadProductoCondicion.length === 0 ){
-            message_error('Debe agregar al menos un producto')
+            fncMensajeErrormns('Debe agregar al menos un producto')
             return false;
         }
         else if(dctOpcionesCatalogoProveedores.dctVariables.strProveedorId == ''){
-            message_error('Seleccione un proveedor')
+            fncMensajeErrormns('Seleccione un proveedor')
             return false;
         }
         else{
@@ -582,7 +582,7 @@ $(function () {
             parameters.append('action', $('#action_cantidad').val());
             parameters.append('proveedor', dctOpcionesCatalogoProveedores.dctVariables.strProveedorId);
             parameters.append('items', JSON.stringify(dctOpcionesCatalogoProveedores.dctVariables.lstCantidadProductoCondicion));
-            submit_with_ajax(window.location.pathname, 'Notificación',
+            fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
                 '¿Estas seguro de guardar el registro?', parameters, function (response) {
                     dctOpcionesCatalogoProveedores.dctVariables.strProveedorId == '';
                     dctOpcionesCatalogoProveedores.dctVariables.lstCantidadProductoCondicion = [];
@@ -600,7 +600,7 @@ $(function () {
         parameters.append('id', $('#id_cantidad').val());
         parameters.append('cantidad', parseInt($('#editar_cantidad_minima').val()));
         parameters.append('estado', $('#estado_cantidad').val());
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 $('#myModalEditarCantidades').modal('hide');
                 tblCantidadesMinimas.ajax.reload();
@@ -632,7 +632,7 @@ $(function () {
     // Función para agregar productos a la tabla cantidades
     $('#agregarProductoTblDescuentos').on('click', function () {
         if (dctOpcionesCatalogoProveedores.dctVariables.dctProducto == ''){
-            message_info('Ingrese un producto');
+            fncMensajeInformacionmns('Ingrese un producto');
             $('#buscar_producto_descuento').select2('open');
             return false;
         }else if (dctOpcionesCatalogoProveedores.dctVariables.dctProducto != ''){
@@ -669,11 +669,11 @@ $(function () {
     $('#frmDescuentos').on('submit', function (e) {
         e.preventDefault();
         if(dctOpcionesCatalogoProveedores.dctVariables.lstDescuentoProductoCondicion.length === 0 ){
-            message_error('Debe agregar al menos un producto')
+            fncMensajeErrormns('Debe agregar al menos un producto')
             return false;
         }
         else if(dctOpcionesCatalogoProveedores.dctVariables.strProveedorId == ''){
-            message_error('Seleccione un proveedor')
+            fncMensajeErrormns('Seleccione un proveedor')
             return false;
         }
         else{
@@ -681,7 +681,7 @@ $(function () {
             parameters.append('action', $('#action_descuento').val());
             parameters.append('proveedor', dctOpcionesCatalogoProveedores.dctVariables.strProveedorId);
             parameters.append('items', JSON.stringify(dctOpcionesCatalogoProveedores.dctVariables.lstDescuentoProductoCondicion));
-            submit_with_ajax(window.location.pathname, 'Notificación',
+            fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
                 '¿Estas seguro de guardar el registro?', parameters, function (response) {
                     $('#myModalDescuentos').modal('hide');
                     dctOpcionesCatalogoProveedores.dctVariables.strProveedorId == '';
@@ -700,7 +700,7 @@ $(function () {
         parameters.append('cantidad', parseInt($('#editar_cantidad_descuento').val()));
         parameters.append('descuento', parseFloat($('#editar_descuento_producto').val()));
         parameters.append('estado', $('#estado_descuento').val());
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 $('#myModalEditarDescuentos').modal('hide');
                 tblDescuentos.ajax.reload();

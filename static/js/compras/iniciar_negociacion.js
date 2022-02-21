@@ -251,7 +251,7 @@ $(function(){
             }).done(function(data) {
                 console.log(data);
                 if(data[0].state == 'VE') {
-                    message_info('El proveedor presenta actualmente una cartera vencida, solicite una autorización para continuar')
+                    fncMensajeInformacionmns('El proveedor presenta actualmente una cartera vencida, solicite una autorización para continuar')
                     $('input[name="stateCartera"]').val('Vencida');
                     $('.btnCartera').removeAttr('disabled');
                     return false;
@@ -279,11 +279,11 @@ $(function(){
         cust = $('select[name="customer"]').val();
         cart = $('input[name="stateCartera"]').val();
         if(cust == ''){
-            message_info('Debe ingresar un proveedor para gestionar una negociación');
+            fncMensajeInformacionmns('Debe ingresar un proveedor para gestionar una negociación');
             $('select[name="customer"]').focus();
             return false;
         }else if(cart == 'Vencida'){
-            message_info('El proveedor presenta una cartera vencida');
+            fncMensajeInformacionmns('El proveedor presenta una cartera vencida');
             return false;
         }
     });
@@ -488,7 +488,7 @@ $(function(){
                                                 $('input[name="cantSol"]').val(0);
                                                 return false;
                                             }
-                                            message_error(data.error);
+                                            fncMensajeErrormns(data.error);
                                         }).fail(function (jqXHR, textStatus, errorThrown) {
                                             alert(textStatus +': '+errorThrown);
                                         }).always(function(data) {                
@@ -531,7 +531,7 @@ $(function(){
                                                     product = '';
                                                     return false;
                                                 }
-                                                message_error(data.error);
+                                                fncMensajeErrormns(data.error);
                                             }).fail(function (jqXHR, textStatus, errorThrown) {
                                                 alert(textStatus +': '+errorThrown);
                                             }).always(function(data) {                
@@ -591,7 +591,7 @@ $(function(){
                                                 $('input[name="cantSol"]').val(0);
                                                 return false;
                                             }
-                                            message_error(data.error);
+                                            fncMensajeErrormns(data.error);
                                         }).fail(function (jqXHR, textStatus, errorThrown) {
                                             alert(textStatus +': '+errorThrown);
                                         }).always(function(data) {                
@@ -634,7 +634,7 @@ $(function(){
                                                     product = '';
                                                     return false;
                                                 }
-                                                message_error(data.error);
+                                                fncMensajeErrormns(data.error);
                                             }).fail(function (jqXHR, textStatus, errorThrown) {
                                                 alert(textStatus +': '+errorThrown);
                                             }).always(function(data) {                
@@ -696,7 +696,7 @@ $(function(){
                                         $('input[name="cantSol"]').val(0);
                                         return false;
                                     }
-                                    message_error(data.error);
+                                    fncMensajeErrormns(data.error);
                                 }).fail(function (jqXHR, textStatus, errorThrown) {
                                     alert(textStatus +': '+errorThrown);
                                 }).always(function(data) {                
@@ -739,7 +739,7 @@ $(function(){
                                             product = '';
                                             return false;
                                         }
-                                        message_error(data.error);
+                                        fncMensajeErrormns(data.error);
                                     }).fail(function (jqXHR, textStatus, errorThrown) {
                                         alert(textStatus +': '+errorThrown);
                                     }).always(function(data) {                
@@ -759,7 +759,7 @@ $(function(){
     // Función para agregar productos a la tabla
     $('.btnAddP').on('click', function () {
         if (product == ''){
-            message_info('Ingrese un producto');
+            fncMensajeInformacionmns('Ingrese un producto');
             $('select[name="search"]').focus();
             return false;
         }
@@ -790,11 +790,11 @@ $(function(){
         dcto = sales.items.dcto;
         if(cbDesc == 0){
             if(sales.items.products.length === 0){
-                message_info('Agregue al menos un producto para aplicar el descuento')
+                fncMensajeInformacionmns('Agregue al menos un producto para aplicar el descuento')
                 return false;
             } else if(dcto > 0){
                 $('.cbDesc').val(1);
-                message_info('ingrese el % de descuento que desea aplicar')
+                fncMensajeInformacionmns('ingrese el % de descuento que desea aplicar')
                 $('input[name="inpDesc"]').removeAttr('disabled')
             }
         } else if (cbDesc == 1){
@@ -855,7 +855,7 @@ $(function(){
     $('form').on('submit', function (e) {
         e.preventDefault();
         if(sales.items.products.length === 0 ){
-            message_error('Debe agregar al menos un producto a la factura de venta ')
+            fncMensajeErrormns('Debe agregar al menos un producto a la factura de venta ')
             return false;
         }
         sales.items.deliver_date = $('input[name="deliver_date"]').val();

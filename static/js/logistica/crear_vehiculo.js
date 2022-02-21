@@ -11,7 +11,7 @@ $(function () {
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', $('input[name="action"]').val());
-        submit_with_ajax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
         location.href = '/logistica/listar_vehiculos';
         });
     });

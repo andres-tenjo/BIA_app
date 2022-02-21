@@ -316,7 +316,7 @@ $(function(){
         e.preventDefault();
         var parameters = new FormData(this);
         parameters.append('action', 'create_supplier');
-        submit_with_ajax(window.location.pathname, 'Notificación',
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
             '¿Estas seguro de guardar el registro?', parameters, function (response) {
                 var newOption = new Option(response.name, false, true);
                 $('#identification').append(newOption).trigger('change');
@@ -354,11 +354,11 @@ $(function(){
         sup = $('#identification').val();
         debt = $('#debtStatus').val();
         if(sup == ''){
-            message_info('Debe ingresar un proveedor a la orden');
+            fncMensajeInformacionmns('Debe ingresar un proveedor a la orden');
             $('#identification').select2('focus');
             return false;
         }else if(debt == 'Vencida'){
-            message_info('El cliente presenta una cartera vencida');
+            fncMensajeInformacionmns('El cliente presenta una cartera vencida');
             return false;
         }else{
             $('#searchProd').select2('focus');
@@ -473,7 +473,7 @@ $(function(){
     // Activar botón agregar producto
     $('.btnAddP').on('click', function () {
         if (product == ''){
-            message_info('Ingrese un producto');
+            fncMensajeInformacionmns('Ingrese un producto');
             $('#searchProd').focus();
             return false;
         }
@@ -503,11 +503,11 @@ $(function(){
         dcto = purchase.items.dcto;
         if(cbDesc == 0){
             if(purchase.items.products.length === 0){
-                message_info('Agregue al menos un producto para aplicar el descuento')
+                fncMensajeInformacionmns('Agregue al menos un producto para aplicar el descuento')
                 return false;
             } else {
                 $('.cbDesc').val(1);
-                message_info('ingrese el % de descuento que desea aplicar')
+                fncMensajeInformacionmns('ingrese el % de descuento que desea aplicar')
                 $('#inpDesc').attr('disabled', false);
                 $('#inpDesc').focus();
             }
@@ -582,7 +582,7 @@ $(function(){
     $('.genOrder').on('click', function (e) {
         e.preventDefault();
         if(purchase.items.products.length === 0 ){
-            message_error('Debe agregar al menos un producto a la orden ')
+            fncMensajeErrormns('Debe agregar al menos un producto a la orden ')
             return false;
         }else{
             $('#addProds').collapse('hide');

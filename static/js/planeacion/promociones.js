@@ -113,7 +113,7 @@ $(function () {
     $('#frmProm').on('submit', function (e) {
         e.preventDefault();
         if (prom.items.products.length === 0) {
-            message_error('Debe al menos agregar un producto a su promoción');
+            fncMensajeErrormns('Debe al menos agregar un producto a su promoción');
             return false;
         }
         prom.items.name = $('input[name="name"]').val();
@@ -125,7 +125,7 @@ $(function () {
         var parameters = new FormData();
         parameters.append('action', $('input[name="action"]').val());
         parameters.append('prom', JSON.stringify(prom.items));
-        submit_with_ajax(window.location.pathname, 'Notificación','¿Estas seguro de generar esta promoción?', parameters, function (response) {
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación','¿Estas seguro de generar esta promoción?', parameters, function (response) {
             location.href = '/configuracion/listar_promociones';
         });
     });
@@ -176,7 +176,7 @@ $(function () {
         disp = parseInt($('input[name="cantDisp"]').val());
         real = parseInt($('input[name="cant"]').val());
         if (real > disp){
-            message_info('La cantidad que esta digitando es mayor que la disponible, ingrese una cantodad menor o igual')
+            fncMensajeInformacionmns('La cantidad que esta digitando es mayor que la disponible, ingrese una cantodad menor o igual')
             $('input[name="cant"]').val(0);
             return false;
         }
@@ -196,7 +196,7 @@ $(function () {
 
     $('.btnAddProd').on('click', function () {
         if (product == ''){
-            message_info('Ingrese un producto');
+            fncMensajeInformacionmns('Ingrese un producto');
             $('select[name="search"]').focus();
             return false;
         }
