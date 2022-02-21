@@ -108,7 +108,7 @@ var dctOpcionesCatalogoClientes = {
             var parameters = new FormData();
             parameters.append('action', 'btnEliminarCategoriaClientejsn');
             parameters.append('id', data.id);
-            delete_action(window.location.pathname, parameters, function () {
+            fncModificarEstadoItem(window.location.pathname, parameters, function () {
                 tblCategoriaCliente.ajax.reload();
             });
         });
@@ -288,7 +288,7 @@ var dctOpcionesCatalogoClientes = {
             var parameters = new FormData();
             parameters.append('action', 'btnEliminarZonaCliente');
             parameters.append('id', data.id);
-            delete_action(window.location.pathname, parameters, function () {
+            fncModificarEstadoItem(window.location.pathname, parameters, function () {
                 tblZonaCliente.ajax.reload();
             });
         });
@@ -383,7 +383,7 @@ var dctOpcionesCatalogoClientes = {
             var parameters = new FormData();
             parameters.append('action', 'btnEliminarAsesorComercialjsn');
             parameters.append('id', data.id);
-            delete_action(window.location.pathname, parameters, function () {
+            fncModificarEstadoItem(window.location.pathname, parameters, function () {
                 tblAsesorComercial.ajax.reload();
             });
         });

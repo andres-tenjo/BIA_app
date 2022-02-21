@@ -143,7 +143,7 @@ var purchase = {
 };
 
 // Cargar repo de proveedor
-function formatRepoSupplier(repo) {
+function fncBuscarProveedorRepo(repo) {
     if (repo.loading) {
         return repo.text;
     }
@@ -166,7 +166,7 @@ function formatRepoSupplier(repo) {
 }
 
 // Cargar repo de productos
-function formatRepoProd(repo) {
+function fncBuscarProductoRepo(repo) {
     if (repo.loading) {
         return repo.text;
     }
@@ -221,7 +221,7 @@ $(function(){
         },
         placeholder: 'Ingrese el nombre, número de identificación ó celular del proveedor',
         minimumInputLength: 1,
-        templateResult: formatRepoSupplier,
+        templateResult: fncBuscarProveedorRepo,
 
     // Seleccionar proveedor
     }).on('select2:select', function (e) {
@@ -390,7 +390,7 @@ $(function(){
         },
         placeholder: 'Ingrese el código, nombre o presentación del producto',
         minimumInputLength: 1,
-        templateResult: formatRepoProd,
+        templateResult: fncBuscarProductoRepo,
     }).on('select2:select', function (e) {
         var data = e.params.data;
         id_prod = data.id;
@@ -552,7 +552,7 @@ $(function(){
     $('.btnRemoveAll').on('click', function () {
         if(purchase.items.products.length === 0) 
         return false;
-        alert_action('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
+        fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
             purchase.items.products = [];
             purchase.list();
         });
@@ -563,7 +563,7 @@ $(function(){
         //Eliminar un producto de la tabla
         .on('click', 'a[rel="remove"]', function () {
             var tr = tblProducts.cell($(this).closest('td, li')).index();
-            alert_action('Notificación', '¿Está seguro de eliminar el producto?', function () {
+            fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar el producto?', function () {
                 purchase.items.products.splice(tr.row, 1);
                 purchase.list();
             });

@@ -74,7 +74,7 @@ var prom = {
     },
 };
 
-function formatRepoProd(repo) {
+function fncBuscarProductoRepo(repo) {
     if (repo.loading) {
         return repo.text;
     }
@@ -154,7 +154,7 @@ $(function () {
         },
         placeholder: 'Ingrese el código, nombre o presentación del producto',
         minimumInputLength: 1,
-        templateResult: formatRepoProd,
+        templateResult: fncBuscarProductoRepo,
 
     }).on('select2:select', function (e) {
         var data = e.params.data;
@@ -220,7 +220,7 @@ $(function () {
 
     $('.btnRemoveAll').on('click', function () {
         if(prom.items.products.length === 0) return false;
-        alert_action('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
+        fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
             prom.items.products = [];
             prom.list();    
         });
@@ -229,7 +229,7 @@ $(function () {
     $('#tblProducts tbody')
         .on('click', 'a[rel="remove"]', function () {
             var tr = tblProducts.cell($(this).closest('td, li')).index();
-            alert_action('Notificación', '¿Estas seguro de eliminar el producto de tu detalle?',
+            fncMensajeAlertamns('Notificación', '¿Estas seguro de eliminar el producto de tu detalle?',
                 function () {
                     prom.items.products.splice(tr.row, 1);
                     prom.list();

@@ -29,7 +29,7 @@ $(function () {
                         Cancelar: function () {
                             title = 'Alerta'
                             content = 'El asistente de prónostico no se ejecutara'
-                            alert_action_msg(content, function () {
+                            fncMensajeAlertamns(content, function () {
                                 location.href = '/configuracion/planeacion_comercial';  
                             });
                         },

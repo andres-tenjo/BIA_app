@@ -1335,7 +1335,7 @@ $(function () {
     // Función para eliminar actividades creadas en la tabla
     $('.removeAct').on('click', function () {
         if(comercial_planning.var.dataActTable.length === 0 ) return false;
-        alert_action('Notificación', '¿Está seguro de eliminar todo?', function () {
+        fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar todo?', function () {
             comercial_planning.var.dataActTable = [];
             $('input[name="actAcumDeep"]').val(0);
             $('input[name="actAcumNew"]').val(0);
@@ -1369,7 +1369,7 @@ $(function () {
     // Función para eliminar estacionalidades creadas en la tabla
     $('.removeSta').on('click', function () {
         if(comercial_planning.var.dataStaTable.length === 0 ) return false;
-        alert_action('Notificación', '¿Está seguro de eliminar todo?', function () {
+        fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar todo?', function () {
             comercial_planning.var.dataStaTable = [];
             comercial_planning.get_sta_table();
         });
@@ -1428,7 +1428,7 @@ $(function () {
     $('#cityDataTable tbody')
         /*.on('click', 'a[rel="remove"]', function () {
             var tr = tblProd.cell($(this).closest('td, li')).index();
-            alert_action('Notificación', '¿Está seguro de eliminar el producto?', function () {
+            fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar el producto?', function () {
                 sales.items.products.splice(tr.row, 1);
                 sales.list();
             });

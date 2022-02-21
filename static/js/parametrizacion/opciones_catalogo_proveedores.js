@@ -243,7 +243,7 @@ dctOpcionesCatalogoProveedores = {
         // Eliminar producto
         $('#tblCantidadesProductos tbody').on('click', 'a[rel="delete"]', function () {
             var tr = tblCantidadesProductos.cell($(this).closest('td, li')).index();
-            alert_action('Notificación', '¿Está seguro de eliminar el producto?', function () {
+            fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar el producto?', function () {
                 dctOpcionesCatalogoProveedores.dctVariables.lstCantidadProductoCondicion.splice(tr.row, 1);
                 $('#tblCantidadesProductos').DataTable().clear().rows.add(dctOpcionesCatalogoProveedores.dctVariables.lstCantidadProductoCondicion).draw();
                 $('#buscar_producto').select2('open');
@@ -312,7 +312,7 @@ dctOpcionesCatalogoProveedores = {
         // Eliminar producto
         $('#tblDescuentosProductos tbody').on('click', 'a[rel="delete"]', function () {
             var tr = tblDescuentosProductos.cell($(this).closest('td, li')).index();
-            alert_action('Notificación', '¿Está seguro de eliminar el producto?', function () {
+            fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar el producto?', function () {
                 dctOpcionesCatalogoProveedores.dctVariables.lstDescuentoProductoCondicion.splice(tr.row, 1);
                 $('#tblDescuentosProductos').DataTable().clear().rows.add(dctOpcionesCatalogoProveedores.dctVariables.lstDescuentoProductoCondicion).draw();
                 $('#buscar_producto_descuento').select2('open');
@@ -360,7 +360,7 @@ $(function () {
         },
         placeholder: 'Ingrese el proveedor, identificación o nombre de contacto',
         minimumInputLength: 1,
-        templateResult: formatRepoSupplier,
+        templateResult: fncBuscarProveedorRepo,
     }).on('select2:select', function (e) {
         var data = e.params.data;
         dctOpcionesCatalogoProveedores.dctVariables.strProveedorId = data.id;
@@ -393,7 +393,7 @@ $(function () {
         },
         placeholder: 'Ingrese el código, nombre o presentación del producto',
         minimumInputLength: 1,
-        templateResult: formatRepoProd,
+        templateResult: fncBuscarProductoRepo,
     }).on('select2:select', function (e) {
         var data = e.params.data;
         id_prod = data.id;
@@ -465,7 +465,7 @@ $(function () {
         },
         placeholder: 'Ingrese el código, nombre o presentación del producto',
         minimumInputLength: 1,
-        templateResult: formatRepoProd,
+        templateResult: fncBuscarProductoRepo,
     }).on('select2:select', function (e) {
         var data = e.params.data;
         id_prod = data.id;
@@ -559,7 +559,7 @@ $(function () {
     // Boton eliminar productos de la tabla cantidades minimas
     $('#eliminarProductosTblCantidades').on('click', function () {
         if(dctOpcionesCatalogoProveedores.dctVariables.lstCantidadProductoCondicion.length === 0) return false;
-        alert_action('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
+        fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
             dctOpcionesCatalogoProveedores.dctVariables.lstCantidadProductoCondicion = [];
             $('#tblCantidadesProductos').DataTable().clear().rows.add(dctOpcionesCatalogoProveedores.dctVariables.lstCantidadProductoCondicion).draw();
             $('#product').select2('open');
@@ -658,7 +658,7 @@ $(function () {
     // Boton eliminar productos de la tabla
     $('#eliminarProductosTblDescuentos').on('click', function () {
         if(dctOpcionesCatalogoProveedores.dctVariables.lstDescuentoProductoCondicion.length === 0) return false;
-        alert_action('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
+        fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
             dctOpcionesCatalogoProveedores.dctVariables.lstDescuentoProductoCondicion = [];
             $('#tblDescuentosProductos').DataTable().clear().rows.add(dctOpcionesCatalogoProveedores.dctVariables.lstDescuentoProductoCondicion).draw();
             $('#buscar_producto_descuento').select2('open');

@@ -138,7 +138,7 @@ dctListarProductos = {
             var parameters = new FormData();
             parameters.append('action', 'frmEliminarProductojsn');
             parameters.append('id', data.id);
-            delete_action(window.location.pathname, parameters, function (response) {
+            fncModificarEstadoItem(window.location.pathname, parameters, function (response) {
                 dctListarProductos.dctVariables.lstProductos = [];
                 dctListarProductos.dctVariables.lstProductos.push(response);
                 $('#data').DataTable().clear().rows.add(dctListarProductos.dctVariables.lstProductos).draw();
@@ -177,7 +177,7 @@ $(function () {
         },
         placeholder: 'Ingrese código de producto, nombre o presentación del producto',
         minimumInputLength: 1,
-        templateResult: formatRepoProd,
+        templateResult: fncBuscarProductoRepo,
     }).on('select2:select', function (e) {
         var data = e.params.data;
         dctListarProductos.dctVariables.lstProductos = [];

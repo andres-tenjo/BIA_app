@@ -81,7 +81,7 @@ $(function () {
         var parameters = new FormData();
         parameters.append('action', 'btnEliminarUsuariojsn');
         parameters.append('id', data.id);
-        delete_action(window.location.pathname, parameters, function () {
+        fncModificarEstadoItem(window.location.pathname, parameters, function () {
             tblUsuarios.ajax.reload();
         });
     });

@@ -21,6 +21,10 @@ function fncObtenerCsrfAjax(name) {
 }
 var csrftoken = fncObtenerCsrfAjax('csrftoken');
 
+///////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////// CARGAR PLUGINS /////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+
 // Función para cargar libreria select2
 // strClase: Clase html del widget que recibe la librería
 // strPlaceholder: Cadena de texto para el placeholder del widget
@@ -72,6 +76,10 @@ function fncCargarLibreriaTouchSpinFormatoMoneda() {
     });
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// FUNCIONES PARA MENSAJES /////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+
 // Función que muestra un mensaje de error en ventana
 // strMensaje: Cadena de texto del mesnaje que se desea visualizar
 function fncMensajeErrormns(strMensaje) {
@@ -112,6 +120,44 @@ function fncMensajeInformacionmns(strMensaje) {
         icon: 'info',
     });
 }
+
+// Función que muestra un mensaje de alerta en ventana
+// strTituloMensaje: Titulo del mensaje para la confirmación del envío del formulario
+// strContenidoMensaje: Contenido del mensaje para la confirmación del envío del formulario
+// fncRetorno: Función que se ejecutara una vez se haya confirmado la acción
+function fncMensajeAlertamns(strTituloMensaje, strContenidoMensaje, fncRetorno) {
+    $.confirm({
+        theme: 'material',
+        title: strTituloMensaje,
+        icon: 'fa fa-info',
+        content: strContenidoMensaje,
+        columnClass: 'small',
+        typeAnimated: true,
+        cancelButtonClass: 'btn-primary',
+        draggable: true,
+        dragWindowBorder: false,
+        buttons: {
+            info: {
+                text: "Si",
+                btnClass: 'btn-primary',
+                action: function () {
+                    fncRetorno();
+                }
+            },
+            danger: {
+                text: "No",
+                btnClass: 'btn-red',
+                action: function () {
+                    
+                }
+            },
+        }
+    })
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// FUNCIONES PARA FORMULARIOS //////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 
 // Función que ejecuta el envío de un formulario a través de petición Ajax por medio de un mensaje de confirmación
 // url: Url de la vista que ejecutara la acción
@@ -169,10 +215,14 @@ function fncGuardarFormularioAjax(url, strTituloMensaje, strContenidoMensaje, js
     })
 }
 
-// Función para eliminar un item que tiene relación con otras tablas
+///////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// FUNCIONES PARA TABLAS ////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+
+// Función para cambiar el estado de un item que tiene relación con otras tablas
 // jsnParametros: Diccionario jsn con los parametros que serán enviado al servidor para ejecutar la acción
 // fncRetorno: Función que se ejecutara una vez se haya confirmado la acción
-function delete_action_foreign_key(url, jsnParametros, fncRetorno) {
+function fncModificarEstadoRelacion(url, jsnParametros, fncRetorno) {
     $.confirm({
         columnClass: 'col-md-12',
         title: 'Alerta',
@@ -209,8 +259,10 @@ function delete_action_foreign_key(url, jsnParametros, fncRetorno) {
     });
 }
 
-// Eliminar una fila de una tabla
-function delete_action(url, parameters, callback) {
+// Función para cambiar el estado de un item de una tabla
+// jsnParametros: Diccionario jsn con los parametros que serán enviado al servidor para ejecutar la acción
+// fncRetorno: Función que se ejecutara una vez se haya confirmado la acción
+function fncModificarEstadoItem(url, jsnParametros, fncRetorno) {
     $.confirm({
         columnClass: 'col-md-12',
         title: 'Alerta',
@@ -221,7 +273,7 @@ function delete_action(url, parameters, callback) {
             Continuar: function () {
                 $.ajax({
                     url: url,
-                    data: parameters,
+                    data: jsnParametros,
                     type: 'POST',
                     dataType: 'json',
                     headers: {
@@ -231,7 +283,7 @@ function delete_action(url, parameters, callback) {
                     contentType: false,
                     success: function (request) {
                         if (!request.hasOwnProperty('error')) {
-                            callback(request);
+                            fncRetorno(request);
                             return false;
                         }
                         fncMensajeErrormns(request.error);
@@ -247,68 +299,12 @@ function delete_action(url, parameters, callback) {
     });
 }
 
-// Mensaje de información para formularios
-function message_form(title) {
-    Swal.fire({
-        position: 'top-end',
-        icon: 'warning',
-        title: title,
-        showConfirmButton: false,
-        timer: 1500
-  })
-}
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// FUNCIONES PARA INPUT SELECT /////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 
-// Mensaje de alerta
-function alert_action(title, content, callback) {
-    $.confirm({
-        theme: 'material',
-        title: title,
-        icon: 'fa fa-info',
-        content: content,
-        columnClass: 'small',
-        typeAnimated: true,
-        cancelButtonClass: 'btn-primary',
-        draggable: true,
-        dragWindowBorder: false,
-        buttons: {
-            info: {
-                text: "Si",
-                btnClass: 'btn-primary',
-                action: function () {
-                    callback();
-                }
-            },
-            danger: {
-                text: "No",
-                btnClass: 'btn-red',
-                action: function () {
-                    
-                }
-            },
-        }
-    })
-}
-
-// Mensaje de alerta 2
-function alert_action_msg(content, callback) {
-    $.confirm({
-        columnClass: 'col-md-12',
-        title: 'Alerta!',
-        icon: 'fa fa-warning',
-        content: content,
-        theme: 'supervan',
-        buttons: {
-            Continuar: function () {
-                callback();
-            },
-            Cancelar: function () {
-            },
-        }
-    });
-}
-
-// Buscador de producto
-function formatRepoProd(repo) {
+// Función para mostrar un bloque de busqueda con algunos campos del catálogo de productos
+function fncBuscarProductoRepo(repo) {
     if (repo.loading) {
         return repo.text;
     }
@@ -330,8 +326,8 @@ function formatRepoProd(repo) {
     return option;
 }
 
-// Cargar repo de proveedores
-function formatRepoSupplier(repo) {
+// Función para mostrar un bloque de busqueda con algunos campos del catálogo de proveedores
+function fncBuscarProveedorRepo(repo) {
     if (repo.loading) {
         return repo.text;
     }
@@ -351,8 +347,8 @@ function formatRepoSupplier(repo) {
     return option;
 }
 
-// Cargar repo de clientes
-function formatRepoCustomer(repo) {
+// Función para mostrar un bloque de busqueda con algunos campos del catálogo de clientes
+function fncBuscarClienteRepo(repo) {
     if (repo.loading) {
         return repo.text;
     }
@@ -373,8 +369,8 @@ function formatRepoCustomer(repo) {
     return option;
 }
 
-// Cargar repo de bodegas
-function formatRepoWarehouse(repo) {
+// Función para mostrar un bloque de busqueda con algunos campos del catálogo de bodegas
+function fncBuscarBodegaRepo(repo) {
     if (repo.loading) {
         return repo.text;
     }

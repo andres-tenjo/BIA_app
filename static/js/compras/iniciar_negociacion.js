@@ -141,7 +141,7 @@ var sales = {
     },
 };
 
-function formatRepoProd(repo) {
+function fncBuscarProductoRepo(repo) {
     if (repo.loading) {
         return repo.text;
     }
@@ -164,7 +164,7 @@ function formatRepoProd(repo) {
     return option;
 }
 
-function formatRepoCustomer(repo) {
+function fncBuscarClienteRepo(repo) {
     if (repo.loading) {
         return repo.text;
     }
@@ -219,7 +219,7 @@ $(function(){
         },
         placeholder: 'Ingrese el nombre, número de identificación ó celular del proveedor',
         minimumInputLength: 1,
-        templateResult: formatRepoCustomer,
+        templateResult: fncBuscarClienteRepo,
 
     // Seleccionar cliente
     }).on('select2:select', function (e) {
@@ -332,7 +332,7 @@ $(function(){
         },
         placeholder: 'Ingrese el código, nombre o presentación del producto',
         minimumInputLength: 1,
-        templateResult: formatRepoProd,
+        templateResult: fncBuscarProductoRepo,
 
     }).on('select2:select', function (e) {
         var data = e.params.data;
@@ -824,7 +824,7 @@ $(function(){
     // Boton eliminar productos de la tabla
     $('.btnRemoveAll').on('click', function () {
         if(sales.items.products.length === 0) return false;
-        alert_action('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
+        fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
             sales.items.products = [];
             sales.list();    
         });
@@ -836,7 +836,7 @@ $(function(){
         //Eliminar un producto de la tabla
         .on('click', 'a[rel="remove"]', function () {
             var tr = tblProducts.cell($(this).closest('td, li')).index();
-            alert_action('Notificación', '¿Está seguro de eliminar el producto?', function () {
+            fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar el producto?', function () {
                 sales.items.products.splice(tr.row, 1);
                 sales.list();
             });

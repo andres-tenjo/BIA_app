@@ -123,7 +123,7 @@ dctListarProveedores = {
                 var parameters = new FormData();
                 parameters.append('action', 'btnEliminarProveedorjsn');
                 parameters.append('id', data.id);
-                delete_action(window.location.pathname, parameters, function (response) {
+                fncModificarEstadoItem(window.location.pathname, parameters, function (response) {
                     dctListarProveedores.dctVariables.lstProveedores = [];
                     dctListarProveedores.dctVariables.lstProveedores.push(response);
                     $('#data').DataTable().clear().rows.add(dctListarProveedores.dctVariables.lstProveedores).draw();
@@ -163,7 +163,7 @@ $(function () {
         },
         placeholder: 'Ingrese el proveedor, identificación o nombre de contacto',
         minimumInputLength: 1,
-        templateResult: formatRepoSupplier,
+        templateResult: fncBuscarProveedorRepo,
     }).on('select2:select', function (e) {
         var data = e.params.data;
         $('#dataTable').prop('hidden', false);

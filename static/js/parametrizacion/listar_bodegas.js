@@ -72,7 +72,7 @@ dctListarBodegas = {
                 var parameters = new FormData();
                 parameters.append('action', 'btnEliminarBodegajsn');
                 parameters.append('id', data.id);
-                delete_action(window.location.pathname, parameters, function (response) {
+                fncModificarEstadoItem(window.location.pathname, parameters, function (response) {
                     dctListarBodegas.dctVariables.lstBodegas = [];
                     dctListarBodegas.dctVariables.lstBodegas.push(response);
                     $('#data').DataTable().clear().rows.add(dctListarBodegas.dctVariables.lstBodegas).draw();
@@ -110,7 +110,7 @@ $(function () {
         },
         placeholder: 'Ingrese el nombre de la bodega o responsable',
         minimumInputLength: 1,
-        templateResult: formatRepoWarehouse,
+        templateResult: fncBuscarBodegaRepo,
     }).on('select2:select', function (e) {
         var data = e.params.data;
         dctListarBodegas.dctVariables.lstBodegas = [];

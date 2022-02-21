@@ -1,5 +1,5 @@
 // Cargar repo de productos
-function formatRepoProd(repo) {
+function fncBuscarProductoRepo(repo) {
     if (repo.loading) {
         return repo.text;
     }
@@ -23,7 +23,7 @@ function formatRepoProd(repo) {
 }
 
 // Cargar repo de bodegas
-function formatRepoWarehouse(repo) {
+function fncBuscarBodegaRepo(repo) {
     if (repo.loading) {
         return repo.text;
     }
@@ -121,7 +121,7 @@ $(function () {
         },
         placeholder: 'Ingrese el nombre de la bodega o responsable',
         minimumInputLength: 1,
-        templateResult: formatRepoWarehouse,
+        templateResult: fncBuscarBodegaRepo,
     }).on('select2:select', function (e) {
         dctAjustesInventario.dctVariables.intIdBodega = e.params.data.id;
         dctAjustesInventario.dctVariables.strBodega = e.params.data.warehouse_name;;
@@ -151,7 +151,7 @@ $(function () {
         },
         placeholder: 'Ingrese el código, nombre o presentación del producto',
         minimumInputLength: 1,
-        templateResult: formatRepoProd,
+        templateResult: fncBuscarProductoRepo,
     }).on('select2:select', function (e) {
         var dctData = e.params.data;
         dctAjustesInventario.dctVariables.intIdProducto = dctData.id;
@@ -329,7 +329,7 @@ $(function () {
     $('#tblAjustesInventario tbody')
         .on('click', 'a[rel="remove"]', function () {
             var tr = tblAjustesInventario.cell($(this).closest('td, li')).index();
-            alert_action('Notificación', '¿Está seguro de eliminar el producto?', function () {
+            fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar el producto?', function () {
                 dctAjustesInventario.dctLstAjustesInventario.lstAjustesInventario.splice(tr.row, 1);
                 $('#tblAjustesInventario').DataTable().clear().rows.add(dctAjustesInventario.dctLstAjustesInventario.lstAjustesInventario).draw();
         });
@@ -338,7 +338,7 @@ $(function () {
     // Boton eliminar productos de la tabla
     $('#btnRemoverProductos').on('click', function () {
         if(dctAjustesInventario.dctLstAjustesInventario.lstAjustesInventario.length === 0) return false;
-        alert_action('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
+        fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
             dctAjustesInventario.dctLstAjustesInventario.lstAjustesInventario = [];
             $('#tblAjustesInventario').DataTable().clear().rows.add(dctAjustesInventario.dctLstAjustesInventario.lstAjustesInventario).draw();
         });

@@ -93,7 +93,7 @@ dctOpcionesCatalogoProductos = {
             var parameters = new FormData();
             parameters.append('action', 'frmEliminarCategoriaProductojsn');
             parameters.append('id', data.id);
-            delete_action_foreign_key(window.location.pathname, parameters, function () {
+            fncModificarEstadoRelacion(window.location.pathname, parameters, function () {
                 tblCategoriaProducto.ajax.reload();
                 tblSubcategoriaProducto.ajax.reload();
             });
@@ -189,7 +189,7 @@ dctOpcionesCatalogoProductos = {
             var parameters = new FormData();
             parameters.append('action', 'frmEliminarSubcategoriaProductojsn');
             parameters.append('id', data.id);
-            delete_action(window.location.pathname, parameters, function () {
+            fncModificarEstadoItem(window.location.pathname, parameters, function () {
                 tblSubcategoriaProducto.ajax.reload();
             });
         });
@@ -282,7 +282,7 @@ dctOpcionesCatalogoProductos = {
             var parameters = new FormData();
             parameters.append('action', 'frmEliminarUnidadComprajsn');
             parameters.append('id', data.id);
-            delete_action(window.location.pathname, parameters, function () {
+            fncModificarEstadoItem(window.location.pathname, parameters, function () {
                 tblUnidadesCompra.ajax.reload();
             });
         });
@@ -375,7 +375,7 @@ dctOpcionesCatalogoProductos = {
             var parameters = new FormData();
             parameters.append('action', 'frmEliminarUnidadVentajsn');
             parameters.append('id', data.id);
-            delete_action(window.location.pathname, parameters, function () {
+            fncModificarEstadoItem(window.location.pathname, parameters, function () {
                 tblUnidadesVenta.ajax.reload();
             });
         });

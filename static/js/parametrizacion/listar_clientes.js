@@ -100,7 +100,7 @@ dctListarClientes = {
                 var parameters = new FormData();
                 parameters.append('action', 'btnEliminarClientejsn');
                 parameters.append('id', data.id);
-                delete_action(window.location.pathname, parameters, function (response) {
+                fncModificarEstadoItem(window.location.pathname, parameters, function (response) {
                     dctListarClientes.dctVariables.lstClientes = [];
                     dctListarClientes.dctVariables.lstClientes.push(response);
                     $('#data').DataTable().clear().rows.add(dctListarClientes.dctVariables.lstClientes).draw();
@@ -139,7 +139,7 @@ $(function () {
         },
         placeholder: 'Ingrese el cliente, identificación o Nº celular',
         minimumInputLength: 1,
-        templateResult: formatRepoCustomer,
+        templateResult: fncBuscarClienteRepo,
     }).on('select2:select', function (e) {
         var data = e.params.data;
         dctListarClientes.dctVariables.lstClientes = [];
