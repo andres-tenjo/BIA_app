@@ -155,3 +155,5 @@ AUTH_USER_MODEL = 'usuario.User'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880

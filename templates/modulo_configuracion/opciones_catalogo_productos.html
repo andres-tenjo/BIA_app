@@ -55,7 +55,7 @@
                   aria-labelledby="headingOne" 
                   data-parent="#accordionExample">
                   <div class="card-body">
-                    <div class="col-lg-6">
+                    <div class="col-lg-9">
                       <div class="accordion" id="accordionOptions">
                         <div class="card card-primary card-outline">
                           <div class="card-header" id="headingCategory">
@@ -133,19 +133,20 @@
                             data-parent="#accordionOptions">
                             <div class="card-body">
                               <div class="row">
-                                <div class="col-lg-12">
-                                  <div class="row justify-content-between">
-                                    <div class="col-auto">
-                                      <div class="form-group">
-                                        <a href="#" type="button" class="btnAddSubcat">
-                                          <i class="fas fa-plus-circle"></i>
-                                          Crear subcategoría
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
+                                <div class="col-lg-6">
+                                  <a href="#" type="button" class="btnAddSubcat">
+                                    <i class="fas fa-plus-circle"></i>
+                                    Crear subcategoría
+                                  </a>
+                                </div>
+                                <div class="col-lg-6">
+                                  <a href="{% url 'configuracion:importar_subcategorias_productos' %}" type="button" class="btnAddSubcat">
+                                    <i class="fas fa-upload"></i>
+                                    Cargar archivo de subcategorías
+                                  </a>
                                 </div>
                               </div>
+                              <hr>
                               <div class="row">
                                 <div class="col-lg-12">
                                   <table class="table table-bordered table-hover" id="subcatTable">

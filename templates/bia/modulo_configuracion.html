@@ -43,7 +43,8 @@
                 {% if request.resolver_match.view_name == 'configuracion:actualizar_producto' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:opciones_producto' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:import_products' %}active{% endif %}
-                {% if request.resolver_match.view_name == 'configuracion:export_products' %}active{% endif %}">
+                {% if request.resolver_match.view_name == 'configuracion:export_products' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:importar_subcategorias_productos' %}active{% endif %}">
                 <i class="nav-icon fas fa-gift"></i>
                 <p>Catálogo de productos</p>
             </a>

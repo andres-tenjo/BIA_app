@@ -151,7 +151,7 @@ class CreateOrderView(CreateView):
                 term = request.POST['term'].strip()
                 ids_exclude = json.loads(request.POST['ids'])
                 if len(term):
-                    prods = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=term) | Q(id__icontains=term) | Q(presentation__icontains=term))[0:10]
+                    prods = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=term) | Q(id__icontains=term))[0:10]
                 for i in prods:
                     item = i.toJSON()
                     item['value'] = i.product_desc
@@ -505,7 +505,7 @@ class CreateQuoteView(CreateView):
                 ids_exclude = json.loads(request.POST['ids'])
                 
                 if len(term):
-                    prods = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=term) | Q(id__icontains=term) | Q(presentation__icontains=term))[0:10]
+                    prods = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=term) | Q(id__icontains=term))[0:10]
                 for i in prods:
                     item = i.toJSON()
                     item['value'] = i.product_desc

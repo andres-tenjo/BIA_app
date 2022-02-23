@@ -33,7 +33,7 @@ def fncValidarImportacionlst(df, colname, val):
                     else:
                         l.append((colname, i, error, values[i]))
                 elif t == int:
-                    e = int(values[i])
+                    e = values[i]
                     if type(e) == t:
                         pass
                     else:
@@ -70,6 +70,8 @@ def fncValidarImportacionlst(df, colname, val):
                     for i in range(0, len(values)):
                         if values[i] in d:
                             l.append((colname, i, error, values[i]))
+                        elif type(values[i]) != int:
+                            l.append((colname, i, 'Tipo de dato', values[i]))
                         else:
                             pass
                 elif t == 'bar_code':
@@ -79,6 +81,20 @@ def fncValidarImportacionlst(df, colname, val):
                     d = db.objects.all()
                     dtf = d.to_dataframe()
                     d = dtf['bar_code'].tolist()
+                    for i in range(0, len(values)):
+                        if values[i] in d:
+                            l.append((colname, i, error, values[i]))
+                        elif type(values[i]) != int:
+                            l.append((colname, i, 'Tipo de dato', values[i]))
+                        else:
+                            pass
+                elif t == 'product_subcat':
+                    db = val[0][2]
+                    error = 'Registro ya existe'
+                    values = df[colname].tolist()
+                    d = db.objects.all()
+                    dtf = d.to_dataframe()
+                    d = dtf['product_subcat'].tolist()
                     for i in range(0, len(values)):
                         if values[i] in d:
                             l.append((colname, i, error, values[i]))

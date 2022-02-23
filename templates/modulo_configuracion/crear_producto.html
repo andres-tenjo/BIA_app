@@ -32,7 +32,7 @@
         </div>
         <div class="col-lg-4">
             <div class="form-group">
-                <label>* Código de barras:</label>
+                <label>Código de barras:</label>
                 <div class="input-group">
                     {{ form.bar_code }}
                     <div class="input-group-append">
@@ -48,18 +48,12 @@
         </div>
         <div class="col-lg-4">
             <div class="form-group">
-                <label>* Presentación:</label>
-                {{ form.presentation }}
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-4">
-            <div class="form-group">
                 <label>* Marca:</label>
                 {{ form.trademark }}
             </div>  
         </div>
+    </div>
+    <div class="row">
         <div class="col-lg-4">
             <div class="form-group">
                 <label>* Categoría:</label>
@@ -90,9 +84,7 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-lg">
+        <div class="col-lg-4">
             <div class="form-group">
                 <label>* Unidad de compra:</label>
                 <div class="input-group">
@@ -107,20 +99,20 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg">
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
             <div class="form-group">
                 <label>* Cantidad por unidad:</label>
                 {{ form.quantity_pu }}
             </div>
         </div>
-        <div class="col-lg">
+        <div class="col-lg-4">
             <div class="form-group">
                 <label>* Precio de compra:</label>
                 {{ form.cost_pu }}
             </div>
         </div>
-    </div>
-    <div class="row">
         <div class="col-lg-4">
             <div class="form-group">
                 <label>* Unidad de venta:</label>
@@ -136,6 +128,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-lg-4">
             <div class="form-group">
                 <label>* Cantidad por unidad:</label>
@@ -148,14 +142,14 @@
                 {{ form.full_sale_price }}
             </div>
         </div>
-    </div>
-    <div class="row">
         <div class="col-lg-4">
             <div class="form-group">
                 <label>Iva:</label>
                 {{ form.iva }}
             </div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-lg-4">
             <div class="form-group">
                 <label>Otros impuestos:</label>

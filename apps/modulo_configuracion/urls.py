@@ -38,6 +38,18 @@ urlpatterns = [
         clsOpcionesCatalogoProductoViw.as_view(), 
         name='opciones_producto'
         ),
+    # Descargar plantilla de subcategorias producto
+    path(
+        'plantilla_subcategorias_producto/', 
+        clsExportarPlantillaSubcategoríaProductoViw.as_view(), 
+        name='plantilla_subcategorias_producto'
+        ),
+    # Importar archivo de subcategorias productos
+    path(
+        'importar_subcategorias_productos/', 
+        clsImportarSubcategoriaProductoViw.as_view(), 
+        name='importar_subcategorias_productos'
+        ),
     # Crear producto
     path(
         'crear_producto/', 

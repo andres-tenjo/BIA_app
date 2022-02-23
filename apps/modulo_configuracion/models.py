@@ -249,8 +249,7 @@ class clsUnidadVentaMdl(BaseModel):
 class clsCatalogoProductosMdl(BaseModel):
     qr_code = models.ImageField(upload_to = 'qr_codes/products/%Y/%m/%d', blank=True)
     product_desc = models.CharField('Nombre del producto', max_length=200)
-    bar_code = models.PositiveBigIntegerField('Código de barras', unique=True)
-    presentation = models.CharField('Presentación', max_length=200)
+    bar_code = models.PositiveBigIntegerField('Código de barras', unique=True, blank=True, null=True)
     trademark = models.CharField('Marca del producto', max_length=200)
     product_cat = models.ForeignKey(clsCategoriaProductoMdl, on_delete=models.CASCADE, verbose_name='Categoría')
     product_subcat = models.ForeignKey(clsSubcategoriaProductoMdl, on_delete=models.CASCADE, verbose_name='Subcategoría')

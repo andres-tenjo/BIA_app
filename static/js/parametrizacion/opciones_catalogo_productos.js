@@ -106,9 +106,9 @@ dctOpcionesCatalogoProductos = {
             responsive: true,
             autoWidth: false,
             destroy: true,
+            pageLength: 0,
+            lengthMenu: [5, 10, 20, 50, 100],
             deferRender: true,
-            paging: false,
-            info: false,
             language: {
                 "decimal": "",
                 "emptyTable": "No existe información creada",

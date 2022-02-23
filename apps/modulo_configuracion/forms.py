@@ -147,13 +147,6 @@ class clsCrearProductoFrm(ModelForm):
                     'placeholder': 'Ej. Aceite de oliva Don Pancho x 200 ml',
                 }
             ),
-            'presentation': TextInput(
-                attrs={
-                    'class': 'form-control',
-                    'id': 'prod_pres',
-                    'placeholder': 'Ej. 200 ml',
-                }
-            ),
             'trademark': TextInput(
                 attrs={
                     'class': 'form-control',

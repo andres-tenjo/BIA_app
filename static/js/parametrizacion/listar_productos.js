@@ -33,11 +33,10 @@ dctListarProductos = {
                     "previous": "Anterior"
                 },
             },
-            data: this.lstProductos,
+            data: this.dctVariables.lstProductos,
             columns: [
                 { "data": "id"},
                 { "data": "product_desc"},
-                { "data": "presentation"},
                 { "data": "trademark"},
                 { "data": "sales_unit.sales_unit"},
                 { "data": "full_sale_price"},
@@ -46,7 +45,7 @@ dctListarProductos = {
             ],
             columnDefs: [
                 {
-                    targets: [-4, -5, -6, -7, -8],
+                    targets: [-4, -5, -6, -7],
                     class: 'text-center',
                     render: function (data, type, row) {
                         return data;
@@ -83,7 +82,6 @@ dctListarProductos = {
             $('#qrCode').attr('src', data.qr_code);
             $('input[name="cod"]').val(data.id);
             $('input[name="name"]').val(data.product_desc);
-            $('input[name="presentation"]').val(data.presentation);
             if (data.product_cat){
                 $('input[name="category"]').val(data.product_cat.product_cat);
             }

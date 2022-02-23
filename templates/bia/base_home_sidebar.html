@@ -293,7 +293,7 @@
             {% for message in messages %}
                 html += '{{ message }}<br>';
             {% endfor %}
-            html += '</p>';
+            html += '</p>'; 
             Swal.fire({
                 title: 'Error!',
                 html: html,
@@ -304,6 +304,7 @@
     <script>
         {% if messages.errors %}
           {% for message in messages.errors %}
+            console.log(message);
             Swal.fire({
                 title: 'Error!',
                 text: message,

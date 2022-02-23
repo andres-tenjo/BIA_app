@@ -303,15 +303,140 @@ class clsOpcionesCatalogoProductoViw(LoginRequiredMixin, ValidatePermissionRequi
         context['frmUdvProd'] = clsCrearUnidadVentaFrm()
         return context
 
-''' 3.3 Vista para exportar plantilla de productos'''
+''' 3.3 Vista para exportar plantilla de subcategorías de producto'''
+class clsExportarPlantillaSubcategoríaProductoViw(APIView):
+
+    def get(self, request):
+        lstCeldasExcel = ['A1', 'B1']
+        lstComentariosExcel = [
+            'Ingresa el nombre de la subcategoría de producto',
+            'Las unidades de venta ya las creaste, en la hoja de este archivo llamada "CATEGORIA_PRODUCTO" las encontrarás, digita el número que aparece en la primer columna, por ejemplo: primer columna 1, segunda columna Alimentos, si es alimentos digitas el 1',
+        ]
+        qrsCategoriaProducto = clsCategoriaProductoMdl.objects.filter(state='AC')
+        srlCategoriaProducto = clsCategoriaProductoMdlSerializer(qrsCategoriaProducto, many=True)
+        dtfCategoriaProducto = pd.DataFrame(srlCategoriaProducto.data)
+        dtfCategoriaProducto = dtfCategoriaProducto.rename(columns={'id':'Nº', 'product_cat':'Categoría'})
+        dtfPlantillaSubcategoriaProductos = pd.DataFrame(
+            {
+                'Nombre subcategoría':[],
+                'Categoría producto':[]
+            }, 
+            index = [i for i in range (0, 0)]
+            )
+        lstNombresColumnasPlantilla = list(dtfPlantillaSubcategoriaProductos.columns.values)
+        lstTotalColumnas = [ i for i in range (1, len(lstNombresColumnasPlantilla) + 1) ]
+        lstTipoDato = [
+            'Alfabético', 
+            'Numérico'
+            ]
+        lstLongitudMaxima = [
+            100,
+            3
+            ]
+        lstCaracteresEspeciales = [
+            'PERMITE Ñ', 
+            'NO PERMITE'
+            ]
+        lstObservaciones = [
+            'Ingresa el nombre de la subcategoría de producto',
+            'Ingrese el Nº de la categoría de producto a la que pertenece la subcategoría de la hoja "CATEGORÍA_PRODUCTO"',
+            ]
+        lstCampoObligatorio = [
+            'SI', 
+            'SI'
+            ]
+        dtfInstructivoPlantilla = pd.DataFrame(
+            {'Nº': lstTotalColumnas, 
+            'NOMBRE CAMPO': lstNombresColumnasPlantilla, 
+            'TIPO DE DATO': lstTipoDato,
+            'LONGITUD MAX': lstLongitudMaxima,
+            'CARACTERES ESPECIALES': lstCaracteresEspeciales,
+            'OBSERVACIONES': lstObservaciones,
+            'OBLIGATORIO': lstCampoObligatorio,
+            }, 
+            index = [i for i in range (0, len(lstTipoDato))]
+            )
+        response = HttpResponse(content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="subcategorias_productos.xlsx"'
+        with pd.ExcelWriter(response) as writer:
+            dtfPlantillaSubcategoriaProductos.to_excel(writer, sheet_name='PLANTILLA', index=False)
+            dtfInstructivoPlantilla.to_excel(writer, sheet_name='INSTRUCTIVO', index=False)
+            dtfCategoriaProducto.to_excel(writer, sheet_name='CATEGORIA_PRODUCTO', index=False)
+            fncAgregarAnchoColumna(writer, False, dtfPlantillaSubcategoriaProductos, 'PLANTILLA') 
+            fncAgregarAnchoColumna(writer, True, dtfInstructivoPlantilla, 'INSTRUCTIVO')
+            fncAgregarAnchoColumna(writer, True, dtfCategoriaProducto, 'CATEGORIA_PRODUCTO')
+            fncAgregarComentarioCeldas(writer, 'PLANTILLA', lstCeldasExcel, lstComentariosExcel)
+        return response
+
+''' 3.4 Vista para importar archivo de subcategorias producto'''
+class clsImportarSubcategoriaProductoViw(LoginRequiredMixin, TemplateView):
+    template_name = 'modulo_configuracion/importar_subcategorias_producto.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        lstNombresColumnas = [
+            'Nombre subcategoría',
+            'Categoría producto'
+            ]
+        tplValidaciones = (
+            ((True, 'product_subcat', clsSubcategoriaProductoMdl), (True, 60), (True, 1), (False,)),
+            ((False,), (True, 3), (True, 1), (True, clsCategoriaProductoMdl))
+            )
+        jsnData = {}
+        try:
+            action = request.POST['action']
+            if action == 'frmCargarArchivojsn':
+                filSubcategoriasProducto = request.FILES['file']
+                if str(filSubcategoriasProducto).endswith('.xlsx'):
+                    dtfSubcategorias = pd.read_excel(filSubcategoriasProducto)
+                    dtfSubcategorias = dtfSubcategorias.fillna(0)
+                    lstValidarImportacion = [ fncValidarImportacionlst(dtfSubcategorias, i, j) for (i, j) in zip(lstNombresColumnas, tplValidaciones) ]
+                    lstValidarImportacion = [ i for n in lstValidarImportacion for i in n ]
+                    if len(lstValidarImportacion):
+                        jsnSubcategoriaProducto = dtfSubcategorias.to_json(orient="split")
+                        jsnData['jsnSubcategoriaProducto'] = jsnSubcategoriaProducto
+                        jsnData['lstValidarImportacion'] = lstValidarImportacion
+                        jsnData['strErrorArchivo'] = 'El archivo presenta errores, desea descargarlos?'
+                        response = JsonResponse(jsnData, safe=False)
+                    else:
+                        with transaction.atomic():
+                            for i in (dtfSubcategorias.values.tolist()):
+                                clsSubcategoriaProductoMdl.objects.create(
+                                product_subcat = i[0],
+                                product_cat_id = int(i[1])
+                                )
+                        jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
+                        response = JsonResponse(jsnData, safe=False)
+                else:
+                    jsnData['error'] = 'Compruebe el formato del archivo'
+                    response = JsonResponse(jsnData, safe=False)
+            elif action == 'btnArchivoErroresjsn':
+                jsnSubcategoriaProducto = request.POST['jsnSubcategoriaProducto']
+                dtfSubcategorias = pd.read_json(jsnSubcategoriaProducto, orient='split')
+                lstValidarImportacion = json.loads(request.POST['lstValidarImportacion'])
+                lstErroresCeldas = list( dict.fromkeys([ i[1] for i in lstValidarImportacion ]) )
+                dtfSubcategorias = fncAgregarErroresDataframedtf(dtfSubcategorias, lstValidarImportacion, lstErroresCeldas)
+                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = 'attachment; filename="subcategoria_productos.xlsx"'
+                with pd.ExcelWriter(response) as writer:
+                    dtfSubcategorias.to_excel(writer, sheet_name='VALIDAR', index=False)
+                    fncAgregarFormatoColumnasError(writer, lstValidarImportacion, 'VALIDAR', lstNombresColumnas)
+                    fncAgregarAnchoColumna(writer, False, dtfSubcategorias, 'VALIDAR')
+        except Exception as e:
+            jsnData['error'] = str(e)
+            response = JsonResponse(jsnData, safe=False)
+        return response
+
+''' 3.5 Vista para exportar plantilla de productos'''
 class clsExportarPlantillaProductosViw(APIView):
 
     def get(self, request):
-        lstCeldasExcel = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1', 'I1', 'J1', 'K1', 'L1', 'M1', 'N1', 'O1']
+        lstCeldasExcel = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1', 'I1', 'J1', 'K1', 'L1', 'M1', 'N1']
         lstComentariosExcel = [
             'Ingrersa el nombre y una descripción breve del producto por ejemplo: Coca cola pet x 12',
             'Este espacio solo permite el ingreso de números, digita el código de barras del producto',
-            'Ingresa en que presentación viene tu producto por ejemplo: 250 ml ó 500 gramos',
             'Ingresa la marca de tu producto',
             'Como ya creaste las categorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "CATEGORIA" donde encontraras las que ya has creado, ahí puedes validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna). Por ejemplo la categoria se llama Bebidas y el numero que aparece al inicio es 1, digitas 1 en este campo',
             'Como ya creaste las subcategorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "SUBCATEGORIA" allí encontraras las que ya has creado, podrás validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna)',
@@ -346,7 +471,6 @@ class clsExportarPlantillaProductosViw(APIView):
             {
                 'Descripción producto':[],
                 'Código de barras':[],
-                'Presentación':[],
                 'Marca':[],
                 'Categoría producto':[],
                 'Subcategoría producto':[],
@@ -366,8 +490,7 @@ class clsExportarPlantillaProductosViw(APIView):
         lstTotalColumnas = [ i for i in range (1, len(lstNombresColumnasPlantilla) + 1) ]
         lstTipoDato = [
             'Alfabético', 
-            'Numérico', 
-            'AlfaNumérico', 
+            'Numérico',  
             'AlfaNumérico',
             'Numérico', 
             'Numérico', 
@@ -384,7 +507,6 @@ class clsExportarPlantillaProductosViw(APIView):
         lstLongitudMaxima = [
             100,
             30, 
-            100, 
             100,
             2, 
             2, 
@@ -398,14 +520,8 @@ class clsExportarPlantillaProductosViw(APIView):
             2, 
             2
             ]
-        lstLongitudMinima = [
-            1, 1, 1, 1,
-            1, 1, 1, 1,
-            1, 1, 1, 1,
-            1, 1, 1
-            ]
         lstCaracteresEspeciales = [
-            'PERMITE Ñ', 'NO PERMITE', 'PERMITE Ñ', 'PERMITE Ñ',
+            'PERMITE Ñ', 'NO PERMITE', 'PERMITE Ñ',
             'NO PERMITE', 'NO PERMITE', 'NO PERMITE', 'NO PERMITE',
             'PERMITE .', 'NO PERMITE', 'NO PERMITE', 'PERMITE .',
             'PERMITE .', 'PERMITE .', 'NO PERMITE'
@@ -413,7 +529,6 @@ class clsExportarPlantillaProductosViw(APIView):
         lstObservaciones = [
             'Ingrese la descripción del producto, Ej. Coca cola pet x 12 250 ml', 
             'Ingrese el código de barras del producto, Ej. 77023456789', 
-            'Ingrese la presentación del producto, Ej. 250 ml',
             'Ingrese la marca del producto, Ej. Coca cola',
             'Ingrese el Nº de la categoría de la hoja (CATEGORIA), Ej. 3', 
             'Ingrese el Nº de la subcategoría de la hoja (SUBCATEGORIA), Ej. 2',
@@ -428,7 +543,7 @@ class clsExportarPlantillaProductosViw(APIView):
             'Ingrese el tiempo promedio de entrega del proveedor en días después de hacer un pedido Ej. 3'
             ]
         lstCampoObligatorio = [
-            'SI', 'SI', 'SI', 'SI',
+            'SI', 'NO', 'SI',
             'SI', 'SI', 'SI', 'SI',
             'SI', 'SI', 'SI', 'SI',
             'NO', 'NO', 'SI'
@@ -438,7 +553,6 @@ class clsExportarPlantillaProductosViw(APIView):
             'NOMBRE CAMPO': lstNombresColumnasPlantilla, 
             'TIPO DE DATO': lstTipoDato,
             'LONGITUD MAX': lstLongitudMaxima,
-            'LONGITUD MIN': lstLongitudMinima,
             'CARACTERES ESPECIALES': lstCaracteresEspeciales,
             'OBSERVACIONES': lstObservaciones,
             'OBLIGATORIO': lstCampoObligatorio,
@@ -463,7 +577,7 @@ class clsExportarPlantillaProductosViw(APIView):
             fncAgregarComentarioCeldas(writer, 'PLANTILLA', lstCeldasExcel, lstComentariosExcel)
         return response
 
-''' 3.4 Vista para importar archivo de productos'''
+''' 3.6 Vista para importar archivo de productos'''
 class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/importar_catalogo_productos.html'
     
@@ -474,7 +588,6 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
         lstNombresColumnas = [
             'Descripción producto',
             'Código de barras',
-            'Presentación',
             'Marca',
             'Categoría producto',
             'Subcategoría producto',
@@ -490,8 +603,7 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
             ]
         tplValidaciones = (
             ((False,), (True, 60), (True, 1), (False,)),
-            ((True, 'bar_code', clsCatalogoProductosMdl), (True, 10), (True, 1), (False,)),
-            ((False,), (True, 60), (True, 1), (False,)),
+            ((True, 'bar_code', clsCatalogoProductosMdl), (True, 20), (True, 1), (False,)),
             ((False,), (True, 60), (True, 1), (False,)),
             ((False,), (True, 2), (True, 1), (True, clsCategoriaProductoMdl)),
             ((False,), (True, 2), (True, 1), (True, clsSubcategoriaProductoMdl)),
@@ -522,34 +634,35 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
                         jsnData['strErrorArchivo'] = 'El archivo presenta errores, desea descargarlos?'
                         response = JsonResponse(jsnData, safe=False)
                     else:
-                        print('no')
                         with transaction.atomic():
                             for i in (dtfProductos.values.tolist()):
-                                clsCatalogoProductosMdl.objects.create(
-                                product_desc = i[0],
-                                bar_code = int(i[1]),
-                                presentation = i[2],
-                                trademark = i[3],
-                                product_cat_id = i[4],
-                                product_subcat_id = i[5],
-                                purchase_unit_id = i[6],
-                                quantity_pu = i[7],
-                                cost_pu = i[8],
-                                sales_unit_id = i[9],
-                                quantity_su = i[10],
-                                full_sale_price = float(i[11]),
-                                split = int(i[7]/i[10]),
-                                iva = float(i[12]),
-                                other_tax = float(i[13]),
-                                del_time = int(i[14]),
-                                )
+                                qrsCatalogoProductos = clsCatalogoProductosMdl()
+                                qrsCatalogoProductos.product_desc = i[0]
+                                print(i[1])
+                                if i[1] != 0:
+                                    qrsCatalogoProductos.bar_code = int(i[1])
+                                qrsCatalogoProductos.trademark = i[2]
+                                qrsCatalogoProductos.product_cat_id = int(i[3])
+                                qrsCatalogoProductos.product_subcat_id = int(i[4])
+                                qrsCatalogoProductos.purchase_unit_id = int(i[5])
+                                qrsCatalogoProductos.quantity_pu = int(i[6])
+                                qrsCatalogoProductos.cost_pu = float(i[7])
+                                qrsCatalogoProductos.sales_unit_id = int(i[8])
+                                qrsCatalogoProductos.quantity_su = int(i[9])
+                                qrsCatalogoProductos.full_sale_price = float(i[10])
+                                qrsCatalogoProductos.split = int(i[6]/i[9])
+                                if i[11] != 0:
+                                    qrsCatalogoProductos.iva = float(i[11])
+                                if i[12] != 0:
+                                    qrsCatalogoProductos.other_tax = float(i[12])
+                                qrsCatalogoProductos.del_time = int(i[13])
+                                qrsCatalogoProductos.save()
                         jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
                         response = JsonResponse(jsnData, safe=False)
                 else:
                     jsnData['error'] = 'Compruebe el formato del archivo'
                     response = JsonResponse(jsnData, safe=False)
             elif action == 'btnArchivoErroresjsn':
-                print('OLLEEE')
                 jsnProductos = request.POST['jsnProductos']
                 dtfProductos = pd.read_json(jsnProductos, orient='split')
                 lstValidarImportacion = json.loads(request.POST['lstValidarImportacion'])
@@ -566,7 +679,7 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
             response = JsonResponse(jsnData, safe=False)
         return response
 
-''' 3.5 Vista para crear producto'''
+''' 3.7 Vista para crear producto'''
 class clsCrearProductoViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
     model = clsCatalogoProductosMdl
     form_class = clsCrearProductoFrm
@@ -647,7 +760,7 @@ class clsCrearProductoViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, C
         context['frmUdvProd'] = clsCrearUnidadVentaFrm()
         return context
 
-''' 3.6 Vista para listar e inactivar productos'''
+''' 3.8 Vista para listar e inactivar productos'''
 class clsListarCatalogoProductosViw(LoginRequiredMixin, ListView):
     model = clsCatalogoProductosMdl
     template_name = 'modulo_configuracion/listar_productos.html'
@@ -663,7 +776,7 @@ class clsListarCatalogoProductosViw(LoginRequiredMixin, ListView):
                 jsnData = []
                 strBuscarProducto = request.POST['term'].strip()
                 if len(strBuscarProducto):
-                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=strBuscarProducto) | Q(id__icontains=strBuscarProducto) | Q(presentation__icontains=strBuscarProducto))[0:10]
+                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=strBuscarProducto) | Q(id__icontains=strBuscarProducto))[0:10]
                 for i in qrsCatalogoProductos:
                     dctJsn = i.toJSON()
                     dctJsn['value'] = i.product_desc
@@ -691,7 +804,7 @@ class clsListarCatalogoProductosViw(LoginRequiredMixin, ListView):
         context['options_url'] = reverse_lazy('configuracion:opciones_producto')
         return context
 
-''' 3.7 Vista para editar producto'''
+''' 3.9 Vista para editar producto'''
 class clsEditarProductoViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, UpdateView):
     model = clsCatalogoProductosMdl
     form_class = clsCrearProductoFrm
@@ -771,7 +884,7 @@ class clsEditarProductoViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, 
         context['frmUdvProd'] = clsCrearUnidadVentaFrm()
         return context
 
-''' 3.8 Vista para exportar catálogo de productos'''
+''' 3.10 Vista para exportar catálogo de productos'''
 class clsExportarCatalogoProductosViw(APIView):
 
     def get(self, request):
@@ -784,7 +897,6 @@ class clsExportarCatalogoProductosViw(APIView):
             'date_update': 'Fecha de actualización',
             'product_desc': 'Descripción producto',
             'bar_code':'Código de barras',
-            'presentation': 'Presentación',
             'trademark': 'Marca',
             'product_cat':'Categoría',
             'product_subcat': 'Subcategoría producto',
@@ -805,7 +917,6 @@ class clsExportarCatalogoProductosViw(APIView):
             'Fecha de actualización',
             'Descripción producto',
             'Código de barras',
-            'Presentación',
             'Marca',
             'Categoría',
             'Subcategoría producto',
@@ -869,7 +980,7 @@ class clsOpcionesCatalogoProveedoresViw(LoginRequiredMixin, ValidatePermissionRe
                 jsnData = []
                 strProducto = request.POST['term'].strip()
                 if len(strProducto):
-                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=strProducto) | Q(id__icontains=strProducto) | Q(presentation__icontains=strProducto))[0:10]
+                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=strProducto) | Q(id__icontains=strProducto))[0:10]
                 for i in qrsCatalogoProductos:
                     dctJsn = i.toJSON()
                     dctJsn['value'] = i.product_desc
@@ -3760,7 +3871,7 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
                 data = []
                 jsnTerm = request.POST['term'].strip()
                 if len(jsnTerm):
-                    qrsProducto = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=jsnTerm) | Q(id__icontains=jsnTerm) | Q(presentation__icontains=jsnTerm))[0:10]
+                    qrsProducto = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=jsnTerm) | Q(id__icontains=jsnTerm))[0:10]
                 for i in qrsProducto:
                     item = i.toJSON()
                     item['text'] = i.product_desc

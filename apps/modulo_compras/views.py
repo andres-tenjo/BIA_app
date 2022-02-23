@@ -217,8 +217,7 @@ class PurchaseOrderView(CreateView):
                 if len(term):
                     prods = clsCatalogoProductosMdl.objects.filter(
                         Q(product_desc__icontains=term) | 
-                        Q(id__icontains=term) | 
-                        Q(presentation__icontains=term))[0:10]
+                        Q(id__icontains=term))[0:10]
                 for i in prods:
                     item = i.toJSON()
                     item['value'] = i.product_desc
@@ -323,8 +322,7 @@ class SupplierQuoteView(CreateView):
                 if len(term):
                     prods = clsCatalogoProductosMdl.objects.filter(
                         Q(product_desc__icontains=term) | 
-                        Q(id__icontains=term) | 
-                        Q(presentation__icontains=term))[0:10]
+                        Q(id__icontains=term))[0:10]
                 for i in prods:
                     item = i.toJSON()
                     item['value'] = i.product_desc

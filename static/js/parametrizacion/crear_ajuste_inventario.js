@@ -12,7 +12,6 @@ function fncBuscarProductoRepo(repo) {
         '<p style="margin-bottom: 0;">' +
         '<b>Nombre:</b> ' + repo.product_desc + '<br>' +
         '<b>Código:</b> ' + repo.id + '<br>' +
-        '<b>Presentación:</b> ' + repo.presentation + '<br>' +
         '<b>Precio:</b> <span class="badge badge-warning">$'+repo.cost_pu+'</span>'+
         '</p>' +
         '</div>' +
