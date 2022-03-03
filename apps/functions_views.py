@@ -84,8 +84,8 @@ def fncValidarImportacionlst(df, colname, val):
                     for i in range(0, len(values)):
                         if values[i] in d:
                             l.append((colname, i, error, values[i]))
-                        elif type(values[i]) != int:
-                            l.append((colname, i, 'Tipo de dato', values[i]))
+                        # elif type(values[i]) != int:
+                        #     l.append((colname, i, 'Tipo de dato', values[i]))
                         else:
                             pass
                 elif t == 'product_subcat':

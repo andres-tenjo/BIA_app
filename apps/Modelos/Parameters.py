@@ -1,9 +1,10 @@
 import pandas as pd
-from Several_func import *
-from Inquiries import *
+from django.db import connection
+from apps.Modelos.Several_func import *
+from apps.Modelos.Inquiries import *
 import sqlite3
-import datetime as dt
-import numpy as np
+# import datetime as dt
+# import numpy as np
 
 # Calcula un saldo no acumulado
 # dtfMovimientoHistorico: Es el cuadro de datos que contiene el histórico de movimiento para todos los productos, bodegas y lotes
@@ -16,14 +17,16 @@ def fncPreSaldolst(dtfMovimientoHistorico):
 
 # Organiza cronológicamente los diferentes cuadros de datos para un producto construyendo el histórico de movimiento
 # intCodigoProducto: Código del producto a construir el movimiento histórico (int)
-# dtfCatalogoProductos: Cuadro de datos que contiene la información de cada producto (pd.DataFrame)
 # lstBasesDatos: Lista que contiene las bases de datos con la información del producto
 # Retorna un cuadro de datos con el movimiento histórico del producto (pandas.DataFrame)
-def fncMovimientoHistoricodtf(intCodigoProducto, dtfCatalogoProductos, lstBasesDatos):
+def fncMovimientoHistoricodtf(intCodigoProducto, lstBasesDatos):
     lstNombreDocumentos= ['Saldo_Inicial', 'Ajuste_de_inventario', 'Ingreso_de_almacén', 'Devolución_de_cliente', 
                           'Devolución_a_proveedor', 'Salida_de_almacén', 'Obsequio', 'Translado']
-    dtfFiltroCatalogo= dtfCatalogoProductos.loc[dtfCatalogoProductos['product_code']== intCodigoProducto].reset_index()
-    fltCostoUnitario= dtfFiltroCatalogo['cost_pu'][0]/ dtfFiltroCatalogo['split_(pu/su)'][0]
+    # dtfFiltroCatalogo= dtfCatalogoProductos.loc[dtfCatalogoProductos['product_code']== intCodigoProducto].reset_index()
+    strCatalogo= 'SELECT id, cost_pu, split FROM modulo_configuracion_clscatalogoproductosmdl WHERE id= %s'
+    lstCatalogo= fncConsultalst(strCatalogo, [intCodigoProducto])
+    dtfFiltroCatalogo= pd.DataFrame(lstCatalogo, columns= ['product_code', 'cost_pu', 'split'])
+    fltCostoUnitario= dtfFiltroCatalogo['cost_pu'][0]/ dtfFiltroCatalogo['split'][0]
     lstDatosProducto= [lstBasesDatos[i].loc[lstBasesDatos[i]['product_code']== intCodigoProducto] for i in range(
         0, len(lstBasesDatos))]
     for i in range(0, len(lstDatosProducto)):
@@ -50,23 +53,54 @@ def fncMovimientoHistoricodtf(intCodigoProducto, dtfCatalogoProductos, lstBasesD
     return dtfMovimientoHistorico    
 
 # Función que construye el histórico de movimientos para cada lote de cada producto en cada bodega que exista en las BBDD
-def fncMovimientosHistoricosProductosdtf():
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++    
-# Linea para insertar el método que consulta desde django las bases de datos para importar las tablas abajo mencionadas
-    db= data_consulting(['Initial_Balance', 'Inventory_Adjustment', 'Income', 'Customer_Return', 'Return_Supplier', 
-                          'Outflows', 'Gifts', 'Transfer', 'Catálogo', 'Stores_Catalogue'])
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    dtfCatalogoProductos, dtfCatalogoBodegas, lstBasesDatos= db[8], db[9], db[: -2]
-    lstCodigoBodegas= [i for i in dtfCatalogoBodegas['store_code'].unique()]
+# Corresponde a la lista que contiene los cuadros de datos requeridos para realizar la construcción del histórico (list)
+# ['Saldo Inicial', 'Ajustes de Inventario', 'Entradas', 'Devoluciones de clientes', 'Devoluciones a proveedor', 
+#                      'salidas', 'obsequíos', 'Traslados', 'Catálogo de productos', 'Catálogo de bodegas']
+def fncMovimientosHistoricosProductosdtf(lstDocumentos):
+    # dtfCatalogoProductos, dtfCatalogoBodegas, lstBasesDatos= lstDocumentos[8], lstDocumentos[9], lstDocumentos[: -2]
+    # lstCodigoBodegas= [i for i in dtfCatalogoBodegas['store_code'].unique()]
+    tplColumnasHistorico= ('creation_date', 'doc_number', 'document_type', 'type', 'quantity', 'batch', 'expiration_date', 
+    'unitary_cost', 'total_cost', 'crossing_doc', 'condition', 'pre_bal', 'balance', 'inv_value', 'identification', 
+    'product_code_id', 'store_id', 'user_id_id')
+    lstBasesDatos= lstDocumentos
+    strConsultaBodegas= 'SELECT id FROM modulo_configuracion_clscatalogobodegasmdl'
+    lstBodegas= fncConsultalst(strConsultaBodegas, [])
+    lstCodigoBodegas= [i[0] for i in lstBodegas]
     lstDatosProducto= [[i.loc[i['store']==j] for i in lstBasesDatos] for j in lstCodigoBodegas]
     lstCodigoProductos= [pd.concat(i)['product_code'].unique() for i in lstDatosProducto]
-    lstMovimientosHistoricos= [fncMovimientoHistoricodtf(lstCodigoProductos[i][j], dtfCatalogoProductos, lstDatosProducto[i])\
+    # lstMovimientosHistoricos= [fncMovimientoHistoricodtf(lstCodigoProductos[i][j], dtfCatalogoProductos, lstDatosProducto[i])\
+    lstMovimientosHistoricos= [fncMovimientoHistoricodtf(lstCodigoProductos[i][j], lstDatosProducto[i])\
                                for i in range(0, len(lstDatosProducto)) for j in range(0, len(lstCodigoProductos[i]))]
     dtfMovimientoHistorico= pd.concat(lstMovimientosHistoricos).sort_values(by= ['store', 'creation_date', 'batch', 'document_type'])
+    dtfMovimientoHistorico.drop(['unit_price', 'discount', 'total_price'], axis= 1)
+    dtfMovimientoHistorico['id']= [i for i in range(1, len(dtfMovimientoHistorico['creation_date'])+ 1)]
+    dtfMovimientoHistorico['user_id']= 1
     dtfMovimientoHistorico= dtfMovimientoHistorico.reindex(columns= ['creation_date', 'doc_number', 'document_type', 'type', 
-                                                                     'product_code', 'quantity', 'batch', 'expiration_date', 
-                                                                     'unitary_cost', 'total_cost', 'crossing_doc', 'condition', 
-                                                                     'pre_bal', 'balance', 'inv_value', 'store', 'identification', 
-                                                                     'unit_price', 'discount', 'total_price'])
-    dtfMovimientoHistorico['id']= 'Código del super usuario'
-    return dtfMovimientoHistorico
+    'quantity', 'batch', 'expiration_date', 'unitary_cost', 'total_cost', 'crossing_doc', 'condition', 'pre_bal', 'balance', 
+    'inv_value', 'identification', 'product_code', 'store', 'user_id'])
+    dtfMovimientoHistorico.loc[:, 'creation_date']= dtfMovimientoHistorico['creation_date'].astype(str)
+    dtfMovimientoHistorico.loc[:, 'doc_number']= dtfMovimientoHistorico['doc_number'].astype(str)
+    dtfMovimientoHistorico.loc[:, 'document_type']= dtfMovimientoHistorico['document_type'].astype(str)
+    dtfMovimientoHistorico.loc[:, 'type']= dtfMovimientoHistorico['type'].astype(str)
+    dtfMovimientoHistorico.loc[:, 'quantity']= dtfMovimientoHistorico['quantity'].astype(int)
+    dtfMovimientoHistorico.loc[:, 'batch']= dtfMovimientoHistorico['batch'].astype(str)
+    dtfMovimientoHistorico.loc[:, 'expiration_date']= dtfMovimientoHistorico['expiration_date'].astype(str)
+    dtfMovimientoHistorico.loc[:, 'unitary_cost']= dtfMovimientoHistorico['unitary_cost'].astype(float)
+    dtfMovimientoHistorico.loc[:, 'total_cost']= dtfMovimientoHistorico['total_cost'].astype(float)
+    dtfMovimientoHistorico.loc[:, 'crossing_doc']= dtfMovimientoHistorico['crossing_doc'].astype(str)
+    dtfMovimientoHistorico.loc[:, 'condition']= dtfMovimientoHistorico['condition'].astype(str)
+    dtfMovimientoHistorico.loc[:, 'pre_bal']= dtfMovimientoHistorico['pre_bal'].astype(int)
+    dtfMovimientoHistorico.loc[:, 'balance']= dtfMovimientoHistorico['balance'].astype(int)
+    dtfMovimientoHistorico.loc[:, 'inv_value']= dtfMovimientoHistorico['inv_value'].astype(float)
+    dtfMovimientoHistorico.loc[:, 'identification']= dtfMovimientoHistorico['identification'].astype(int)
+    dtfMovimientoHistorico.loc[:, 'product_code']= dtfMovimientoHistorico['product_code'].astype(int)
+    dtfMovimientoHistorico.loc[:, 'store']= dtfMovimientoHistorico['store'].astype(int)
+    dtfMovimientoHistorico.loc[:, 'user_id']= dtfMovimientoHistorico['user_id'].astype(int)
+    strConsultaHistorico= f'''INSERT INTO modulo_configuracion_clshistoricomovimientosalternomdl {tplColumnasHistorico} VALUES
+    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+    with connection.cursor() as cursor:    
+        sqlite3.register_adapter(np.int64, lambda val: int(val))
+        sqlite3.register_adapter(np.int32, lambda val: int(val))
+        cursor.executemany(strConsultaHistorico, dtfMovimientoHistorico.to_records(index= False))
+        # return dtfMovimientoHistorico
+        return print('Subieron con Éxito')
