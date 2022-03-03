@@ -3,8 +3,6 @@ from django.db import connection
 from apps.Modelos.Several_func import *
 from apps.Modelos.Inquiries import *
 import sqlite3
-# import datetime as dt
-# import numpy as np
 
 # Calcula un saldo no acumulado
 # dtfMovimientoHistorico: Es el cuadro de datos que contiene el histórico de movimiento para todos los productos, bodegas y lotes
@@ -22,7 +20,6 @@ def fncPreSaldolst(dtfMovimientoHistorico):
 def fncMovimientoHistoricodtf(intCodigoProducto, lstBasesDatos):
     lstNombreDocumentos= ['Saldo_Inicial', 'Ajuste_de_inventario', 'Ingreso_de_almacén', 'Devolución_de_cliente', 
                           'Devolución_a_proveedor', 'Salida_de_almacén', 'Obsequio', 'Translado']
-    # dtfFiltroCatalogo= dtfCatalogoProductos.loc[dtfCatalogoProductos['product_code']== intCodigoProducto].reset_index()
     strCatalogo= 'SELECT id, cost_pu, split FROM modulo_configuracion_clscatalogoproductosmdl WHERE id= %s'
     lstCatalogo= fncConsultalst(strCatalogo, [intCodigoProducto])
     dtfFiltroCatalogo= pd.DataFrame(lstCatalogo, columns= ['product_code', 'cost_pu', 'split'])
@@ -57,8 +54,6 @@ def fncMovimientoHistoricodtf(intCodigoProducto, lstBasesDatos):
 # ['Saldo Inicial', 'Ajustes de Inventario', 'Entradas', 'Devoluciones de clientes', 'Devoluciones a proveedor', 
 #                      'salidas', 'obsequíos', 'Traslados', 'Catálogo de productos', 'Catálogo de bodegas']
 def fncMovimientosHistoricosProductosdtf(lstDocumentos):
-    # dtfCatalogoProductos, dtfCatalogoBodegas, lstBasesDatos= lstDocumentos[8], lstDocumentos[9], lstDocumentos[: -2]
-    # lstCodigoBodegas= [i for i in dtfCatalogoBodegas['store_code'].unique()]
     tplColumnasHistorico= ('creation_date', 'doc_number', 'document_type', 'type', 'quantity', 'batch', 'expiration_date', 
     'unitary_cost', 'total_cost', 'crossing_doc', 'condition', 'pre_bal', 'balance', 'inv_value', 'identification', 
     'product_code_id', 'store_id', 'user_id_id')
@@ -68,7 +63,6 @@ def fncMovimientosHistoricosProductosdtf(lstDocumentos):
     lstCodigoBodegas= [i[0] for i in lstBodegas]
     lstDatosProducto= [[i.loc[i['store']==j] for i in lstBasesDatos] for j in lstCodigoBodegas]
     lstCodigoProductos= [pd.concat(i)['product_code'].unique() for i in lstDatosProducto]
-    # lstMovimientosHistoricos= [fncMovimientoHistoricodtf(lstCodigoProductos[i][j], dtfCatalogoProductos, lstDatosProducto[i])\
     lstMovimientosHistoricos= [fncMovimientoHistoricodtf(lstCodigoProductos[i][j], lstDatosProducto[i])\
                                for i in range(0, len(lstDatosProducto)) for j in range(0, len(lstCodigoProductos[i]))]
     dtfMovimientoHistorico= pd.concat(lstMovimientosHistoricos).sort_values(by= ['store', 'creation_date', 'batch', 'document_type'])
@@ -102,5 +96,4 @@ def fncMovimientosHistoricosProductosdtf(lstDocumentos):
         sqlite3.register_adapter(np.int64, lambda val: int(val))
         sqlite3.register_adapter(np.int32, lambda val: int(val))
         cursor.executemany(strConsultaHistorico, dtfMovimientoHistorico.to_records(index= False))
-        # return dtfMovimientoHistorico
-        return print('Subieron con Éxito')
+        return 

@@ -66,8 +66,7 @@ def fncCortaCuadrodtf(dtfDatos, intTamaño):
 # Retorna un valor booleano confirmando si hay continuidad (True Continuidad, False lo contrario) (bool)
 def fncFechaConsecutivabol(dtfDatos):
     datUltimo= dtfDatos['creation_date'].max().month
-    # datActual= dt.datetime.now().month
-    datActual= dt.datetime(2021, 12, 1).month
+    datActual= dt.datetime.now().month
     if (datUltimo== datActual) | (datActual- 1== datUltimo): return True
     else: return False
 
