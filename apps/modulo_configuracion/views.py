@@ -3400,7 +3400,6 @@ class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
                         response = JsonResponse(data, safe=False)
                     else:                       
                         # Validar continuidad periodos
-                        print('modificando nombres')
                         dtfHistoricoSaldoInicial.rename(columns= {'Fecha de creación': 'creation_date', 'Código producto': 'product_code', 
                         'Bodega': 'store', 'Cantidad': 'quantity', 'Lote': 'batch', 'Fecha de vencimiento': 'expiration_date'}, inplace= True)
                         dtfHistoricoAjustesInventario.rename(columns= {'Fecha de creación': 'creation_date', 'Nº Documento': 'doc_number', 
@@ -3422,7 +3421,6 @@ class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
                         'Precio unitario': 'unit_price', 'Descuento': 'discount', 'Precio total': 'total_price', 'Bodega': 'store', 
                         'Documento cruce': 'crossing_doc', 'Condición salida': 'condition', 'Lote': 'batch', 
                         'Fecha de vencimiento': 'expiration_date'}, inplace= True)
-                        print('dtfHistoricoSalidasAlmacen', dtfHistoricoSalidasAlmacen.columns)
                         dtfHistoricoObsequios.rename(columns= {'Fecha de creación': 'creation_date', 'Nº Documento': 'doc_number', 
                         'Bodega': 'store', 'Código producto': 'product_code', 'Cantidad': 'quantity', 'Costo total': 'total_cost', 'Lote': 'batch',
                         'Fecha de vencimiento': 'expiration_date'}, inplace= True)
@@ -3443,7 +3441,6 @@ class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
                             response = JsonResponse(data, safe=False)
                         else:
                             # Validar tamaño de base de datos
-                            print('se validaron las fechas')
                             lstOrganizarDatos = [
                             fncOrganizadtf(dtfHistoricoPedidos, 'creation_date', 'quantity', 'W', 'sum', bolAgrupaProd= False),
                             fncOrganizadtf(dtfHistoricoOrdenesCompra, 'creation_date', 'quantity', 'W', 'sum', bolAgrupaProd= False),
@@ -3456,16 +3453,12 @@ class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
                                 response = JsonResponse(data, safe=False)
                             else:
                                 # Recortar tablas de datos que exceden el tamaño
-                                print('seguimos en el proceso')
                                 lstTablasDocumentos = [ lstTablasDocumentos[i] if lstRangosPeriodos[i] != 'Bigger' else fncCortaCuadrodtf(lstTablasDocumentos[i], 
                                 3 ) for i in range(0, len(lstTablasDocumentos))]
-                                print('no nos detenemos')
                                 lstParaHistorico= [dtfHistoricoSaldoInicial, dtfHistoricoAjustesInventario, dtfHistoricoEntradasAlmacen, 
                                 dtfHistoricoDevolucionesCliente, dtfHistoricoDevolucionesProveedor, dtfHistoricoSalidasAlmacen, dtfHistoricoObsequios, 
                                 dtfHistoricoTrasladosBodegas]
-                                print('ya vamos llegando')
                                 fncMovimientosHistoricosProductosdtf(lstParaHistorico)
-                                print('coronamos primer integración')
                                 with transaction.atomic():
                                     for pedido in (lstTablasDocumentos[0].values.tolist()):
                                         clsHistoricoPedidosMdl.objects.create(
