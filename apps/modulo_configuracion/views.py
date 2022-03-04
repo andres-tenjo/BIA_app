@@ -3,8 +3,6 @@ import json
 from datetime import datetime, date
 import time
 from pandas import pandas as pd
-from io import BytesIO
-import numpy as np
 
 # Modelos BIA
 from apps.Modelos.Several_func import *
@@ -16,7 +14,6 @@ from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
-from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView
@@ -636,27 +633,41 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
                     else:
                         with transaction.atomic():
                             for i in (dtfProductos.values.tolist()):
-                                qrsCatalogoProductos = clsCatalogoProductosMdl()
-                                qrsCatalogoProductos.product_desc = i[0]
-                                print(i[1])
-                                if i[1] != 0:
-                                    qrsCatalogoProductos.bar_code = int(i[1])
-                                qrsCatalogoProductos.trademark = i[2]
-                                qrsCatalogoProductos.product_cat_id = int(i[3])
-                                qrsCatalogoProductos.product_subcat_id = int(i[4])
-                                qrsCatalogoProductos.purchase_unit_id = int(i[5])
-                                qrsCatalogoProductos.quantity_pu = int(i[6])
-                                qrsCatalogoProductos.cost_pu = float(i[7])
-                                qrsCatalogoProductos.sales_unit_id = int(i[8])
-                                qrsCatalogoProductos.quantity_su = int(i[9])
-                                qrsCatalogoProductos.full_sale_price = float(i[10])
-                                qrsCatalogoProductos.split = int(i[6]/i[9])
-                                if i[11] != 0:
-                                    qrsCatalogoProductos.iva = float(i[11])
-                                if i[12] != 0:
-                                    qrsCatalogoProductos.other_tax = float(i[12])
-                                qrsCatalogoProductos.del_time = int(i[13])
-                                qrsCatalogoProductos.save()
+                                if int(i[1]) > 0:
+                                    clsCatalogoProductosMdl.objects.create(
+                                    product_desc = i[0],
+                                    bar_code = int(i[1]),
+                                    trademark = i[2],
+                                    product_cat_id = int(i[3]),
+                                    product_subcat_id = int(i[4]),
+                                    purchase_unit_id = int(i[5]),
+                                    quantity_pu = int(i[6]),
+                                    cost_pu = float(i[7]),
+                                    sales_unit_id = int(i[8]),
+                                    quantity_su = int(i[9]),
+                                    full_sale_price = float(i[10]),
+                                    split = int(i[6]/i[9]),
+                                    iva = float(i[11]),
+                                    other_tax = float(i[12]),
+                                    del_time = int(i[13])
+                                    )
+                                else:
+                                    clsCatalogoProductosMdl.objects.create(
+                                    product_desc = i[0],
+                                    trademark = i[2],
+                                    product_cat_id = int(i[3]),
+                                    product_subcat_id = int(i[4]),
+                                    purchase_unit_id = int(i[5]),
+                                    quantity_pu = int(i[6]),
+                                    cost_pu = float(i[7]),
+                                    sales_unit_id = int(i[8]),
+                                    quantity_su = int(i[9]),
+                                    full_sale_price = float(i[10]),
+                                    split = int(i[6]/i[9]),
+                                    iva = float(i[11]),
+                                    other_tax = float(i[12]),
+                                    del_time = int(i[13])
+                                    )
                         jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
                         response = JsonResponse(jsnData, safe=False)
                 else:
@@ -1931,7 +1942,7 @@ class clsImportarCatalogoClientesViw(LoginRequiredMixin, TemplateView):
             ((True, int), (True, 50), (True, 1), (False,)),
             ((True, 'mail'), (True, 100), (True, 1), (False,)),
             ((False,), (True, 3), (True, 1), (True, clsDepartamentosMdl)),
-            ((False,), (True, 3), (True, 1), (True, clsCiudadesMdl)),
+            ((False,), (False, ), (True, 1), (True, clsCiudadesMdl)),   
             ((False,), (True, 3), (True, 1), (True, clsZonaClienteMdl)),
             ((False,), (True, 100), (True, 1), (False,)),
             ((True, time), (True, 10), (True, 1), (False,)),
@@ -4238,3 +4249,32 @@ class clsExportarPlantillaPrueba(APIView):
 #                     else:
 #                         lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
 #     return lstCeldaError
+
+
+
+
+#     dtfProductos = dtfProductos.rename(
+                    #         columns={
+                    #             'Descripción producto':'product_desc',
+                    #             'Código de barras':'bar_code',
+                    #             'Marca':'trademark',
+                    #             'Categoría producto':'product_cat',
+                    #             'Subcategoría producto':'product_subcat',
+                    #             'Unidad de compra':'purchase_unit',
+                    #             'Cantidad unidad de compra':'quantity_pu',
+                    #             'Precio de compra':'cost_pu',
+                    #             'Unidad de venta':'sales_unit',
+                    #             'Cantidad unidad de venta':'quantity_su',
+                    #             'Precio de venta':'full_sale_price',
+                    #             'Iva':'iva',
+                    #             'Otros impuestos':'other_tax',
+                    #             'Tiempo de entrega proveedor':'del_time',
+                    #             }
+                    #         )
+                        # user = settings.DATABASES['default']['USER']
+                        # password = settings.DATABASES['default']['PASSWORD']
+                        # database_name = settings.DATABASES['default']['NAME']
+
+                        # database_url = 'sqlite://///Users/andres/Desktop/biapp/db.sqlite3'
+                        # engine = create_engine(database_url, echo=False)
+                        # dtfProductos.to_sql(clsCatalogoProductosMdl, con=engine)

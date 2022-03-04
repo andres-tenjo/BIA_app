@@ -1,11 +1,18 @@
+# Python libraries
 from datetime import time, date
+import datetime as dt
 import numpy as np
 from pandas import pandas as pd
+from collections import defaultdict
 import re
+from pandas import Timestamp
+
+# BIA Fields
 from apps.modulo_configuracion.api.serializers import *
 from apps.modulo_configuracion.models import *
+from apps.planeacion.models import *
 
-from pandas import Timestamp
+
 '''Funciones para las vistas de las ventanas'''
 
 # Función que valida las celdas de un archivo de importación
@@ -84,10 +91,12 @@ def fncValidarImportacionlst(df, colname, val):
                     for i in range(0, len(values)):
                         if values[i] in d:
                             l.append((colname, i, error, values[i]))
-                        elif type(values[i]) != int:
-                            l.append((colname, i, 'Tipo de dato', values[i]))
-                        else:
+                        elif type(values[i]) == int:
                             pass
+                        elif type(values[i]) == float:
+                            pass
+                        else:
+                            l.append((colname, i, 'Tipo de dato', values[i]))
                 elif t == 'product_subcat':
                     db = val[0][2]
                     error = 'Registro ya existe'
@@ -277,3 +286,41 @@ def fncRetornarListaDataFrame(lstConsultas, lstSerializadores, lstClaves, lstNue
         strClaveNueva = lstNuevasClaves[i]
         lstDataframes.append(fncRetornarDataframe(qrsConsulta, jsnSerializador, strClave, strClaveNueva))
     return lstDataframes
+
+# Función que recibe los filtros para retornar una lista con la data para los gráficos de indicadores
+# strSet: Cadena de texto del nombre del conjunto al que corresponde el indicador (General o nombre de la categoría)
+# strIndicador: Cadena de texto con el nombre del indicador (Total_Sales_Objetive)
+# intSubset: Entero con el pk del subconjunto en relación al conjunto que quiere consultar
+def fncRetornarDataGraficolst(strSet, strIndicator, intSubset=None):
+    lstDataGrafico = []
+    lstCategorias = []
+    lstIndicador = []
+    if intSubset == None:
+        qrsIndicador = clsIndicadoresComercialesMdl.objects.filter(set=strSet, indicator=strIndicator)
+    else:
+        qrsIndicador = clsIndicadoresComercialesMdl.objects.filter(set=strSet, indicator=strIndicator, subset=intSubset)
+    if qrsIndicador:
+        dctVentaReal = {}
+        dctObjetivoVenta = {}
+        lstDataVentaReal = []
+        lstObjetivoVenta = []
+        for i in qrsIndicador:
+            lstCategorias.append(i.measurement_date.strftime("%b"))
+            lstDataVentaReal.append(float(i.real) / float(1000000))
+            lstObjetivoVenta.append(float(i.objetive) / float(1000000))
+        dctVentaReal["name"] = 'Venta Real'
+        dctVentaReal["data"] = lstDataVentaReal
+        dctObjetivoVenta["name"] = 'Objetivo de venta'
+        dctObjetivoVenta["data"] = lstObjetivoVenta
+        lstIndicador.append(dctVentaReal)
+        lstIndicador.append(dctObjetivoVenta)
+        lstDataGrafico.append(lstCategorias)
+        lstDataGrafico.append(lstIndicador)
+    else:
+        lstDataGrafico = False
+    return lstDataGrafico
+
+def fncRetornarDataSelect(strNombreTabla):
+    if strNombreTabla == 'modulo_configuracion_clssalidasalmacenmdl':
+        strConsultaSalidas = f'SELECT identification_id FROM {strNombreTabla}'
+        strConsultaCatalogoClientes = 'SELECT id, city_id FROM modulo_configuracion_clscatalogoclientesmdl'

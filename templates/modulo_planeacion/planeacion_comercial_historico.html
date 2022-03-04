@@ -1,0 +1,149 @@
+{% extends 'bia/planeacion.html' %}
+{% load static %}
+{% block title-header %}
+{% endblock title-header %}
+{% block menu-header %}
+    {% block menu %}
+    {% endblock menu %}
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+        </a>
+    </li>
+{% endblock menu-header %}
+{% block content-window %}    
+    <div class="card card-primary card-outline">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fas fa-search"></i>
+                Consultar indicadores comerciales
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="accordion" id="accordionIndicadoresVentas">
+                <div class="card">
+                    <div class="card-header" id="hdnIndicadoresVentas">
+                        <h2 class="mb-0">
+                            <button 
+                                class="btn btn-link btn-block text-left" 
+                                type="button" data-toggle="collapse" 
+                                data-target="#cllIndicadoresVentas" 
+                                aria-expanded="false" 
+                                aria-controls="cllIndicadoresVentas">
+                                Ver indicadores de venta actual
+                            </button>
+                        </h2>
+                    </div>
+                    <div 
+                        id="cllIndicadoresVentas" 
+                        class="collapse" 
+                        aria-labelledby="hdnIndicadoresVentas" 
+                        data-parent="#accordionIndicadoresVentas">  
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label>Seleccione indicador a consultar:</label>
+                                        <select name="select" class="form-control">
+                                            <option value="value1">-------------</option>
+                                            <option value="value1">Venta total</option>
+                                            <option value="value2">Profundización de venta</option>
+                                            <option value="value3">Clientes nuevos</option>
+                                            <option value="value3">Tasa de retención de clientes</option>
+                                            <option value="value3">Margén de ventas</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label>Seleecione tipo de indicador:</label>
+                                        <select name="select" class="form-control">
+                                            <option value="value1">-------------</option>
+                                            <option value="value1">General</option>
+                                            <option value="value2">Detallado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-block btn-outline-primary">Consultar</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <figure class="highcharts-figure">
+                                        <div id="grfVentaMensual"></div>
+                                    </figure>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="hdnHistoricoVentas">
+                        <h2 class="mb-0">
+                            <button 
+                                class="btn btn-link btn-block text-left" 
+                                type="button" data-toggle="collapse" 
+                                data-target="#cllHistoricoVentas" 
+                                aria-expanded="false" 
+                                aria-controls="cllHistoricoVentas">
+                                Ver historico de indicadores de venta
+                            </button>
+                        </h2>
+                    </div>
+                    <div 
+                        id="cllHistoricoVentas" 
+                        class="collapse" 
+                        aria-labelledby="hdnHistoricoVentas" 
+                        data-parent="#accordionIndicadoresVentas">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label>Seleccione indicador a consultar:</label>
+                                        <select name="select" class="form-control">
+                                            <option value="value1">-------------</option>
+                                            <option value="value1">Venta total</option>
+                                            <option value="value2">Profundización de venta</option>
+                                            <option value="value3">Clientes nuevos</option>
+                                            <option value="value3">Tasa de retención de clientes</option>
+                                            <option value="value3">Margén de ventas</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label>Seleecione tipo de indicador:</label>
+                                        <select name="select" class="form-control">
+                                            <option value="value1">-------------</option>
+                                            <option value="value1">General</option>
+                                            <option value="value2">Detallado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-block btn-outline-primary">Consultar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content-window %}
+{% block extrajs %}  
+    <script src="{% static 'js/planeacion/planeacion_comercial_establecer_indicadores.js' %}"></script>
+{% endblock %}
