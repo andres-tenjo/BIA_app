@@ -1,10 +1,18 @@
 import numpy as np
-from numpy.lib.function_base import average
 import pandas as pd
 import datetime as dt
-import sqlite3
-from scipy.linalg.special_matrices import invpascal
+from collections import defaultdict
 import datetime as dt
+from django.db import connection
+import sqlite3
+
+# Convierte una columna de un cuadro de datos al tipo objeto fecha (datetime.datetime)
+# dtfDatos: Cuadro de datos en donde se encuentra la columna a modificar el formato (pandas.DataFrame)
+# strNombreColumna: Nombre de la columna a la cual se le dará formato fecha (str)
+# Retorna el cuadro de datos con la columna modificada (pandas.DataFrame)
+def fncFormatoFechadtf(dtfDatos, strNombreColumna):
+    dtfDatos[strNombreColumna]= pd.to_datetime(dtfDatos[strNombreColumna], format= '%Y-%m-%d')
+    return dtfDatos
 
 # Elimina los valores de 0 de la lista de entrada
 # lstLista: Es la lista a la cual se le van a eliminar los ceros (list)
@@ -17,7 +25,7 @@ def fncEliminaCerolst(lstLista):
                return lstLista[lstLista.index(0)+ 1: ]
      else:
           return lstLista
-      
+
 # Valida si la tabla de datos se encuentra en el rango ingresado de parámetros
 # dtfDatos: Es el cuadro de datos para la validación de períodos (pd.DataFrame)
 # intMinimo: Valor mínimo del rango (int)
@@ -40,21 +48,28 @@ def fncRangoPeriodosstr(dtfDatos, intMinimo, intMaximo):
           lstFinal= fncEliminaCerolst(lstValidacion)
           return np.where(len(lstFinal)>= intMinimo, np.where(len(lstFinal)<= intMaximo, 'Complete', 'Bigger'), 'Incomplete')
      else:
-          return 'Empty'
+          return 'Empty'          
 
 # Corta el cuadro de datos según el tamaño en meses especificado
 # dtfDatos: Corresponde al cuadro de datos que se desea cortar (pandas.DataFrame)
 # intTamaño: Corresponde al tamaño en meses al que se desea reducir el cuadro de datos (int)
 # Retorma el cuadro de datos recortado al tamaño de meses específicado (pandas.DataFrame)
 def fncCortaCuadrodtf(dtfDatos, intTamaño):
-    intTotalDias= intTamaño* 31
-    lstFechas= [dt.datetime.strptime(str(dtfDatos['Fecha de creación'].max()), 
-                                     '%Y-%m-%d %H:%M:%S').date()- dt.timedelta(days= i) for i in range(intTotalDias)]
-    dtfCortado= pd.concat([dtfDatos.loc[dtfDatos['Fecha de creación']== dt.datetime.strptime(str(i), '%Y-%m-%d')]\
-                           for i in lstFechas])
+    intTotalDias= int(round(intTamaño* 30.36, 0))
+    lstFechas= [dt.datetime.strptime(str(dtfDatos['creation_date'].max()), '%Y-%m-%d %H:%M:%S')- dt.timedelta(days= i)\
+        for i in range(intTotalDias)]
+    dtfCortado= pd.concat([dtfDatos.loc[dtfDatos['creation_date']== i] for i in lstFechas])
     return dtfCortado
 
-            
+# Confirma si una base de datos es consecutiva cronológicamente con la fecha actual
+# dtfDatos: Corresponde al cuadro de datos que se desea cortar (pandas.DataFrame)
+# Retorna un valor booleano confirmando si hay continuidad (True Continuidad, False lo contrario) (bool)
+def fncFechaConsecutivabol(dtfDatos):
+    datUltimo= dtfDatos['creation_date'].max().month
+    datActual= dt.datetime.now().month
+    if (datUltimo== datActual) | (datActual- 1== datUltimo): return True
+    else: return False
+
 # Función que según la frecuencia de tiempo de un cuadro de datos, asigna los períodos por fila en el cuadro de datos
 # dtfDatos: Es el cuadro de datos al que se le van a incluir los períodos (pd.DataFrame)
 # strNombreColumnaFecha: Cadena de texto que corresponde al nombre de la columna que contiene el registro de la fecha (str)
@@ -83,8 +98,8 @@ def fncNumeroPeriodosdtf(dtfDatos, strNombreColumnaFecha, strNombreColumnaValor,
     dtfDatos= dtfDatos.set_index(strNombreColumnaFecha)
     if dtfDatos.columns.nlevels> 1: dtfDatos.columns= dtfDatos.columns.droplevel(1)
     else:  pass
-    return dtfDatos
-
+    return dtfDatos        
+            
 # Realiza el proceso de agrupamiento para una tabla de datos de acuerdo a una frecuencia y una función específica    
 # dtfDatos: Es el cuadro de datos que se desea agrupar (pd.DataFrame)
 # strFrecuencia: Cadena de texto que corresponde a la frecuencia en que están registrados los datos (str)
@@ -97,18 +112,18 @@ def fncNumeroPeriodosdtf(dtfDatos, strNombreColumnaFecha, strNombreColumnaValor,
 # (pandas.DataFrame)
 def fncAgrupadtf(dtfDatos, strFrecuencia, strNombreColumnaValor, strFuncion, strNombreColumnaFecha, bolAgrupaProd= False):
     if bolAgrupaProd== True:
-        dtfDatos= dtfDatos.groupby(['Product_Code', pd.Grouper(key= strNombreColumnaFecha, freq= strFrecuencia)])\
+        dtfDatos= dtfDatos.groupby(['product_code', pd.Grouper(key= strNombreColumnaFecha, freq= strFrecuencia)])\
             .agg({strNombreColumnaValor: [strFuncion]}).reset_index()
-        dtfDatos= pd.concat([fncNumeroPeriodosdtf(dtfDatos.loc[dtfDatos['Product_Code']== i], 
+        dtfDatos= pd.concat([fncNumeroPeriodosdtf(dtfDatos.loc[dtfDatos['product_code']== i], 
                                                   strNombreColumnaFecha, strNombreColumnaValor, strFrecuencia)\
-                             for i in dtfDatos['Product_Code'].unique()])
-        dtfDatos['Product_Code']= dtfDatos['Product_Code'].astype(int)
+                             for i in dtfDatos['product_code'].unique()])
+        dtfDatos['product_code']= dtfDatos['product_code'].astype(int)
         return dtfDatos
     else:
         dtfDatos= dtfDatos.groupby([pd.Grouper(key= strNombreColumnaFecha, freq= strFrecuencia)])\
             .agg({strNombreColumnaValor: [strFuncion]}).reset_index()
         return fncNumeroPeriodosdtf(dtfDatos, strNombreColumnaFecha, strNombreColumnaValor, strFrecuencia)
-    
+
 # Organiza la tabla de datos para realizar el pronóstico en Bia
 # dtfDatos: Es el cuadro de datos que se desea agrupar (pd.DataFrame)
 # strNombreColumnaFecha: Cadena de texto que corresponde al nombre de la columna que contiene el registro de la fecha (str)
@@ -133,7 +148,7 @@ def fncOrganizadtf(dtfDatos, strNombreColumnaFecha, strNombreColumnaValor, strFr
          return fncAgrupadtf(dtfDatos, '6M', strNombreColumnaValor, strFuncion, 'Format_Date', bolAgrupaProd= bolAgrupaProd)
     else:
          return fncAgrupadtf(dtfDatos, 'Y', strNombreColumnaValor, strFuncion, 'Format_Date', bolAgrupaProd= bolAgrupaProd)
-     
+    
 # Valida si un producto se puede debitar o acreditar en una bodega específica y para un lote especifico (si aplica)
 # dtfSaldosBodega: Cuadro de datos con los saldos por producto de una bodega específica (pandas.DataFrame)
 # intCodigoProducto: Corresponde al código del producto a validar (int)
@@ -145,11 +160,11 @@ def fncValidaAjustebol(dtfSaldosBodega, intCodigoProducto, intBodega, strLote, i
     dtfSaldoProducto= dtfSaldosBodega.loc[(dtfSaldosBodega['product_code']== intCodigoProducto)\
                                           & (dtfSaldosBodega['batch']== strLote) & (dtfSaldosBodega['store']== intBodega)]
     if dtfSaldoProducto.empty: 
-        if (dtfSaldoProducto.empty) & (bolTipoAjuste== False): return False
-        else: return True
+       if (dtfSaldoProducto.empty) & (bolTipoAjuste== False): return False
+       else: return True
     else:
         if bolTipoAjuste== False:
-            if int(dtfSaldoProducto.iloc[0]['inventory_avail'])- int(intCantidad)< 0: return False
+            if dtfSaldoProducto.iloc[0]['inventory_avail']- intCantidad< 0: return False
             else: return True
         else: return True
 
@@ -158,97 +173,134 @@ def fncValidaAjustebol(dtfSaldosBodega, intCodigoProducto, intBodega, strLote, i
 # varParametro: Es el párametro de consulta en la tabla, puede ser int, dt.datetime, float, str
 # Retorna una lista con la información de la consulta realizada (list)
 def fncConsultalst(strConsulta, varParametro):
-    with sqlite3.connect(r'C:\Users\FULERO\Desktop\Convergencia\BIA\DailyWork\BasesparaCotizador\DDBBactualized.db') as conn:
+    with connection.cursor() as cursor:
         sqlite3.register_adapter(np.int64, lambda val: int(val))
         sqlite3.register_adapter(np.int32, lambda val: int(val))
-        crs= conn.cursor()
         try:
-            lstConsulta= crs.execute(strConsulta, varParametro).fetchall()
-            conn.commit()
+            lstConsulta= cursor.execute(strConsulta, varParametro).fetchall()
             return lstConsulta
         except:
             return 'No existe tabla de datos'
 
 # Conecta con la base de datos sqlite3 sin realizar ningúna consulta
 def fncConecta():
-    conn= sqlite3.connect(r'C:\Users\FULERO\Desktop\Convergencia\BIA\DailyWork\BasesparaCotizador\DDBBactualized.db')
-    sqlite3.register_adapter(np.int64, lambda val: int(val))
-    sqlite3.register_adapter(np.int32, lambda val: int(val))
-    return conn
+    with connection.cursor() as cursor:
+        sqlite3.register_adapter(np.int64, lambda val: int(val))
+        sqlite3.register_adapter(np.int32, lambda val: int(val))
+        return cursor
     
 # Análiza si para una fecha específica existen rangos de horario disponibles
-# strFechaConsulta: Corresponde a la fecha en la que el usuario desea asignar una actividad (datetime.datetime)
+# datFechaConsulta: Corresponde a la fecha en la que el usuario desea asignar una actividad 
+# en el horario en punto de la media noche (datetime.datetime) 
 # strNombreTabla: Corresponde al nombre de la tabla en donde se almacenan las actividades (str)
 # intUsuario: Corresponde al código de identificacion del usuario que hace la consuta (int)
 # intDuracionTarea: Corresponde al tiempo de duración de la tarea en minutos, (int)
+# bolSegmento: Valor booleano donde True es antes del medio día y False igual o después del medio día, por defecto True (bool)
 # Retorna una tupla con una cadena de texto según el evento y con una lista de textos tuple(str, list(str))
-def fncDisponibilidadHorariotpl(strFechaConsulta, strNombreTabla, intUsuario, intDuracionTarea):
+def fncDisponibilidadHorariotpl(datFechaConsulta, strNombreTabla, intUsuario, intDuracionTarea, bolSegmento= True):
     strConsulta= 'SELECT * FROM '+strNombreTabla+' WHERE Task_Date= ? AND User_ID= ?'
-    varParametro= [strFechaConsulta, intUsuario]
+    varParametro= [datFechaConsulta, intUsuario]
     lstTareasFecha= fncConsultalst(strConsulta, varParametro)
     if (lstTareasFecha== 'No existe tabla de datos') | (len(lstTareasFecha)== 0): return 'Todos los horarios disponibles',
     else: 
-        lstHorariosInicio= [dt.datetime.strptime(i[1][: 11]+' '+i[2], '%Y-%m-%d %H:%M' )\
+        lstHorariosInicio= [dt.datetime.strptime(i[1][: 11]+' '+i[2], '%Y-%m-%d %H:%M')\
                             for i in lstTareasFecha]
-        lstHorariosFin= [dt.datetime.strptime(i[1][: 11]+' '+i[3], '%Y-%m-%d %H:%M' )\
+        lstHorariosFin= [dt.datetime.strptime(i[1][: 11]+' '+i[3], '%Y-%m-%d %H:%M')\
                           for i in lstTareasFecha]
         datInicioFecha=dt.datetime.strptime(lstTareasFecha[0][1], '%Y-%m-%d %H:%M:%S').replace(hour= 0, minute= 0, second= 0)
+        datMedioDiaFecha= datFechaConsulta.replace(hour= 12, minute= 0, second= 0, microsecond= 0)
         datFinFecha= datInicioFecha.replace(hour= 23, minute= 59, second= 59)
-        lstRangoHorario= [int((lstHorariosInicio[0]- datInicioFecha).seconds/ 60)]
-        lstPosibleHorario= [(datInicioFecha.strftime('%Y-%m-%d %H:%M')[11: ], lstHorariosInicio[0].strftime('%Y-%m-%d %H:%M')[11: ])]
+        lstRangoHorario= [int((lstHorariosInicio[0]- dt.timedelta(minutes= 1)- datInicioFecha).seconds/ 60)\
+                          if lstHorariosInicio[0]!= datInicioFecha else int((lstHorariosInicio[0] - datInicioFecha).seconds/ 60)]
+        lstPosibleHorario= [(datInicioFecha, lstHorariosInicio[0]- dt.timedelta(minutes= 1)\
+                             if lstHorariosInicio[0]!= datInicioFecha else lstHorariosInicio[0])]
         if len(lstHorariosInicio)> 1:
             for i in range(0, len(lstHorariosInicio)):
                 if (i< len(lstHorariosInicio)- 1):
-                    lstRangoHorario.append(int((lstHorariosInicio[i+ 1]- lstHorariosFin[i]).seconds/ 60))
-                    lstPosibleHorario.append((lstHorariosFin[i].strftime('%Y-%m-%d %H:%M')[11: ], 
-                                         lstHorariosInicio[i+ 1].strftime('%Y-%m-%d %H:%M')[11: ]))
+                    intMinuto= int((lstHorariosInicio[i+ 1]- dt.timedelta(minutes= 2)- lstHorariosFin[i]).seconds/ 60)\
+                        if lstHorariosInicio[i+ 1]- dt.timedelta(minutes= 2)>= lstHorariosFin[i]\
+                            else int(0)
+                    lstRangoHorario.append(intMinuto)
+                    lstPosibleHorario.append((lstHorariosFin[i]+ dt.timedelta(minutes= 1), 
+                                              lstHorariosInicio[i+ 1]- dt.timedelta(minutes= 1)))
                 else: pass
-            lstRangoHorario.append(int((datFinFecha- lstHorariosFin[- 1]).seconds/ 60))
-            lstPosibleHorario.append((lstHorariosFin[- 1].strftime('%Y-%m-%d %H:%M')[11: ], 
-                                      datFinFecha.strftime('%Y-%m-%d %H:%M')[11: ]))
+            intMinuto= int((datFinFecha- dt.timedelta(minutes= 1)- lstHorariosFin[- 1]).seconds/ 60)\
+                if datFinFecha- dt.timedelta(minutes= 1)>= lstHorariosFin[- 1] else int(0)
+            lstRangoHorario.append(intMinuto)
+            lstPosibleHorario.append((lstHorariosFin[- 1]+ dt.timedelta(minutes= 1), datFinFecha))
         else:
-            lstRangoHorario.append(int((datFinFecha- lstHorariosFin[- 1]).seconds/ 60))
-            lstPosibleHorario.append((lstHorariosFin[- 1].strftime('%Y-%m-%d %H:%M')[11: ], 
-                                      datFinFecha.strftime('%Y-%m-%d %H:%M')[11: ]))
+            intMinuto= int((datFinFecha- dt.timedelta(minutes= 1)- lstHorariosFin[- 1]).seconds/ 60)\
+                if datFinFecha- dt.timedelta(minutes= 1)>= lstHorariosFin[- 1] else int(0)
+            lstRangoHorario.append(intMinuto)
+            lstPosibleHorario.append((lstHorariosFin[- 1]+ dt.timedelta(minutes= 1), datFinFecha))
         lstValidacion= [True if i/ intDuracionTarea>= 1 else False for i in lstRangoHorario]
         lstHorarioDisponible= [lstPosibleHorario[i] for i in range(0, len(lstValidacion)) if lstValidacion[i]== True]
         if len(lstHorarioDisponible)== 0: return 'No hay horario disponible', lstHorarioDisponible
-        else: return 'Horarios disponibles', lstHorarioDisponible
+        else:
+            lstValidacionMediodia= []
+            for i in lstHorarioDisponible:
+                intMinutos= int((i[1]- i[0]).seconds/ 60)
+                lstRango= [i[0]+ dt.timedelta(minutes= j) for j in range(0, intMinutos+ 1)]
+                lstValidacionMediodia.append(lstRango)
+            lstMedioDia= [(i, j) for i, j in enumerate(lstValidacionMediodia) if datMedioDiaFecha in j]
+            if len(lstMedioDia)!= 0:
+                lstCorte= [(lstMedioDia[0][1][0], lstMedioDia[0][1][i]) for i in range(0, len(lstMedioDia[0][1]))\
+                           if lstMedioDia[0][1][i]== datMedioDiaFecha- dt.timedelta(minutes= 1)]
+                lstHorarioDisponible= lstHorarioDisponible[: lstMedioDia[0][0]]+ lstCorte+ [(datMedioDiaFecha, lstMedioDia[0][1][- 1])]\
+                    + lstHorarioDisponible[lstMedioDia[0][0]+ 1: ]
+                lstDisponibilidadMañana= [(i[0].strftime('%Y-%m-%d %I:%M %p')[11: ], i[1].strftime('%Y-%m-%d %I:%M %p')[11: ])\
+                                          for i in lstHorarioDisponible if (datInicioFecha<= i[0] < datMedioDiaFecha) &\
+                                              (datInicioFecha<= i[1] < datMedioDiaFecha)]
+                lstDisponibilidadTarde= [(i[0].strftime('%Y-%m-%d %I:%M %p')[11: ], i[1].strftime('%Y-%m-%d %I:%M %p')[11: ])\
+                                         for i in lstHorarioDisponible if (datMedioDiaFecha<= i[0] < datFinFecha) &\
+                                             (datMedioDiaFecha<= i[1] <= datFinFecha)]
+            else:
+                lstDisponibilidadMañana= [(i[0].strftime('%Y-%m-%d %I:%M %p')[11: ], i[1].strftime('%Y-%m-%d %I:%M %p')[11: ])\
+                                          for i in lstHorarioDisponible if (datInicioFecha<= i[0] < datMedioDiaFecha) &\
+                                              (datInicioFecha<= i[1] < datMedioDiaFecha)]
+                lstDisponibilidadTarde= [(i[0].strftime('%Y-%m-%d %I:%M %p')[11: ], i[1].strftime('%Y-%m-%d %I:%M %p')[11: ])\
+                                         for i in lstHorarioDisponible if (datMedioDiaFecha<= i[0] <= datFinFecha) &\
+                                             (datMedioDiaFecha<= i[1] <= datFinFecha)]
+            if bolSegmento== True: return 'Horarios disponibles', lstDisponibilidadMañana
+            else: return 'Horarios disponibles', lstDisponibilidadTarde
 
-
-# Convierte una columna de un cuadro de datos al tipo objeto fecha (datetime.datetime)
-# dtfDatos: Cuadro de datos en donde se encuentra la columna a modificar el formato (pandas.DataFrame)
-# strNombreColumna: Nombre de la columna a la cual se le dará formato fecha (str)
-# Retorna el cuadro de datos con la columna modificada (pandas.DataFrame)
-def fncFormatoFechadtf(dtfDatos, strNombreColumna):
-    dtfDatos[strNombreColumna]= pd.to_datetime(dtfDatos[strNombreColumna], format= '%Y-%m-%d')
-    return dtfDatos
-'''-------------------------------------------------------------------------------------------------------------------------------''' 
-# Función para importar de sqlite3 la base de datos de los movimientos históricos (¿TEMPORAL': Verificar en la integración)
-# dfname: Listado con el nombre de las bases de datos a importar (list)
-def data_consulting(dfname):    
-     conn= sqlite3.connect(r'C:\Users\FULERO\Desktop\Convergencia\BIA\DailyWork\BasesparaCotizador\DDBBactualized.db')
-     if len(dfname)> 1: df_list= [pd.read_sql_query(f'SELECT * FROM {i}', conn) for i in dfname]
-     else: df_list= pd.read_sql_query(f'SELECT * FROM {dfname[0]}', conn)
-     conn.commit()
-     return df_list
-    
-# Función para incluir las fechas en días que no están dentro del cuadro de datos
-# df: Cuadro de datos al cual se le van a incluir los días    
-def complete_days(df):
-     numdays= (df['Creation_Date'].max()- df['Creation_Date'].min()).days
-     cdays= [df['Creation_Date'].min()+ dt.timedelta(days= i) for i in range(numdays+ 1)]
-     datedf= pd.DataFrame({'Creation_Date': cdays}, index= [i for i in range(0, len(cdays))])
-     ndf= datedf.merge(df, how= 'outer', on= 'Creation_Date')
-     ndf['Product_Code']= ndf['Product_Code'].fillna(method= 'ffill')
-     ndf['value']= ndf['value'].fillna(0)
-     return ndf
- 
-# Confirma si una base de datos es consecutiva cronológicamente con la fecha actual
-# dtfDatos: Corresponde al cuadro de datos que se desea cortar (pandas.DataFrame)
-# Retorna un valor booleano confirmando si hay continuidad (True Continuidad, False lo contrario) (bool)
-def fncFechaConsecutivabol(dtfDatos):
-    datUltimo= dtfDatos['Fecha de creación'].max().month
-    datActual= dt.datetime.now().month
-    if (datUltimo== datActual) | (datActual- 1== datUltimo): return True
+# Evita que el usuario ingrese un horario no disponible en los rangos recibidos
+# datFechaConsulta: Corresponde a la fecha en la que el usuario desea asignar una actividad 
+# en el horario en punto de la media noche (datetime.datetime) 
+# lstHorarioDisponible: Corresponde a lista que contiene los rangos horarios disponibles para ingresar una tarea (list)
+# intDuracionTarea: Corresponde al tiempo de duración de la tarea en minutos, (int)
+# strHorarioSeleccion: Corresponde al horario seleccionado por el usuario para iniciar la tarea (str)
+# Retorna un booleano donde True indica que el horario seleccionado puede ser ingresado como hora inicial y False lo contrario (bool)
+def fncHoraIniciobol(datFechaConsulta, lstHorarioDisponible, intDuracionTarea, strHorarioSeleccion):
+    datFecha= datFechaConsulta.strftime('%Y-%m-%d %H:%M')[: 11]
+    if isinstance(lstHorarioDisponible, list):
+        if len(lstHorarioDisponible)== 0: return False
+        else:
+            lstHorarios= []
+            for i in lstHorarioDisponible:
+                intMinutos= int((dt.datetime.strptime(datFecha+' '+i[1], '%Y-%m-%d %I:%M %p')\
+                                 - dt.datetime.strptime(datFecha+' '+i[0], '%Y-%m-%d %I:%M %p')).seconds/ 60)
+                lstRango= [dt.datetime.strptime(datFecha+' '+i[0], '%Y-%m-%d %I:%M %p')+ dt.timedelta(minutes= j)\
+                           for j in range(0, (intMinutos+ 1)- intDuracionTarea)]
+                lstHoras= [k.strftime('%Y-%m-%d %I:%M %p')[11: ] for k in lstRango]
+                lstHorarios.append(lstHoras)
+            lstHorariosParaInicio= [i for j in lstHorarios for i in j]
+            if strHorarioSeleccion in lstHorariosParaInicio: return True
+            else: return False
     else: return False
+
+# Valida si una lista contiene valores repetidos 
+# lstValores: Lista que puede contener o no los valores repetidos
+# Retorna el valor y el indice dentro de la lista donde se encuentran repetidos los valores (tuple)
+def fncDuplicadoListatpl(lstValores):
+    dctLista= defaultdict(list)
+    for i, j in enumerate(lstValores): dctLista[j].append(i)
+    return ((i, j) for (i, j) in dctLista.items() if len(j)> 1)    
+
+# Función para importar de sqlite3 la base de datos de los movimientos históricos (¿TEMPORAL': Verificar en la integración)
+# lstNombreTabla: Listado con el nombre de las bases de datos a importar (list)
+# Retorna una lista con el (los) cuadro(s) de dato(s) solicitados
+def fncCuadroConsultalst(lstNombreTabla):    
+    if len(lstNombreTabla)> 1: lstDatos= [pd.read_sql_query(f'SELECT * FROM {i}', connection) for i in lstNombreTabla]
+    else: lstDatos= pd.read_sql_query(f'SELECT * FROM {lstNombreTabla[0]}', connection)
+    return lstDatos

@@ -945,7 +945,36 @@ class clsHistoricoSaldoInicialMdl(models.Model):
     def __str__(self):
         return self.product_code.product_desc
 
+# Tabla de historico alterno de movimientos
+class clsHistoricoMovimientosAlternoMdl(models.Model):
+    creation_date = models.CharField('Fecha de creación', max_length=200)
+    doc_number = models.CharField('Nº Documento', max_length=200)
+    document_type = models.CharField('Tipo de documento', max_length=200)
+    type = models.CharField('Tipo de movimiento', max_length=200)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    batch = models.CharField('Lote', max_length=200)
+    expiration_date = models.CharField('Fecha vencimiento', max_length=200)
+    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
+    crossing_doc = models.CharField('Documento cruce', max_length=200)
+    condition = models.CharField('Condición', max_length=200)
+    pre_bal = models.SmallIntegerField('Presaldo')
+    balance = models.SmallIntegerField('Saldo')
+    inv_value = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    identification = models.PositiveBigIntegerField('Identificación')
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    objects = DataFrameManager()
 
+    class Meta:
+        verbose_name = 'Historico de movimiento Alterno'
+        verbose_name_plural = 'Historico de movimientos Alterno'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return self.doc_number
 
 ''' Tabla ajustes de inventario'''
 # Tabla de ajustes de inventario

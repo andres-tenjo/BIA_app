@@ -7,6 +7,7 @@ from pandas import pandas as pd
 # Modelos BIA
 from apps.Modelos.Several_func import *
 from apps.Modelos.Update_Balances import *
+from apps.Modelos.Parameters import *
 
 # Django libraries
 from django.conf import settings
@@ -670,6 +671,31 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
                                     )
                         jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
                         response = JsonResponse(jsnData, safe=False)
+                        # with transaction.atomic():
+                        #     for i in (dtfProductos.values.tolist()):
+                        #         qrsCatalogoProductos = clsCatalogoProductosMdl()
+                        #         qrsCatalogoProductos.product_desc = i[0]
+                        #         print(i[1])
+                        #         if i[1] != 0:
+                        #             qrsCatalogoProductos.bar_code = int(i[1])
+                        #         qrsCatalogoProductos.trademark = i[2]
+                        #         qrsCatalogoProductos.product_cat_id = int(i[3])
+                        #         qrsCatalogoProductos.product_subcat_id = int(i[4])
+                        #         qrsCatalogoProductos.purchase_unit_id = int(i[5])
+                        #         qrsCatalogoProductos.quantity_pu = int(i[6])
+                        #         qrsCatalogoProductos.cost_pu = float(i[7])
+                        #         qrsCatalogoProductos.sales_unit_id = int(i[8])
+                        #         qrsCatalogoProductos.quantity_su = int(i[9])
+                        #         qrsCatalogoProductos.full_sale_price = float(i[10])
+                        #         qrsCatalogoProductos.split = int(i[6]/i[9])
+                        #         if i[11] != 0:
+                        #             qrsCatalogoProductos.iva = float(i[11])
+                        #         if i[12] != 0:
+                        #             qrsCatalogoProductos.other_tax = float(i[12])
+                        #         qrsCatalogoProductos.del_time = int(i[13])
+                        #         qrsCatalogoProductos.save()
+                        # jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
+                        # response = JsonResponse(jsnData, safe=False)
                 else:
                     jsnData['error'] = 'Compruebe el formato del archivo'
                     response = JsonResponse(jsnData, safe=False)
@@ -3051,7 +3077,7 @@ class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
             ((False,), (True, 10), (True, 1), (True, clsCatalogoClientesMdl)),
             ((False,), (True, 2), (False,), (False,), (True, ('CR', 'CO'))),
             ((True, Timestamp), (True, 20), (True, 1), (False,)),
-            ((True, int), (True, 3), (False, ), (True, clsCiudadesMdl)),
+            ((True, int), (True, 5), (False, ), (True, clsCiudadesMdl)),
             ((False,), (True, 10), (True, 1), (True, clsCatalogoProductosMdl)),
             ((True, int), (True, 5), (False, ), (False,)),
             ((True, float), (True, 30), (False, ), (False,)),
@@ -3369,10 +3395,39 @@ class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
                         data['dctValidaciones'] = dctValidaciones
                         data['strError'] = 'El archivo presenta errores, ¿desea descargarlos?'
                         response = JsonResponse(data, safe=False)
-                    else:
+                    else:                       
                         # Validar continuidad periodos
+                        dtfHistoricoSaldoInicial.rename(columns= {'Fecha de creación': 'creation_date', 'Código producto': 'product_code', 
+                        'Bodega': 'store', 'Cantidad': 'quantity', 'Lote': 'batch', 'Fecha de vencimiento': 'expiration_date'}, inplace= True)
+                        dtfHistoricoAjustesInventario.rename(columns= {'Fecha de creación': 'creation_date', 'Nº Documento': 'doc_number', 
+                        'Tipo de movimiento': 'type', 'Bodega': 'store', 'Código producto': 'product_code', 'Cantidad': 'quantity', 
+                        'Costo total': 'total_cost', 'Lote': 'batch', 'Fecha de vencimiento': 'expiration_date'}, inplace= True)
+                        dtfHistoricoEntradasAlmacen.rename(columns= {'Fecha de creación': 'creation_date', 'Nº Documento': 'doc_number', 
+                        'Identificación proveedor': 'identification', 'Código producto': 'product_code', 'Cantidad': 'quantity', 
+                        'Precio unitario': 'unitary_cost', 'Precio total': 'total_cost', 'Bodega': 'store', 'Documento cruce': 'crossing_doc', 
+                        'Condición entrada': 'condition', 'Lote': 'batch', 'Fecha de vencimiento': 'expiration_date'}, inplace= True)
+                        dtfHistoricoDevolucionesCliente.rename(columns= {'Fecha de creación': 'creation_date', 'Nº Documento': 'doc_number', 
+                        'Identificación cliente': 'identification', 'Código producto': 'product_code', 'Cantidad': 'quantity', 'Bodega': 'store', 
+                        'Lote': 'batch', 'Fecha de vencimiento': 'expiration_date', 'Documento cruce': 'crossing_doc'}, inplace= True)
+                        dtfHistoricoDevolucionesProveedor.rename(columns= {'Fecha de creación': 'creation_date', 'Nº Documento': 'doc_number', 
+                        'Identificación proveedor': 'identification', 'Código producto': 'product_code', 'Cantidad': 'quantity', 
+                        'Bodega': 'store', 'Lote': 'batch', 'Fecha de vencimiento': 'expiration_date', 'Documento cruce': 'crossing_doc'}, 
+                        inplace= True)
+                        dtfHistoricoSalidasAlmacen.rename(columns= {'Fecha de creación': 'creation_date', 'Nº Documento': 'doc_number', 
+                        'Identificación cliente': 'identification', 'Código producto': 'product_code', 'Cantidad': 'quantity', 
+                        'Precio unitario': 'unit_price', 'Descuento': 'discount', 'Precio total': 'total_price', 'Bodega': 'store', 
+                        'Documento cruce': 'crossing_doc', 'Condición salida': 'condition', 'Lote': 'batch', 
+                        'Fecha de vencimiento': 'expiration_date'}, inplace= True)
+                        dtfHistoricoObsequios.rename(columns= {'Fecha de creación': 'creation_date', 'Nº Documento': 'doc_number', 
+                        'Bodega': 'store', 'Código producto': 'product_code', 'Cantidad': 'quantity', 'Costo total': 'total_cost', 'Lote': 'batch',
+                        'Fecha de vencimiento': 'expiration_date'}, inplace= True)
+                        dtfHistoricoTrasladosBodegas.rename(columns= {'Fecha de creación': 'creation_date', 'Nº Documento': 'doc_number', 
+                        'Tipo de movimiento': 'type', 'Bodega': 'store', 'Código producto': 'product_code', 'Cantidad': 'quantity', 
+                        'Costo total': 'total_cost', 'Lote': 'batch', 'Fecha de vencimiento': 'expiration_date'}, inplace= True)
+                        dtfHistoricoPedidos.rename(columns= {'Fecha de creación': 'creation_date', 'Cantidad': 'quantity'}, inplace= True)
+                        dtfHistoricoOrdenesCompra.rename(columns= {'Fecha de creación': 'creation_date', 'Cantidad': 'quantity'}, inplace= True)
                         lstTablasDocumentos = [dtfHistoricoPedidos, dtfHistoricoOrdenesCompra, dtfHistoricoEntradasAlmacen, dtfHistoricoSalidasAlmacen]
-                        lstContinuidadMeses = [ fncFechaConsecutivabol(i) for i in lstTablasDocumentos ]
+                        lstContinuidadMeses = [ fncFechaConsecutivabol(i) for i in lstTablasDocumentos ]                        
                         lstIndicesContinuidad = [ lstContinuidadMeses.index(i) for i in lstContinuidadMeses if i == False ]
                         lstNombresDocumentos = ['Historico pedidos', 'Historico ordenes de compra', 'Historico entradas de almacén', 'Historico salidas de almacén']
                         if len(lstIndicesContinuidad):
@@ -3384,10 +3439,10 @@ class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
                         else:
                             # Validar tamaño de base de datos
                             lstOrganizarDatos = [
-                            fncOrganizadtf(dtfHistoricoPedidos, 'Fecha de creación', 'Cantidad', 'W', 'sum', bolAgrupaProd= False),
-                            fncOrganizadtf(dtfHistoricoOrdenesCompra, 'Fecha de creación', 'Cantidad', 'W', 'sum', bolAgrupaProd= False),
-                            fncOrganizadtf(dtfHistoricoEntradasAlmacen, 'Fecha de creación', 'Cantidad', 'W', 'sum', bolAgrupaProd= False),
-                            fncOrganizadtf(dtfHistoricoSalidasAlmacen, 'Fecha de creación', 'Cantidad', 'W', 'sum', bolAgrupaProd= False),
+                            fncOrganizadtf(dtfHistoricoPedidos, 'creation_date', 'quantity', 'W', 'sum', bolAgrupaProd= False),
+                            fncOrganizadtf(dtfHistoricoOrdenesCompra, 'creation_date', 'quantity', 'W', 'sum', bolAgrupaProd= False),
+                            fncOrganizadtf(dtfHistoricoEntradasAlmacen, 'creation_date', 'quantity', 'W', 'sum', bolAgrupaProd= False),
+                            fncOrganizadtf(dtfHistoricoSalidasAlmacen, 'creation_date', 'quantity', 'W', 'sum', bolAgrupaProd= False),
                             ]
                             lstRangosPeriodos = [ str(fncRangoPeriodosstr(i, 5, 12)) for i in lstOrganizarDatos ]
                             if ('Empty' in lstRangosPeriodos) | ('Incomplete' in lstRangosPeriodos):
@@ -3395,7 +3450,12 @@ class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
                                 response = JsonResponse(data, safe=False)
                             else:
                                 # Recortar tablas de datos que exceden el tamaño
-                                lstTablasDocumentos = [ lstTablasDocumentos[i] if lstRangosPeriodos[i] != 'Bigger' else fncCortaCuadrodtf(lstTablasDocumentos[i], 3 ) for i in range(0, len(lstTablasDocumentos)) ]
+                                lstTablasDocumentos = [ lstTablasDocumentos[i] if lstRangosPeriodos[i] != 'Bigger' else fncCortaCuadrodtf(lstTablasDocumentos[i], 
+                                3 ) for i in range(0, len(lstTablasDocumentos))]
+                                lstParaHistorico= [dtfHistoricoSaldoInicial, dtfHistoricoAjustesInventario, dtfHistoricoEntradasAlmacen, 
+                                dtfHistoricoDevolucionesCliente, dtfHistoricoDevolucionesProveedor, dtfHistoricoSalidasAlmacen, dtfHistoricoObsequios, 
+                                dtfHistoricoTrasladosBodegas]
+                                fncMovimientosHistoricosProductosdtf(lstParaHistorico)
                                 with transaction.atomic():
                                     for pedido in (lstTablasDocumentos[0].values.tolist()):
                                         clsHistoricoPedidosMdl.objects.create(
@@ -3527,7 +3587,6 @@ class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
                                         batch = str(saldo_inicial[4]),
                                         expiration_date = saldo_inicial[5].date(),
                                         )
-                                
                                 data['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
                                 response = JsonResponse(data, safe=False)
                 else:
