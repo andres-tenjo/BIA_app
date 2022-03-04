@@ -176,11 +176,11 @@ def fncConsultalst(strConsulta, varParametro):
     with connection.cursor() as cursor:
         sqlite3.register_adapter(np.int64, lambda val: int(val))
         sqlite3.register_adapter(np.int32, lambda val: int(val))
-        try:
-            lstConsulta= cursor.execute(strConsulta, varParametro).fetchall()
-            return lstConsulta
-        except:
-            return 'No existe tabla de datos'
+        # try:
+        lstConsulta= cursor.execute(strConsulta, varParametro).fetchall()
+        return lstConsulta
+        # except:
+        #     return 'No existe tabla de datos'
 
 # Conecta con la base de datos sqlite3 sin realizar ningúna consulta
 def fncConecta():
@@ -304,3 +304,13 @@ def fncCuadroConsultalst(lstNombreTabla):
     if len(lstNombreTabla)> 1: lstDatos= [pd.read_sql_query(f'SELECT * FROM {i}', connection) for i in lstNombreTabla]
     else: lstDatos= pd.read_sql_query(f'SELECT * FROM {lstNombreTabla[0]}', connection)
     return lstDatos
+
+# Entrega al última posición de una llave primaria de una tabla de datos específica
+def fncLlavePrimariaint(strNombreTabla):
+    strConsultaLlave= f'SELECT id FROM {strNombreTabla}'
+    lstConsultaLlave= fncConsultalst(strConsultaLlave, [])
+    if isinstance(lstConsultaLlave, list):
+        if len(lstConsultaLlave)== 0: return 1
+        else: return int(max([i[0] for i in lstConsultaLlave])+ 1)
+    else: 'No existe la tabla de datos'
+            

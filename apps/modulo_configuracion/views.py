@@ -3872,7 +3872,7 @@ class clsImportarAjustesInventarioViw(LoginRequiredMixin, TemplateView):
                     lstValidarAjustesInventario = [ i for n in lstValidarAjustesInventario for i in n ]
                     dctValidaciones = {}
                     if len(lstValidarAjustesInventario):
-                        dtfHistoricoAjustesInventario.loc[:,'Fecha de creación'] = dtfHistoricoAjustesInventario['Fecha de creación'].astype(str)
+                        # dtfHistoricoAjustesInventario.loc[:,'Fecha de creación'] = dtfHistoricoAjustesInventario['Fecha de creación'].astype(str)
                         dtfHistoricoAjustesInventario.loc[:,'Fecha de vencimiento'] = dtfHistoricoAjustesInventario['Fecha de vencimiento'].astype(str)
                         dctValidaciones['dtfHistoricoAjustesInventarioError'] = dtfHistoricoAjustesInventario.to_json(orient="split")
                         dctValidaciones['lstValidarAjustesInventario'] = lstValidarAjustesInventario
@@ -3881,6 +3881,21 @@ class clsImportarAjustesInventarioViw(LoginRequiredMixin, TemplateView):
                         jsnData['strError'] = 'El archivo presenta errores, ¿desea descargarlos?'
                         response = JsonResponse(jsnData, safe=False)
                     else:
+                        dtfActualizaSaldo= dtfHistoricoAjustesInventario.rename(columns= {'Bodega': 'store_id', 'Tipo de ajuste': 'type',
+                        'Código producto': 'product_code_id', 'Cantidad': 'quantity', 'Costo total': 'total_cost', 'Lote': 'batch',
+                        'Fecha de vencimiento': 'expiration_date'})
+                        strCatalogo= 'SELECT id, cost_pu, split FROM modulo_configuracion_clscatalogoproductosmdl WHERE id= %s'
+                        lstConsulta= [fncConsultalst(strCatalogo, [i]) for i in dtfActualizaSaldo['product_code_id'].unique()]
+                        lstDatos= [i[0] for i in lstConsulta]
+                        intIdentificacion= fncConsultalst('SELECT id_number FROM modulo_configuracion_clsperfilempresamdl', [])[0][0]
+                        dtfCatalogo= pd.DataFrame(lstDatos, columns= ['product_code_id', 'cost_pu', 'split'])
+                        dtfActualizaSaldo= dtfActualizaSaldo.merge(dtfCatalogo, how= 'left', on= 'product_code_id')
+                        dtfActualizaSaldo= dtfActualizaSaldo.assign(doc_number= 'aquiVaElConsecutivo', creation_date= datetime.now(), 
+                        unitary_cost= dtfActualizaSaldo['cost_pu']/ dtfActualizaSaldo['split'], condition= 'EN', 
+                        identification= intIdentificacion, user_id_id= request.user.id)
+                        dtfActualizaSaldo.drop(['cost_pu', 'split'], axis= 1, inplace= True)
+                        strDocumento= 'Ajuste_De_Inventario'
+                        fncActualizaSaldo(strDocumento, dtfActualizaSaldo)
                         with transaction.atomic():
                             for ajuste_inventario in (dtfHistoricoAjustesInventario.values.tolist()):
                                 clsHistoricoAjustesInventarioMdl.objects.create(

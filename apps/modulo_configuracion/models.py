@@ -262,7 +262,7 @@ class clsCatalogoProductosMdl(BaseModel):
     split = models.PositiveSmallIntegerField('Equivalencia', blank=True, null=True)
     iva = models.DecimalField('Iva', max_digits=5, decimal_places=2, blank=True, null=True)
     other_tax = models.DecimalField('Otros impuestos', max_digits=5, decimal_places=2, blank=True, null=True)
-    del_time = models.PositiveSmallIntegerField('Tiempo de entrega proveedor')
+    supplier_lead_time = models.PositiveSmallIntegerField('Tiempo de entrega proveedor')
     state = models.CharField('Estado', max_length=10, choices=STATE, default='AC')
     objects = DataFrameManager()
 
@@ -1344,10 +1344,12 @@ class clsDetalleTrasladosBodegaMdl(models.Model):
 # Tabla de saldos de inventario
 class clsSaldosInventarioMdl(models.Model):
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    # product_code = models.SmallIntegerField('codigo producto')
     batch = models.CharField('Lote', max_length=200)
     inventory_avail = models.PositiveSmallIntegerField('Saldo disponible')
     expiration_date = models.CharField('Fecha vencimiento', max_length=200)
     store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    # store = models.SmallIntegerField('bodega')
     objects = DataFrameManager()
 
     class Meta:
@@ -1377,7 +1379,8 @@ class clsHistoricoMovimientosMdl(models.Model):
     balance = models.PositiveSmallIntegerField('Saldo')
     inv_value = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
     store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    identification = models.PositiveBigIntegerField('Identificación')
+    # identification = models.PositiveBigIntegerField('Identificación')
+    identification = models.CharField('Identificación', max_length= 200)
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     objects = DataFrameManager()
 
