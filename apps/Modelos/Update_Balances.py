@@ -6,9 +6,6 @@ Created on Wed Feb  9 13:50:43 2022
 """
 import pandas as pd
 from apps.Modelos.Several_func import *
-# from apps.Modelos.Inquiries import *
-# import sqlite3
-# import datetime as dt
 import numpy as np
 from apps.modulo_configuracion.models import *
 from django.db import connection
@@ -25,8 +22,8 @@ def fncActualizaPresaldoint(strCondition, strType, intQuantity):
     else: return 0            
 
 tplColumnasHistorico= ('id', 'creation_date', 'doc_number', 'document_type', 'type', 'quantity', 'batch', 
-'expiration_date', 'unitary_cost', 'total_cost', 'crossing_doc', 'condition', 'pre_bal', 'balance', 
-'inv_value', 'identification', 'product_code_id', 'store_id', 'user_id_id')
+'expiration_date', 'unitary_cost', 'total_cost', 'crossing_doc', 'condition', 'balance', 'inv_value', 
+'identification', 'product_code_id', 'store_id', 'user_id_id', 'pre_bal')
 
 # Actualiza las tablas de histórico de movimiento y de saldo por bodega cuando se guarda un documento
 # strDocumento: Corresponde al nombre del documento que se está guardando o anulando (str)
@@ -70,10 +67,10 @@ def fncActualizaSaldo(strDocumento, dtfDocumento, tplColumnasHistorico= tplColum
             int(fncActualizaPresaldoint(dtfModificado.iloc[i]['condition'], 
                                     dtfModificado.iloc[i]['type'], dtfModificado.iloc[i]['quantity']))\
                 * int(dtfModificado.iloc[i]['quantity']),  
+            str(dtfModificado.iloc[i]['identification']),
             int(dtfModificado.iloc[i]['product_code_id']),
-            int(dtfModificado.iloc[i]['store_id']),            
-            int(dtfModificado.iloc[i]['user_id_id']),
-            str(dtfModificado.iloc[i]['identification'])
+            int(dtfModificado.iloc[i]['user_id_id']), 
+            int(dtfModificado.iloc[i]['store_id'])
             ]
         strConsultaSubirHistorico= '''INSERT INTO modulo_configuracion_clshistoricomovimientosmdl 
         VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
@@ -81,24 +78,24 @@ def fncActualizaSaldo(strDocumento, dtfDocumento, tplColumnasHistorico= tplColum
         product_code_id= %s AND batch= %s'''
         strConsultaSubirSaldo= 'INSERT INTO modulo_configuracion_clssaldosinventariomdl VALUES(%s, %s, %s, %s, %s, %s)'
         dtfDocumentoProducto= dtfModificado.iloc[i: i+ 1, :]
-        if len(fncConsultalst(strConsultaHistorico, [varParametros[17], varParametros[16], varParametros[6]]))== 0:
-            print(varParametros)
-            # fncConsultalst(strConsultaSubirHistorico, varParametros)
+        if len(fncConsultalst(strConsultaHistorico, [varParametros[18], varParametros[16], varParametros[6]]))== 0:
+            fncConsultalst(strConsultaSubirHistorico, varParametros)
             intLlaveSaldo= fncLlavePrimariaint('modulo_configuracion_clssaldosinventariomdl')
             fncConsultalst(strConsultaSubirSaldo, [int(intLlaveSaldo+ i), varParametros[6], int(fncActualizaPresaldoint(dtfModificado.iloc[i]['condition'], 
-            dtfModificado.iloc[i]['type'], dtfModificado.iloc[i]['quantity'])), varParametros[7], varParametros[16], varParametros[17]])
+            dtfModificado.iloc[i]['type'], dtfModificado.iloc[i]['quantity'])), varParametros[7], varParametros[16], varParametros[18]])
         else:
-            lstHistorico= fncConsultalst(strConsultaHistorico, [varParametros[17], varParametros[16], varParametros[6]])
+            lstHistorico= fncConsultalst(strConsultaHistorico, [varParametros[18], varParametros[16], varParametros[6]])
             dtfHistoricoModficado= pd.DataFrame(lstHistorico, columns= list(tplColumnasHistorico))
             dtfHistoricoConcatenado= pd.concat([dtfHistoricoModficado, dtfDocumentoProducto])\
-                .fillna(0).reset_index().drop(['index'], axis= 1)
+                .fillna(0).reset_index().drop(['index'], axis= 1)    
+            dtfHistoricoConcatenado= dtfHistoricoConcatenado[- 2: ].reset_index().drop(['index'], axis= 1)
             index= [i for i in range(len(dtfHistoricoConcatenado))]
             dtfHistoricoConcatenado.at[index[- 1], 'pre_bal']= dtfHistoricoConcatenado.iloc[- 1]['quantity']\
-                if dtfHistoricoConcatenado.iloc[- 1]['type']== 'EN' else dtfHistoricoConcatenado.iloc[- 1]['quantity']* - 1                
+                if dtfHistoricoConcatenado.iloc[- 1]['type']== 'EN' else dtfHistoricoConcatenado.iloc[- 1]['quantity']* - 1
             dtfHistoricoConcatenado.at[index[- 1], 'balance']= dtfHistoricoConcatenado.iloc[- 1]['pre_bal']\
                 + int(dtfHistoricoConcatenado.iloc[0]['balance'])
             dtfHistoricoASubir= dtfHistoricoConcatenado[- 1: ].reset_index().drop(['index'], axis= 1)
-            dtfHistoricoASubir['id']= int(intLlaveHistorico+ i) 
+            dtfHistoricoASubir['id']= int(intLlaveHistorico+ i)
             dtfHistoricoASubir.loc[: , 'creation_date']= dtfHistoricoASubir['creation_date'].astype(str)
             dtfHistoricoASubir.loc[: , 'product_code_id']= dtfHistoricoASubir['product_code_id'].astype(int)
             dtfHistoricoASubir.loc[: , 'quantity']= dtfHistoricoASubir['quantity'].astype(int)
@@ -124,10 +121,13 @@ def fncActualizaSaldo(strDocumento, dtfDocumento, tplColumnasHistorico= tplColum
                 varSaldos= [lstCantidad[i], lstProductos[i], lstLotes[i], lstBodega[i]]
                 fncConsultalst(strActualiza, varSaldos)
             with connection.cursor() as cursor:
+                sqlite3.register_adapter(np.int64, lambda val: int(val))
+                sqlite3.register_adapter(np.int32, lambda val: int(val))
                 strInserta= f'''INSERT INTO modulo_configuracion_clshistoricomovimientosmdl {tplColumnasHistorico} VALUES
                 (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
                 cursor.executemany(strInserta, dtfHistoricoASubir.to_records(index= False))
-    return print('se actualizó el histórico y la bodega')
+    print('se actualizó el histórico y la bodega')
+    return 'se actualizó el histórico y la bodega'
 
 # Actualiza los valores para recalcular los saldos de bodega desde un inicio a fin 
 # dtfDatos: Corresponde al cuadro de datos donde se va a realizar el recalculo de saldos de inventario (pandas.DataFrame)

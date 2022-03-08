@@ -54,7 +54,7 @@ def fncMovimientoHistoricodtf(intCodigoProducto, lstBasesDatos):
 # ['Saldo Inicial', 'Ajustes de Inventario', 'Entradas', 'Devoluciones de clientes', 'Devoluciones a proveedor', 
 #                      'salidas', 'obsequíos', 'Traslados', 'Catálogo de productos', 'Catálogo de bodegas']
 def fncMovimientosHistoricosProductosdtf(lstDocumentos):
-    tplColumnasHistorico= ('creation_date', 'doc_number', 'document_type', 'type', 'quantity', 'batch', 'expiration_date', 
+    tplColumnasHistorico= ('id', 'creation_date', 'doc_number', 'document_type', 'type', 'quantity', 'batch', 'expiration_date', 
     'unitary_cost', 'total_cost', 'crossing_doc', 'condition', 'pre_bal', 'balance', 'inv_value', 'identification', 
     'product_code_id', 'store_id', 'user_id_id')
     lstBasesDatos= lstDocumentos
@@ -69,9 +69,10 @@ def fncMovimientosHistoricosProductosdtf(lstDocumentos):
     dtfMovimientoHistorico.drop(['unit_price', 'discount', 'total_price'], axis= 1)
     dtfMovimientoHistorico['id']= [i for i in range(1, len(dtfMovimientoHistorico['creation_date'])+ 1)]
     dtfMovimientoHistorico['user_id']= 1
-    dtfMovimientoHistorico= dtfMovimientoHistorico.reindex(columns= ['creation_date', 'doc_number', 'document_type', 'type', 
+    dtfMovimientoHistorico= dtfMovimientoHistorico.reindex(columns= ['id', 'creation_date', 'doc_number', 'document_type', 'type', 
     'quantity', 'batch', 'expiration_date', 'unitary_cost', 'total_cost', 'crossing_doc', 'condition', 'pre_bal', 'balance', 
     'inv_value', 'identification', 'product_code', 'store', 'user_id'])
+    dtfMovimientoHistorico.loc[:, 'id']= dtfMovimientoHistorico['id'].astype(int)
     dtfMovimientoHistorico.loc[:, 'creation_date']= dtfMovimientoHistorico['creation_date'].astype(str)
     dtfMovimientoHistorico.loc[:, 'doc_number']= dtfMovimientoHistorico['doc_number'].astype(str)
     dtfMovimientoHistorico.loc[:, 'document_type']= dtfMovimientoHistorico['document_type'].astype(str)
@@ -91,7 +92,7 @@ def fncMovimientosHistoricosProductosdtf(lstDocumentos):
     dtfMovimientoHistorico.loc[:, 'store']= dtfMovimientoHistorico['store'].astype(int)
     dtfMovimientoHistorico.loc[:, 'user_id']= dtfMovimientoHistorico['user_id'].astype(int)
     strConsultaHistorico= f'''INSERT INTO modulo_configuracion_clshistoricomovimientosalternomdl {tplColumnasHistorico} VALUES
-    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
     with connection.cursor() as cursor:    
         sqlite3.register_adapter(np.int64, lambda val: int(val))
         sqlite3.register_adapter(np.int32, lambda val: int(val))

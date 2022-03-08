@@ -156,15 +156,16 @@ def fncOrganizadtf(dtfDatos, strNombreColumnaFecha, strNombreColumnaValor, strFr
 # strLote: Es el lote del producto, si aplica (str)
 # intCantidad: Es la cantidad a ajustar (int)
 # Retorna False si el ajuste no se puede realizar, de lo contrario retorna True (bool)
-def fncValidaAjustebol(dtfSaldosBodega, intCodigoProducto, intBodega, strLote, intCantidad, bolTipoAjuste= False):
-    dtfSaldoProducto= dtfSaldosBodega.loc[(dtfSaldosBodega['product_code']== intCodigoProducto)\
-                                          & (dtfSaldosBodega['batch']== strLote) & (dtfSaldosBodega['store']== intBodega)]
-    if dtfSaldoProducto.empty: 
-       if (dtfSaldoProducto.empty) & (bolTipoAjuste== False): return False
-       else: return True
+def fncValidaAjustebol(intCodigoProducto, intBodega, strLote, intCantidad, bolTipoAjuste= False):
+    strSaldo= '''SELECT inventory_avail FROM modulo_configuracion_clssaldosinventariomdl 
+    WHERE product_code_id= %s AND batch= %s AND store_id= %s'''
+    lstSaldo= fncConsultalst(strSaldo, [intCodigoProducto, strLote, intBodega])
+    if len(lstSaldo)== 0:
+        if bolTipoAjuste== False: return False
+        else: return True
     else:
         if bolTipoAjuste== False:
-            if dtfSaldoProducto.iloc[0]['inventory_avail']- intCantidad< 0: return False
+            if lstSaldo[0][0]- intCantidad< 0: return False
             else: return True
         else: return True
 
@@ -176,12 +177,9 @@ def fncConsultalst(strConsulta, varParametro):
     with connection.cursor() as cursor:
         sqlite3.register_adapter(np.int64, lambda val: int(val))
         sqlite3.register_adapter(np.int32, lambda val: int(val))
-        # try:
         lstConsulta= cursor.execute(strConsulta, varParametro).fetchall()
         return lstConsulta
-        # except:
-        #     return 'No existe tabla de datos'
-
+        
 # Conecta con la base de datos sqlite3 sin realizar ningúna consulta
 def fncConecta():
     with connection.cursor() as cursor:

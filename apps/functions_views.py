@@ -244,8 +244,7 @@ def fncAgregarFormatoColumnasError(excWriter, lstValidar, strHojaExcel, lstNombr
             plantilla.write(i[1]+ 1, lstNombresColumnas.index(i[0]), str(i[3]) + ' Error: ' +  i[2], e_type)
         elif i[2] == 'No es una opción valida, recuerde el uso de mayusculas':
             plantilla.write(i[1]+ 1, lstNombresColumnas.index(i[0]), str(i[3]) + ' Error: ' +  i[2], e_type)
-        else:
-            pass
+        else: plantilla.write(i[1]+ 1, lstNombresColumnas.index(i[0]), str(i[3]) + ' Error: ' +  i[2], e_type)
 
 # Función que retorna un consulta django en dataframe
 # tblDatos: Clase del modelo (tabla de datos) django que se quiere consultar

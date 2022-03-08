@@ -713,7 +713,6 @@ class clsCatalogoBodegasMdl(BaseModel):
         return self.warehouse_name
 
 
-
 ''' Tablas para cargue de historico de movimientos '''
 # Tabla de historico de pedidos
 class clsHistoricoPedidosMdl(models.Model):
@@ -825,7 +824,7 @@ class clsHistoricoAjustesInventarioMdl(models.Model):
     store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField('Cantidad')
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField('Total costo', max_digits=20, decimal_places=2)
     batch = models.CharField('Lote', max_length=200)
     expiration_date = models.DateTimeField('Fecha vencimiento')
     objects = DataFrameManager()
@@ -980,7 +979,7 @@ class clsHistoricoMovimientosAlternoMdl(models.Model):
 # Tabla de ajustes de inventario
 class clsAjusteInventarioMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length=200, blank=True, null=True)
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField('Total costo', max_digits=30, decimal_places=2)
     condition = models.CharField('Condición', max_length=200, choices=INCOMECONDITION, default='CE')
     objects = DataFrameManager()
 
@@ -1013,7 +1012,7 @@ class clsDetalleAjusteInventarioMdl(models.Model):
     expiration_date = models.DateField('Fecha vencimiento')
     quantity = models.PositiveSmallIntegerField('Cantidad')
     unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2, blank=True, null=True)
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField('Total costo', max_digits=20, decimal_places=2)
     
     objects = DataFrameManager()
 
@@ -1375,7 +1374,7 @@ class clsHistoricoMovimientosMdl(models.Model):
     total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
     crossing_doc = models.CharField('Documento cruce', max_length=200)
     condition = models.CharField('Condición', max_length=200)
-    pre_bal = models.PositiveSmallIntegerField('Presaldo')
+    pre_bal = models.SmallIntegerField('Presaldo')
     balance = models.PositiveSmallIntegerField('Saldo')
     inv_value = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
     store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
