@@ -10,6 +10,7 @@ import numpy as np
 from apps.Modelos.Several_func import *
 from apps.Modelos.Update_Balances import *
 from apps.Modelos.Parameters import *
+from apps.Modelos.Information_Inactivation import *
 
 # Django libraries
 from django.conf import settings
@@ -824,8 +825,31 @@ class clsListarCatalogoProductosViw(LoginRequiredMixin, ListView):
             elif action == 'frmEliminarProductojsn':
                 qrsCatalogoProductos = clsCatalogoProductosMdl.objects.get(pk=request.POST['id'])
                 if qrsCatalogoProductos.state == "AC":
-                    qrsCatalogoProductos.state = "IN"
-                    qrsCatalogoProductos.save()
+                    # with transaction.atomic():
+                    #     qrsAjusteInventario = clsEntradasAlmacenMdl()
+                    #     qrsAjusteInventario.identification= clsCatalogoProveedoresMdl.objects.get(pk= 1)
+                    #     qrsAjusteInventario.total_cost= dtfEntrada['total_cost'].sum()
+                    #     qrsAjusteInventario.store= clsCatalogoBodegasMdl.objects.get(id= 1)
+                    #     qrsAjusteInventario.crossing_doc= 'OC-01'
+                    #     qrsAjusteInventario.condition= 'CA'
+                    #     qrsAjusteInventario.save()
+                    #     for i in dtfEntrada.to_records(index= False):
+                    #         qrsDetalleAjuste = clsDetalleEntradaAlmacen()
+                    #         qrsDetalleAjuste.doc_number = clsEntradasAlmacenMdl.objects.get(id= 4)
+                    #         qrsDetalleAjuste.product_code = clsCatalogoProductosMdl.objects.get(id= i[0])                            
+                    #         qrsDetalleAjuste.quantity = i[2]
+                    #         qrsDetalleAjuste.unitary_cost= i[1]
+                    #         qrsDetalleAjuste.total_cost= i[5]
+                    #         qrsDetalleAjuste.batch = i[3]
+                    #         qrsDetalleAjuste.expiration_date= datetime(2021, 3, 10)
+                    #         qrsDetalleAjuste.state= i[4]
+                    #         qrsDetalleAjuste.save()
+                    bolEvaluacion= fncInactivarProductotpl(qrsCatalogoProductos.id)
+                    if bolEvaluacion== True:
+                        qrsCatalogoProductos.state = "IN"
+                        qrsCatalogoProductos.save()
+                    else:
+                        print(bolEvaluacion)
                 else:
                     qrsCatalogoProductos.state = "AC"
                     qrsCatalogoProductos.save()
@@ -4019,7 +4043,7 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
                         'condition', 'identification', 'product_code_id', 'store_id', 'user_id_id'
                         ]
                 qrsclsPerfilEmpresaMdl = clsPerfilEmpresaMdl.objects.all()
-                intIdentificacionusuario = [ i.jsnObtenerIdentificacion() for i in qrsclsPerfilEmpresaMdl]
+                intIdentificacionusuario = [i.jsnObtenerIdentificacion() for i in qrsclsPerfilEmpresaMdl]
                 dctLstAjustesInventario = json.loads(request.POST['dctLstAjustesInventario'])
                 fltCostoTotalAjuste = dctLstAjustesInventario['fltCostoTotal']
                 lstAjustesInventario = dctLstAjustesInventario['lstAjustesInventario']
@@ -4029,10 +4053,10 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
                     qrsAjusteInventario.save()
                     for i in lstAjustesInventario:
                         qrsDetalleAjuste = clsDetalleAjusteInventarioMdl()
-                        qrsDetalleAjuste.doc_number_id = qrsAjusteInventario.id
-                        qrsDetalleAjuste.store_id = i['intIdBodega']
+                        qrsDetalleAjuste.doc_number_id = qrsAjusteInventario.id                        
+                        qrsDetalleAjuste.store_id = i['intIdBodega']                        
                         qrsDetalleAjuste.type = i['strTipoAjusteId']
-                        qrsDetalleAjuste.product_code_id = i['intIdProducto']
+                        qrsDetalleAjuste.product_code_id = i['intIdProducto']                        
                         qrsDetalleAjuste.batch = i['strLote']
                         qrsDetalleAjuste.expiration_date = datetime.strptime(i['datFechaVencimiento'],"%d/%m/%Y")
                         qrsDetalleAjuste.quantity = int(i['intCantidad'])
@@ -4080,14 +4104,14 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
 class clsExportarPlantillaPrueba(APIView):
 
     def get(self, request):
-        lstConsultas = [clsEntradasAlmacenMdl, clsTblDetalleEntradaAlmacen,
+        lstConsultas = [clsEntradasAlmacenMdl, clsDetalleEntradaAlmacen,
                         clsDevolucionesClienteMdl, clsDetalleDevolucionesClienteMdl,
                         clsDevolucionesProveedorMdl, clsDetalleDevolucionesProveedorMdl,
                         clsSalidasAlmacenMdl, clsDetalleSalidasAlmacenMdl,
                         clsObsequiosMdl, clsDetalleObsequiosMdl,
                         clsTrasladosBodegasMdl, clsDetalleTrasladosBodegaMdl,
                     ]
-        lstSerializadores = [clsEntradasAlmacenMdlSerializador, clsTblDetalleEntradaAlmacenSerializador,
+        lstSerializadores = [clsEntradasAlmacenMdlSerializador, clsDetalleEntradaAlmacenSerializador,
                             clsDevolucionesClienteMdlSerializador, clsDetalleDevolucionesClienteMdlSerializador,
                             clsDevolucionesProveedorMdlSerializador, clsDetalleDevolucionesProveedorMdlSerializador,
                             clsSalidasAlmacenMdlSerializador, clsDetalleSalidasAlmacenMdlSerializador,

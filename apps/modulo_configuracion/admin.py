@@ -93,11 +93,56 @@ class PersonAdmin(ImportExportModelAdmin):
     pass
 
 ''' Admin entradas de almacén '''
-@admin.register(clsTblDetalleEntradaAlmacen)
+@admin.register(clsDetalleEntradaAlmacen)
 class PersonAdmin(ImportExportModelAdmin):
     pass
 
 ''' Admin historico movimientos '''
 @admin.register(clsHistoricoMovimientosMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+'''Admin historico alterno de movimientos'''
+@admin.register(clsHistoricoMovimientosAlternoMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+'''Admin pedidos general'''
+@admin.register(clsPedidosMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+'''Admin pedidos detallado'''
+@admin.register(clsDetallePedidosMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+'''Admin ordenes de compra general'''
+@admin.register(clsOrdenesCompraMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+'''Admin ordenes de compra detallado'''
+@admin.register(clsDetalleOrdenesCompraMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+'''Admin lista de precios general'''
+@admin.register(clsListaPreciosMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+'''Admin lista de precios detallado'''
+@admin.register(clsDetalleListaPreciosMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+'''Admin cotizaciones general'''
+@admin.register(clsCotizacionesMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+'''Admin cotizaciones detallado'''
+@admin.register(clsDetalleCotizacionesMdl)
 class PersonAdmin(ImportExportModelAdmin):
     pass
