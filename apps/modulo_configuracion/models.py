@@ -766,185 +766,6 @@ class clsHistoricoOrdenesCompraMdl(models.Model):
     def __str__(self):
         return self.identification.supplier_name
 
-# Tabla de entradas de almacén
-class clsHistoricoEntradasAlmacenMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unit_price = models.DecimalField('Precio unitario', max_digits=10, decimal_places=2, blank=True, null=True)
-    total_price = models.DecimalField('Total', max_digits=10, decimal_places=2)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    condition = models.CharField('Condición', max_length=200, choices=INCOMECONDITION, blank=True, null=True)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Entrada de almacén'
-        verbose_name_plural = 'Entradas de almacén'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.identification.supplier_name
-
-# Tabla de salidas de almacén
-class clsHistoricoSalidasAlmacenMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unit_price = models.DecimalField('Precio unitario', max_digits=10, decimal_places=2, blank=True, null=True)
-    discount = models.DecimalField('Descuento', max_digits=10, decimal_places=2, blank=True, null=True)
-    total_price = models.DecimalField('Total', max_digits=10, decimal_places=2)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT, blank=True, null=True)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Salida de almacén'
-        verbose_name_plural = 'Salidas de almacén'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.identification.business_name
-
-# Tabla de ajustes de inventario
-class clsHistoricoAjustesInventarioMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    type = models.CharField('Tipo de movimiento', max_length=200, choices=INCOMETYPE)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Ajuste inventario'
-        verbose_name_plural = 'Ajustes de inventario'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.doc_number
-
-# Tabla de devoluciones de cliente
-class clsHistoricoDevolucionesClienteMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Devolución cliente'
-        verbose_name_plural = 'Devoluciones clientes'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.identification.business_name
-
-# Tabla de devoluciones a proveedor
-class clsHistoricoDevolucionesProveedorMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Devolución proveedor'
-        verbose_name_plural = 'Devoluciones proveedores'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.identification.supplier_name
-
-# Tabla de obsequios
-class clsHistoricoObsequiosMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Obsequio'
-        verbose_name_plural = 'Obsequios'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.doc_number
-
-# Tabla de traslados entre bodegas
-class clsHistoricoTrasladosBodegasMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    type = models.CharField('Tipo de movimiento', max_length=200, choices=INCOMETYPE)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Traslado bodega'
-        verbose_name_plural = 'Traslados bodegas'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.doc_number
-
-# Tabla de saldo inicial
-class clsHistoricoSaldoInicialMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    balance = models.PositiveSmallIntegerField('Cantidad')
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Saldo inicial'
-        verbose_name_plural = 'Saldos iniciales'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.product_code.product_desc
-
 # Tabla de historico alterno de movimientos
 class clsHistoricoMovimientosAlternoMdl(models.Model):
     creation_date = models.CharField('Fecha de creación', max_length=200)
@@ -1411,19 +1232,19 @@ def fncGenerarNumeroDocumento(sender, instance, **kwargs):
     elif sender == clsTrasladosBodegasMdl:
         clsTrasladosBodegasMdl.objects.filter(pk=instance.pk).update(doc_number=f'TRL-{instance.pk}')
     
-# Función que genera un nuevo QR-CODE para una instancia de una tabla
-# sender: Tabla de datos
-# instance: Instancia del modelo
-def fncGenerarNumeroDocumento(sender, instance, **kwargs):
-    qrcode_img = qrcode.make(instance.id)
-    canvas = Image.new('RGB', (290, 290), 'white')
-    draw = ImageDraw.Draw(canvas)
-    canvas.paste(qrcode_img)
-    fname = f'qr_code-{instance.id}'+'.png'
-    buffer = BytesIO()
-    canvas.save(buffer, 'PNG')
-    instance.qr_code.save(fname, File(buffer), save=False)
-    canvas.close()
+# # Función que genera un nuevo QR-CODE para una instancia de una tabla
+# # sender: Tabla de datos
+# # instance: Instancia del modelo
+# def fncGenerarNumeroDocumento(sender, instance, **kwargs):
+#     qrcode_img = qrcode.make(instance.id)
+#     canvas = Image.new('RGB', (290, 290), 'white')
+#     draw = ImageDraw.Draw(canvas)
+#     canvas.paste(qrcode_img)
+#     fname = f'qr_code-{instance.id}'+'.png'
+#     buffer = BytesIO()
+#     canvas.save(buffer, 'PNG')
+#     instance.qr_code.save(fname, File(buffer), save=False)
+#     canvas.close()
 
 
 post_save.connect(fncGenerarNumeroDocumento, sender=clsAjusteInventarioMdl)

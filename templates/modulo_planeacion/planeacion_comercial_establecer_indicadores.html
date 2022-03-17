@@ -11,288 +11,288 @@
         </a>
     </li>
 {% endblock menu-header %}
-{% block content-window %}
-    <form method="post">
-        <div class="card card-primary card-outline">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <i class="fas fa-plus"></i>
-                    {{ title }}
-                </h2>
-            </div>
-            <div class="card-body">
-                <div class="accordion" id="accordionIndicadoresGenerales">
-                    <div class="card card-primary card-outline">
-                        <div class="card-header" id="headingVentasCategoria">
-                            <h2 class="mb-0">
-                                <button 
-                                    class="btn btn-block text-left collapsed" 
-                                    type="button"
-                                    data-toggle="collapse"
-                                    data-target="#cllVentaGeneral"
-                                    aria-expanded="false"
-                                    aria-controls="cllVentaGeneral">
-                                    <i class="fas fa-angle-right"></i>
-                                    Indicadores de venta generales
-                                </button>
-                            </h2>
-                        </div>
-                        <div id="cllVentaGeneral" class="collapse" aria-labelledby="headingVentasCategoria" data-parent="#accordionIndicadoresGenerales">
-                            <div class="card-body">
-                                <div class="accordion" id="accordionFour">
-                                    <div class="card card-primary card-outline">
-                                        <div class="card-header" id="hdnVentaTotal">
-                                            <div class="mb-0">
-                                                <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <button 
-                                                            class="btn collapsed"
-                                                            type="button" 
-                                                            data-toggle="collapse" 
-                                                            data-target="#cllMetaVenta" 
-                                                            aria-expanded="false" 
-                                                            aria-controls="cllMetaVenta">
-                                                            <i class="fas fa-angle-right"></i>
-                                                            Indicador de venta total
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="cllMetaVenta" class="collapse" aria-labelledby="hdnVentaTotal" data-parent="#accordionFour">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-lg-6">
-                                                        <div class="form-group">
-                                                            <label>Meta de venta total:</label>
-                                                            <input 
-                                                                type="number" 
-                                                                class="form-control touchPrice" 
-                                                                autocomplete="off" 
-                                                                placeholder="Registre su objetivo"
-                                                                id="iptVentaTotal">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <div class="row">
-                                                    <div class="col-lg-12">
-                                                        <figure class="highcharts-figure">
-                                                            <div id="grfVentaMensual"></div>
-                                                        </figure>
-                                                    </div>
+{% block content-window %}    
+    <div class="card card-primary card-outline">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fas fa-plus"></i>
+                {{ title }}
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="accordion" id="accordionIndicadoresGenerales">
+                <div class="card card-primary card-outline">
+                    <div class="card-header" id="headingVentasCategoria">
+                        <h2 class="mb-0">
+                            <button 
+                                class="btn btn-block text-left collapsed" 
+                                type="button"
+                                data-toggle="collapse"
+                                data-target="#cllVentaGeneral"
+                                aria-expanded="false"
+                                aria-controls="cllVentaGeneral">
+                                <i class="fas fa-angle-right"></i>
+                                Indicadores de venta generales
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="cllVentaGeneral" class="collapse" aria-labelledby="headingVentasCategoria" data-parent="#accordionIndicadoresGenerales">
+                        <div class="card-body">
+                            <div class="accordion" id="accordionFour">
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header" id="hdnVentaTotal">
+                                        <div class="mb-0">
+                                            <div class="row">
+                                                <div class="col-lg-4">
+                                                    <button 
+                                                        class="btn collapsed"
+                                                        type="button" 
+                                                        data-toggle="collapse" 
+                                                        data-target="#cllMetaVenta" 
+                                                        aria-expanded="false" 
+                                                        aria-controls="cllMetaVenta">
+                                                        <i class="fas fa-angle-right"></i>
+                                                        Indicador de venta total
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card card-primary card-outline">
-                                        <div class="card-header" id="hdnVentasNuevas">
-                                            <h5 class="mb-0">
-                                                <button 
-                                                    class="btn collapsed" 
-                                                    type="button" 
-                                                    data-toggle="collapse" 
-                                                    data-target="#cllVentasNuevas" 
-                                                    aria-expanded="false" 
-                                                    aria-controls="cllVentasNuevas">
-                                                    <i class="fas fa-angle-right"></i>
-                                                    Indicador de ventas nuevas
-                                                </button>
-                                            </h5>
-                                        </div>
-                                        <div id="cllVentasNuevas" class="collapse" aria-labelledby="hdnVentasNuevas" data-parent="#accordionFour">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-lg-6">
-                                                        <div class="form-group">
-                                                            <label>Meta de ventas nuevas:</label>
-                                                            <input 
-                                                                type="number" 
-                                                                class="form-control touchPrice" 
-                                                                autocomplete="off" 
-                                                                placeholder="Registre su objetivo"
-                                                                id="iptVentasNuevas">
-                                                        </div>
+                                    <div id="cllMetaVenta" class="collapse" aria-labelledby="hdnVentaTotal" data-parent="#accordionFour">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Meta de venta total:</label>
+                                                        <input 
+                                                            type="number" 
+                                                            class="form-control touchPrice" 
+                                                            autocomplete="off" 
+                                                            placeholder="Registre su objetivo"
+                                                            id="iptVentaTotal">
                                                     </div>
                                                 </div>
-                                                <hr>
-                                                <div class="row">
-                                                    <div class="col-lg-12">
-                                                        <figure class="highcharts-figure">
-                                                            <div id="grfVentasNuevas"></div>
-                                                        </figure>
-                                                    </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <figure class="highcharts-figure">
+                                                        <div id="grfVentaMensual"></div>
+                                                    </figure>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card card-primary card-outline">
-                                        <div class="card-header" id="hdnProfundizacionClientes">
-                                            <h5 class="mb-0">
-                                                <button 
-                                                    class="btn collapsed" 
-                                                    type="button" 
-                                                    data-toggle="collapse" 
-                                                    data-target="#cllProfundizacionClientes" 
-                                                    aria-expanded="false" 
-                                                    aria-controls="cllProfundizacionClientes">
-                                                    <i class="fas fa-angle-right"></i>
-                                                    Indicador de profundización de clientes
-                                                </button>
-                                            </h5>
-                                        </div>
-                                        <div id="cllProfundizacionClientes" class="collapse" aria-labelledby="hdnProfundizacionClientes" data-parent="#accordionFour">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-lg-6">
-                                                        <div class="form-group">
-                                                            <label>Meta de profundización de clientes:</label>
-                                                            <input 
-                                                                type="number" 
-                                                                class="form-control touchPrice" 
-                                                                autocomplete="off" 
-                                                                placeholder="Registre su objetivo"
-                                                                id="iptProfundizacionClientes">
-                                                        </div>
+                                </div>
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header" id="hdnVentasNuevas">
+                                        <h5 class="mb-0">
+                                            <button 
+                                                class="btn collapsed" 
+                                                type="button" 
+                                                data-toggle="collapse" 
+                                                data-target="#cllVentasNuevas" 
+                                                aria-expanded="false" 
+                                                aria-controls="cllVentasNuevas">
+                                                <i class="fas fa-angle-right"></i>
+                                                Indicador de ventas nuevas
+                                            </button>
+                                        </h5>
+                                    </div>
+                                    <div id="cllVentasNuevas" class="collapse" aria-labelledby="hdnVentasNuevas" data-parent="#accordionFour">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Meta de ventas nuevas:</label>
+                                                        <input 
+                                                            type="number" 
+                                                            class="form-control touchPrice" 
+                                                            autocomplete="off" 
+                                                            placeholder="Registre su objetivo"
+                                                            id="iptVentasNuevas">
                                                     </div>
                                                 </div>
-                                                <hr>
-                                                <div class="row">
-                                                    <div class="col-lg-12">
-                                                        <figure class="highcharts-figure">
-                                                            <div id="grfProfundizacionClientes"></div>
-                                                        </figure>
-                                                    </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <figure class="highcharts-figure">
+                                                        <div id="grfVentasNuevas"></div>
+                                                    </figure>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card card-primary card-outline">
-                                        <div class="card-header" id="hdnClientesNuevos">
-                                            <h5 class="mb-0">
-                                                <button 
-                                                    class="btn collapsed" 
-                                                    type="button" 
-                                                    data-toggle="collapse" 
-                                                    data-target="#cllClientesNuevos" 
-                                                    aria-expanded="false" 
-                                                    aria-controls="cllClientesNuevos">
-                                                    <i class="fas fa-angle-right"></i>
-                                                    Indicador de clientes nuevos
-                                                </button>
-                                            </h5>
-                                        </div>
-                                        <div id="cllClientesNuevos" class="collapse" aria-labelledby="hdnClientesNuevos" data-parent="#accordionFour">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-lg-6">
-                                                        <div class="form-group">
-                                                            <label>Meta de clientes nuevos:</label>
-                                                            <input 
-                                                                type="number" 
-                                                                class="form-control touchNumber" 
-                                                                autocomplete="off" 
-                                                                placeholder="Registre su objetivo"
-                                                                id="iptClientesNuevos">
-                                                        </div>
+                                </div>
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header" id="hdnProfundizacionClientes">
+                                        <h5 class="mb-0">
+                                            <button 
+                                                class="btn collapsed" 
+                                                type="button" 
+                                                data-toggle="collapse" 
+                                                data-target="#cllProfundizacionClientes" 
+                                                aria-expanded="false" 
+                                                aria-controls="cllProfundizacionClientes">
+                                                <i class="fas fa-angle-right"></i>
+                                                Indicador de profundización de clientes
+                                            </button>
+                                        </h5>
+                                    </div>
+                                    <div id="cllProfundizacionClientes" class="collapse" aria-labelledby="hdnProfundizacionClientes" data-parent="#accordionFour">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Meta de profundización de clientes:</label>
+                                                        <input 
+                                                            type="number" 
+                                                            class="form-control touchPrice" 
+                                                            autocomplete="off" 
+                                                            placeholder="Registre su objetivo"
+                                                            id="iptProfundizacionClientes">
                                                     </div>
                                                 </div>
-                                                <hr>
-                                                <div class="row">
-                                                    <div class="col-lg-12">
-                                                        <figure class="highcharts-figure">
-                                                            <div id="grfClientesNuevos"></div>
-                                                        </figure>
-                                                    </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <figure class="highcharts-figure">
+                                                        <div id="grfProfundizacionClientes"></div>
+                                                    </figure>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card card-primary card-outline">
-                                        <div class="card-header" id="hdnMargenVenta">
-                                            <h5 class="mb-0">
-                                                <button 
-                                                    class="btn collapsed" 
-                                                    type="button" 
-                                                    data-toggle="collapse" 
-                                                    data-target="#cllMargenVenta" 
-                                                    aria-expanded="false" 
-                                                    aria-controls="cllMargenVenta">
-                                                    <i class="fas fa-angle-right"></i>
-                                                    Indicador de margén de venta
-                                                </button>
-                                            </h5>
-                                        </div>
-                                        <div id="cllMargenVenta" class="collapse" aria-labelledby="hdnMargenVenta" data-parent="#accordionFour">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-lg-6">
-                                                        <div class="form-group">
-                                                            <label>Meta de margén de venta:</label>
-                                                            <input 
-                                                                type="number" 
-                                                                class="form-control touchPerc"
-                                                                autocomplete="off" 
-                                                                placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
-                                                        </div>
+                                </div>
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header" id="hdnClientesNuevos">
+                                        <h5 class="mb-0">
+                                            <button 
+                                                class="btn collapsed" 
+                                                type="button" 
+                                                data-toggle="collapse" 
+                                                data-target="#cllClientesNuevos" 
+                                                aria-expanded="false" 
+                                                aria-controls="cllClientesNuevos">
+                                                <i class="fas fa-angle-right"></i>
+                                                Indicador de clientes nuevos
+                                            </button>
+                                        </h5>
+                                    </div>
+                                    <div id="cllClientesNuevos" class="collapse" aria-labelledby="hdnClientesNuevos" data-parent="#accordionFour">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Meta de clientes nuevos:</label>
+                                                        <input 
+                                                            type="number" 
+                                                            class="form-control touchNumber" 
+                                                            autocomplete="off" 
+                                                            placeholder="Registre su objetivo"
+                                                            id="iptClientesNuevos">
                                                     </div>
                                                 </div>
-                                                <hr>
-                                                <div class="row">
-                                                    <div class="col-lg-12">
-                                                        <figure class="highcharts-figure">
-                                                            <div id="grfMargenVenta"></div>
-                                                        </figure>
-                                                    </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <figure class="highcharts-figure">
+                                                        <div id="grfClientesNuevos"></div>
+                                                    </figure>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>    
-                            </div>
+                                </div>
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header" id="hdnMargenVenta">
+                                        <h5 class="mb-0">
+                                            <button 
+                                                class="btn collapsed" 
+                                                type="button" 
+                                                data-toggle="collapse" 
+                                                data-target="#cllMargenVenta" 
+                                                aria-expanded="false" 
+                                                aria-controls="cllMargenVenta">
+                                                <i class="fas fa-angle-right"></i>
+                                                Indicador de margén de venta
+                                            </button>
+                                        </h5>
+                                    </div>
+                                    <div id="cllMargenVenta" class="collapse" aria-labelledby="hdnMargenVenta" data-parent="#accordionFour">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label>Meta de margén de venta:</label>
+                                                        <input 
+                                                            type="number" 
+                                                            class="form-control touchPerc"
+                                                            autocomplete="off" 
+                                                            placeholder="Registre su objetivo"
+                                                            id="iptMargenVenta">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <figure class="highcharts-figure">
+                                                        <div id="grfMargenVenta"></div>
+                                                    </figure>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>    
                         </div>
                     </div>
-                    <hr>
-                    <div class="card card-primary card-outline">
-                        <div class="card-header" id="headingVentasCategoria">   
-                            <h2 class="mb-0">
-                                <button 
-                                    class="btn btn-block text-left collapsed" 
-                                    type="button" 
-                                    data-toggle="collapse" 
-                                    data-target="#cllVentasCategorias" 
-                                    aria-expanded="false" 
-                                    aria-controls="cllVentasCategorias">
-                                    <i class="fas fa-angle-right"></i>
-                                    Indicadores de venta detallados
-                                </button>
-                            </h2>
-                        </div>
-                        <div id="cllVentasCategorias" class="collapse" aria-labelledby="headingVentasCategoria" data-parent="#accordionIndicadoresGenerales">
-                            <div class="card-body">
-                                <div class="accordion" id="accordionThree">
-                                    <div class="card card-primary card-outline">
-                                        <div class="card-header" id="hdnCiudad">
-                                            <div class="mb-0">
-                                                <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <button 
-                                                            class="btn collapsed"
-                                                            type="button" 
-                                                            data-toggle="collapse" 
-                                                            data-target="#cllCiudad" 
-                                                            aria-expanded="false" 
-                                                            aria-controls="cllCiudad"
-                                                            id="btnCollapseCiudad">
-                                                            <i class="fas fa-angle-right"></i>
-                                                            Ciudad
-                                                        </button>
-                                                    </div>
+                </div>
+                <hr>
+                <div class="card card-primary card-outline">
+                    <div class="card-header" id="headingVentasCategoria">   
+                        <h2 class="mb-0">
+                            <button 
+                                class="btn btn-block text-left collapsed" 
+                                type="button" 
+                                data-toggle="collapse" 
+                                data-target="#cllVentasCategorias" 
+                                aria-expanded="false" 
+                                aria-controls="cllVentasCategorias">
+                                <i class="fas fa-angle-right"></i>
+                                Indicadores de venta detallados
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="cllVentasCategorias" class="collapse" aria-labelledby="headingVentasCategoria" data-parent="#accordionIndicadoresGenerales">
+                        <div class="card-body">
+                            <div class="accordion" id="accordionThree">
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header" id="hdnCiudad">
+                                        <div class="mb-0">
+                                            <div class="row">
+                                                <div class="col-lg-4">
+                                                    <button 
+                                                        class="btn collapsed"
+                                                        type="button" 
+                                                        data-toggle="collapse" 
+                                                        data-target="#cllCiudad" 
+                                                        aria-expanded="false" 
+                                                        aria-controls="cllCiudad"
+                                                        id="btnCollapseCiudad">
+                                                        <i class="fas fa-angle-right"></i>
+                                                        Ciudad
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="cllCiudad" class="collapse" aria-labelledby="hdnCiudad" data-parent="#accordionThree">
+                                    </div>
+                                    <div id="cllCiudad" class="collapse" aria-labelledby="hdnCiudad" data-parent="#accordionThree">
+                                        <form id="frmCiudad" action=".">
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-lg-4">
@@ -300,6 +300,7 @@
                                                             <label>Ciudad:</label>
                                                             <select 
                                                                 id="slcCiudad"
+                                                                required="true"
                                                                 class="form-control select2">
                                                             </select>
                                                         </div>
@@ -307,8 +308,10 @@
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
                                                             <label>Indicador:</label>
-                                                            <select name="select" class="form-control">
-                                                                <option value="value1">-------------</option>
+                                                            <select 
+                                                                id="slcIndicadorCiudad" 
+                                                                class="form-control select2"
+                                                                required="true">
                                                                 <option value="Total_Sales_Objetive">Venta total</option>
                                                                 <option value="Customer_Retention_Rate">Ventas nuevas</option>
                                                                 <option value="Sales_Deepening">Profundización de clientes</option>
@@ -322,61 +325,58 @@
                                                             <label>Meta:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control touchPrice"
+                                                                required="true"
                                                                 autocomplete="off" 
-                                                                placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptObjetivoCiudad">
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row" id="rowMetaGeneral">
+                                                <hr>
+                                                <div class="row" id="rowMetaGeneral" hidden="true">
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
                                                             <label>Meta general indicador:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                readonly="true"
                                                                 autocomplete="off" 
-                                                                placeholder="Registre su objetivo"
-                                                                id="iptMetaGeneral">
+                                                                required="false"
+                                                                id="iptMetaGeneralCiudad">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Meta acumulada ciudad:</label>
+                                                            <label>Meta acumulada indicador:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
-                                                                autocomplete="off" 
-                                                                placeholder="Registre su objetivo"
-                                                                id="iptMetaAcumulada">
+                                                                class="form-control"
+                                                                readonly="true"
+                                                                autocomplete="off"
+                                                                required="false"
+                                                                id="iptMetaAcumuladaCiudad">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Meta restante ciudad:</label>
+                                                            <label>Meta restante indicador:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                readonly="true"
                                                                 autocomplete="off" 
-                                                                placeholder="Registre su objetivo"
-                                                                id="iptMetaRestante">
+                                                                required="false"
+                                                                id="iptMetaRestanteCiudad">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <hr>
                                                 <div class="row">
-                                                    <div class="col-lg-12">
-                                                        <figure class="highcharts-figure">
-                                                            <div id="grfIndicadorCiudad"></div>
-                                                        </figure>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
                                                             <button 
-                                                                type="button"
+                                                                type="submit"
                                                                 id="btnAgregarIndicadorCiudad"
                                                                 class="btn btn-block btn-outline-primary">
                                                                 Agregar
@@ -384,7 +384,14 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <hr>
+                                                <hr>    
+                                                <div class="row" id="rowGraficoCiudad">
+                                                    <div class="col-lg-12">
+                                                        <figure class="highcharts-figure">
+                                                            <div id="grfCiudad"></div>
+                                                        </figure>
+                                                    </div>
+                                                </div>
                                                 <div class="row">
                                                     <div class="col-lg-12">
                                                         <table 
@@ -393,8 +400,9 @@
                                                             <thead>
                                                                 <tr style="text-align: center;">
                                                                     <th style="width: 30%;">Indicador</th>
-                                                                    <th style="width: 40%;">Ciudad</th>
+                                                                    <th style="width: 30%;">Ciudad</th>
                                                                     <th style="width: 30%;">Meta</th>
+                                                                    <th style="width: 10%;">Opciones</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -403,47 +411,51 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
-                                    <div class="card card-primary card-outline">
-                                        <div class="card-header" id="hdnZona">
-                                            <h5 class="mb-0">
-                                                <button 
-                                                    class="btn collapsed" 
-                                                    type="button" 
-                                                    data-toggle="collapse" 
-                                                    data-target="#cllZona" 
-                                                    aria-expanded="false" 
-                                                    aria-controls="cllZona">
-                                                    <i class="fas fa-angle-right"></i>
-                                                    Zona
-                                                </button>
-                                            </h5>
-                                        </div>
-                                        <div id="cllZona" class="collapse" aria-labelledby="hdnZona" data-parent="#accordionThree">
+                                </div>
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header" id="hdnZona">
+                                        <h5 class="mb-0">
+                                            <button 
+                                                class="btn collapsed" 
+                                                type="button" 
+                                                data-toggle="collapse" 
+                                                data-target="#cllZona" 
+                                                aria-expanded="false" 
+                                                aria-controls="cllZona"
+                                                id="btnCollapseZona">
+                                                <i class="fas fa-angle-right"></i>
+                                                Zona
+                                            </button>
+                                        </h5>
+                                    </div>
+                                    <div id="cllZona" class="collapse" aria-labelledby="hdnZona" data-parent="#accordionThree">
+                                        <form id="frmZona" action=".">
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
                                                             <label>Zona:</label>
-                                                            <select name="select" class="form-control">
-                                                                <option value="value1">-------------</option>
-                                                                <option value="value1">Norte</option>
-                                                                <option value="value2">Sur</option>
-                                                                <option value="value3">Oriente</option>
+                                                            <select 
+                                                                id="slcZona"
+                                                                required="true"
+                                                                class="form-control select2">
                                                             </select>
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
                                                             <label>Indicador:</label>
-                                                            <select name="select" class="form-control">
-                                                                <option value="value1">-------------</option>
-                                                                <option value="value1">Venta total</option>
-                                                                <option value="value2">Profundización de venta</option>
-                                                                <option value="value3">Clientes nuevos</option>
-                                                                <option value="value3">Tasa de retención de clientes</option>
-                                                                <option value="value3">Margén de ventas</option>
+                                                            <select 
+                                                                id="slcIndicadorZona" 
+                                                                class="form-control select2"
+                                                                required="true">
+                                                                <option value="Total_Sales_Objetive">Venta total</option>
+                                                                <option value="Customer_Retention_Rate">Ventas nuevas</option>
+                                                                <option value="Sales_Deepening">Profundización de clientes</option>
+                                                                <option value="New_Customers">Clientes nuevos</option>
+                                                                <option value="Margin">Margén de ventas</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -452,72 +464,85 @@
                                                             <label>Meta:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                required="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptObjetivoZona">
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
+                                                <hr>
+                                                <div class="row" id="rowMetaGeneralZona" hidden="true">
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Meta general:</label>
+                                                            <label>Meta general indicador:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                readonly="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptMetaGeneralZona">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Meta acumulada:</label>
+                                                            <label>Meta acumulada indicador:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                readonly="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptMetaAcumuladaZona">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Meta por completar:</label>
+                                                            <label>Meta restante zona:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                readonly="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptMetaRestanteZona">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <hr>
                                                 <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <div class="form-group">
+                                                            <button 
+                                                                type="submit"
+                                                                id="btnAgregarIndicadorZona"
+                                                                class="btn btn-block btn-outline-primary">
+                                                                Agregar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="row" id="rowGraficoZona">
                                                     <div class="col-lg-12">
                                                         <figure class="highcharts-figure">
-                                                            <div id="grfCiudad"></div>
+                                                            <div id="grfZona"></div>
                                                         </figure>
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <div class="form-group">
-                                                            <button type="button" class="btn btn-block btn-outline-primary">Agregar</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <div class="row">
                                                     <div class="col-lg-12">
-                                                        <table class="table table-bordered table-hover" id="subcatTable">
+                                                        <table 
+                                                            class="table table-bordered table-hover" 
+                                                            id="tblIndicadorZona">
                                                             <thead>
                                                                 <tr style="text-align: center;">
                                                                     <th style="width: 30%;">Indicador</th>
-                                                                    <th style="width: 40%;">Zona</th>
+                                                                    <th style="width: 30%;">Zona</th>
                                                                     <th style="width: 30%;">Meta</th>
+                                                                    <th style="width: 10%;">Opciones</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -526,47 +551,51 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
-                                    <div class="card card-primary card-outline">
-                                        <div class="card-header" id="hdnCategoriaCliente">
-                                            <h5 class="mb-0">
-                                                <button 
-                                                    class="btn collapsed" 
-                                                    type="button" 
-                                                    data-toggle="collapse" 
-                                                    data-target="#cllCategoriaCliente" 
-                                                    aria-expanded="false" 
-                                                    aria-controls="cllCategoriaCliente">
-                                                    <i class="fas fa-angle-right"></i>
-                                                    Categoría clientes
-                                                </button>
-                                            </h5>
-                                        </div>
-                                        <div id="cllCategoriaCliente" class="collapse" aria-labelledby="hdnCategoriaCliente" data-parent="#accordionThree">
+                                </div>
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header" id="hdnCategoriaCliente">
+                                        <h5 class="mb-0">
+                                            <button 
+                                                class="btn collapsed" 
+                                                type="button" 
+                                                data-toggle="collapse" 
+                                                data-target="#cllCategoriaCliente" 
+                                                aria-expanded="false" 
+                                                aria-controls="cllCategoriaCliente"
+                                                id="btnCollapseCategoriaCliente">
+                                                <i class="fas fa-angle-right"></i>
+                                                Categoría cliente
+                                            </button>
+                                        </h5>
+                                    </div>
+                                    <div id="cllCategoriaCliente" class="collapse" aria-labelledby="hdnCategoriaCliente" data-parent="#accordionThree">
+                                        <form id="frmCategoriaCliente" action=".">
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
                                                             <label>Categoría cliente:</label>
-                                                            <select name="select" class="form-control">
-                                                                <option value="value1">-------------</option>
-                                                                <option value="value1">Norte</option>
-                                                                <option value="value2">Sur</option>
-                                                                <option value="value3">Oriente</option>
+                                                            <select 
+                                                                id="slcCategoriaCliente"
+                                                                required="true"
+                                                                class="form-control select2">
                                                             </select>
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
                                                             <label>Indicador:</label>
-                                                            <select name="select" class="form-control">
-                                                                <option value="value1">-------------</option>
-                                                                <option value="value1">Venta total</option>
-                                                                <option value="value2">Profundización de venta</option>
-                                                                <option value="value3">Clientes nuevos</option>
-                                                                <option value="value3">Tasa de retención de clientes</option>
-                                                                <option value="value3">Margén de ventas</option>
+                                                            <select 
+                                                                id="slcIndicadorCategoriaCliente" 
+                                                                class="form-control select2"
+                                                                required="true">
+                                                                <option value="Total_Sales_Objetive">Venta total</option>
+                                                                <option value="Customer_Retention_Rate">Ventas nuevas</option>
+                                                                <option value="Sales_Deepening">Profundización de clientes</option>
+                                                                <option value="New_Customers">Clientes nuevos</option>
+                                                                <option value="Margin">Margén de ventas</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -575,72 +604,85 @@
                                                             <label>Meta:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                required="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptObjetivoCategoriaCliente">
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
+                                                <hr>
+                                                <div class="row" id="rowMetaGeneralCategoriaCliente" hidden="true">
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Meta general:</label>
+                                                            <label>Meta general indicador:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                readonly="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptMetaGeneralCategoriaCliente">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Meta acumulada:</label>
+                                                            <label>Meta acumulada indicador:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                readonly="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptMetaAcumuladaCategoriaCliente">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Meta por completar:</label>
+                                                            <label>Meta restante zona:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                readonly="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptMetaRestanteCategoriaCliente">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <hr>
                                                 <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <div class="form-group">
+                                                            <button 
+                                                                type="submit"
+                                                                id="btnAgregarIndicadorCategoriaCliente"
+                                                                class="btn btn-block btn-outline-primary">
+                                                                Agregar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="row" id="rowGraficoCategoriaCliente">
                                                     <div class="col-lg-12">
                                                         <figure class="highcharts-figure">
-                                                            <div id="grfCiudad"></div>
+                                                            <div id="grfCategoriaCliente"></div>
                                                         </figure>
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <div class="form-group">
-                                                            <button type="button" class="btn btn-block btn-outline-primary">Agregar</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <div class="row">
                                                     <div class="col-lg-12">
-                                                        <table class="table table-bordered table-hover" id="subcatTable">
+                                                        <table 
+                                                            class="table table-bordered table-hover" 
+                                                            id="tblIndicadorCategoriaCliente">
                                                             <thead>
                                                                 <tr style="text-align: center;">
                                                                     <th style="width: 30%;">Indicador</th>
-                                                                    <th style="width: 40%;">Categoría cliente</th>
+                                                                    <th style="width: 30%;">Categoría cliente</th>
                                                                     <th style="width: 30%;">Meta</th>
+                                                                    <th style="width: 10%;">Opciones</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -649,47 +691,51 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
-                                    <div class="card card-primary card-outline">
-                                        <div class="card-header" id="hdnAsesor">
-                                            <h5 class="mb-0">
-                                                <button 
-                                                    class="btn collapsed" 
-                                                    type="button" 
-                                                    data-toggle="collapse" 
-                                                    data-target="#cllAsesor" 
-                                                    aria-expanded="false" 
-                                                    aria-controls="cllAsesor">
-                                                    <i class="fas fa-angle-right"></i>
-                                                    Asesor
-                                                </button>
-                                            </h5>
-                                        </div>
-                                        <div id="cllAsesor" class="collapse" aria-labelledby="hdnAsesor" data-parent="#accordionThree">
+                                </div>
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header" id="hdnAsesor">
+                                        <h5 class="mb-0">
+                                            <button 
+                                                class="btn collapsed" 
+                                                type="button" 
+                                                data-toggle="collapse" 
+                                                data-target="#cllAsesor" 
+                                                aria-expanded="false" 
+                                                aria-controls="cllAsesor"
+                                                id="btnCollapseAsesorComercial">
+                                                <i class="fas fa-angle-right"></i>
+                                                Asesor
+                                            </button>
+                                        </h5>
+                                    </div>
+                                    <div id="cllAsesor" class="collapse" aria-labelledby="hdnAsesor" data-parent="#accordionThree">
+                                        <form id="frmAsesorComercial" action=".">
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Asesor:</label>
-                                                            <select name="select" class="form-control">
-                                                                <option value="value1">-------------</option>
-                                                                <option value="value1">Norte</option>
-                                                                <option value="value2">Sur</option>
-                                                                <option value="value3">Oriente</option>
+                                                            <label>Asesor comercial:</label>
+                                                            <select 
+                                                                id="slcAsesorComercial"
+                                                                required="true"
+                                                                class="form-control select2">
                                                             </select>
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
                                                             <label>Indicador:</label>
-                                                            <select name="select" class="form-control">
-                                                                <option value="value1">-------------</option>
-                                                                <option value="value1">Venta total</option>
-                                                                <option value="value2">Profundización de venta</option>
-                                                                <option value="value3">Clientes nuevos</option>
-                                                                <option value="value3">Tasa de retención de clientes</option>
-                                                                <option value="value3">Margén de ventas</option>
+                                                            <select 
+                                                                id="slcIndicadorAsesorComercial" 
+                                                                class="form-control select2"
+                                                                required="true">
+                                                                <option value="Total_Sales_Objetive">Venta total</option>
+                                                                <option value="Customer_Retention_Rate">Ventas nuevas</option>
+                                                                <option value="Sales_Deepening">Profundización de clientes</option>
+                                                                <option value="New_Customers">Clientes nuevos</option>
+                                                                <option value="Margin">Margén de ventas</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -698,72 +744,85 @@
                                                             <label>Meta:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                required="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptObjetivoAsesorComercial">
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
+                                                <hr>
+                                                <div class="row" id="rowMetaGeneralAsesorComercial" hidden="true">
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Meta general:</label>
+                                                            <label>Meta general indicador:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                readonly="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptMetaGeneralAsesorComercial">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Meta acumulada:</label>
+                                                            <label>Meta acumulada indicador:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                readonly="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptMetaAcumuladaAsesorComercial">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="form-group">
-                                                            <label>Meta por completar:</label>
+                                                            <label>Meta restante zona:</label>
                                                             <input 
                                                                 type="number" 
-                                                                class="form-control touchPerc"
+                                                                class="form-control"
+                                                                readonly="true"
                                                                 autocomplete="off" 
                                                                 placeholder="Registre su objetivo"
-                                                                id="iptMargenVenta">
+                                                                id="iptMetaRestanteAsesorComercial">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <hr>
                                                 <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <div class="form-group">
+                                                            <button 
+                                                                type="submit"
+                                                                id="btnAgregarIndicadorAsesorComercial"
+                                                                class="btn btn-block btn-outline-primary">
+                                                                Agregar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="row" id="rowGraficoAsesorComercial">
                                                     <div class="col-lg-12">
                                                         <figure class="highcharts-figure">
-                                                            <div id="grfCiudad"></div>
+                                                            <div id="grfAsesorComercial"></div>
                                                         </figure>
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-lg-4">
-                                                        <div class="form-group">
-                                                            <button type="button" class="btn btn-block btn-outline-primary">Agregar</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <div class="row">
                                                     <div class="col-lg-12">
-                                                        <table class="table table-bordered table-hover" id="subcatTable">
+                                                        <table 
+                                                            class="table table-bordered table-hover" 
+                                                            id="tblIndicadorAsesorComercial">
                                                             <thead>
                                                                 <tr style="text-align: center;">
                                                                     <th style="width: 30%;">Indicador</th>
-                                                                    <th style="width: 40%;">Ciudad</th>
+                                                                    <th style="width: 30%;">Asesor comercial</th>
                                                                     <th style="width: 30%;">Meta</th>
+                                                                    <th style="width: 10%;">Opciones</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -772,21 +831,26 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>  
-                                    </div>
-                                </div>    
-                            </div>
+                                        </form>
+                                    </div>  
+                                </div>
+                            </div>    
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card-footer">
-                <div class="col-lg-4">
-                    <button type="submit" class="btn btn-block btn-outline-primary">Guardar Planeación</button>
-                </div>
+        </div>
+        <div class="card-footer">
+            <div class="col-lg-4">
+                <button 
+                    type="button" 
+                    class="btn btn-block btn-outline-primary"
+                    id="btnGuardarPlaneacion">
+                    Guardar Planeación
+                </button>
             </div>
         </div>
-    </form>
+    </div>
 </div>
 {% endblock content-window %}
 {% block extrajs %}  

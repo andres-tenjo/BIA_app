@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils.formats import number_format
 from apps.modulo_configuracion.models import *
 
 exclude_tuple = (
@@ -104,6 +105,10 @@ class clsCatalogoBodegasPlantillajson(serializers.ModelSerializer):
             )
 
 class clsCatalogoProductosMdlSerializer(serializers.ModelSerializer):
+    cost_pu = serializers.SerializerMethodField('fncFormatoNumero')
+    full_sale_price = serializers.SerializerMethodField('fncFormatoNumero')
+    iva = serializers.SerializerMethodField('fncFormatoNumero')
+    other_tax = serializers.SerializerMethodField('fncFormatoNumero')
     product_cat = serializers.StringRelatedField()
     product_subcat = serializers.StringRelatedField()
     purchase_unit = serializers.StringRelatedField()
@@ -116,6 +121,9 @@ class clsCatalogoProductosMdlSerializer(serializers.ModelSerializer):
     class Meta:
         model = clsCatalogoProductosMdl
         exclude = ('qr_code','split','state', 'user_creation', 'user_update')
+    
+    def fncFormatoNumero(self, obj):
+        return number_format(obj.cost_pu)
 
 class clsCatalogoProveedoresMdlSerializer(serializers.ModelSerializer):
     department = serializers.StringRelatedField()

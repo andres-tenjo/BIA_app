@@ -451,20 +451,20 @@ class clsExportarPlantillaProductosViw(APIView):
         qrsCategoriaProducto = clsCategoriaProductoMdl.objects.filter(state='AC')
         srlCategoriaProducto = clsCategoriaProductoMdlSerializer(qrsCategoriaProducto, many=True)
         dtfCategoriaProducto = pd.DataFrame(srlCategoriaProducto.data)
-        dtfCategoriaProducto = dtfCategoriaProducto.rename(columns={'id':'Nº', 'product_cat':'Categoría'})
+        dtfCategoriaProducto = dtfCategoriaProducto.rename(columns={'id':'Código', 'product_cat':'Categoría'})
         qrsSubcategoriaPorducto = clsSubcategoriaProductoMdl.objects.filter(state='AC')
         srlSubcategoriaProducto = ProductSubcategorySerializer(qrsSubcategoriaPorducto, many=True)
         dtfSubcategoria = pd.DataFrame(srlSubcategoriaProducto.data)
-        dtfSubcategoria = dtfSubcategoria.rename(columns={'id':'Nº', 'product_subcat':'Subcategoría'})
+        dtfSubcategoria = dtfSubcategoria.rename(columns={'id':'Código', 'product_subcat':'Subcategoría'})
         dtfSubcategoria = dtfSubcategoria.drop(['product_cat'], axis=1)
         qrsUnidadCompra = clsUnidadCompraMdl.objects.filter(state='AC')
         srlUnidadCompra = clsUnidadCompraMdlSerializer(qrsUnidadCompra, many=True)
         dtfUnidadCompra = pd.DataFrame(srlUnidadCompra.data)
-        dtfUnidadCompra = dtfUnidadCompra.rename(columns={'id':'Nº', 'purchase_unit':'Unidad de compra'})
+        dtfUnidadCompra = dtfUnidadCompra.rename(columns={'id':'Código', 'purchase_unit':'Unidad de compra'})
         qrsUnidadVenta = clsUnidadVentaMdl.objects.filter(state='AC')
         srlUnidadVenta = clsUnidadVentaMdlSerializer(qrsUnidadVenta, many=True)
         dtfUnidadVenta = pd.DataFrame(srlUnidadVenta.data)
-        dtfUnidadVenta = dtfUnidadVenta.rename(columns={'id':'Nº', 'sales_unit':'Unidad de venta'})
+        dtfUnidadVenta = dtfUnidadVenta.rename(columns={'id':'Código', 'sales_unit':'Unidad de venta'})
         dtfPlantillaProductos = pd.DataFrame(
             {
                 'Descripción producto':[],
@@ -525,20 +525,20 @@ class clsExportarPlantillaProductosViw(APIView):
             'PERMITE .', 'PERMITE .', 'NO PERMITE'
             ]
         lstObservaciones = [
-            'Ingrese la descripción del producto, Ej. Coca cola pet x 12 250 ml', 
-            'Ingrese el código de barras del producto, Ej. 77023456789', 
-            'Ingrese la marca del producto, Ej. Coca cola',
-            'Ingrese el Nº de la categoría de la hoja (CATEGORIA), Ej. 3', 
-            'Ingrese el Nº de la subcategoría de la hoja (SUBCATEGORIA), Ej. 2',
-            'Ingrese el Nº de la unidad de compra de la hoja (UNIDAD_COMPRA), Ej. 1',
-            'Ingrese la cantidad por unidad de compra, Ej. 12',
-            'Ingrese el precio de compra con máximo 2 digitos decimales separados por (,) Ej. 12536,23',
-            'Ingrese el Nº de la unidad de venta de la hoja (UNIDAD_VENTA), Ej. 1',
-            'Ingrese la cantidad por unidad de venta, Ej. 12',
-            'Ingrese el precio de venta con máximo 2 digitos decimales separados por (,) Ej. 12536,23',
-            'Ingrese el porcentaje de iva del producto (Si aplica) Ej. 19',
-            'Ingrese el porcentaje de otros impuestos del producto (Si aplica) Ej. 5',
-            'Ingrese el tiempo promedio de entrega del proveedor en días después de hacer un pedido Ej. 3'
+            'Ingrersa el nombre y una descripción breve del producto por ejemplo: Coca cola pet x 12',
+            'Este espacio solo permite el ingreso de números, digita el código de barras del producto',
+            'Ingresa la marca de tu producto',
+            'Como ya creaste las categorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "CATEGORIA" donde encontraras las que ya has creado, ahí puedes validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna). Por ejemplo la categoria se llama Bebidas y el numero que aparece al inicio es 1, digitas 1 en este campo',
+            'Como ya creaste las subcategorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "SUBCATEGORIA" allí encontraras las que ya has creado, podrás validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna)',
+            'Las unidades de compra ya las creaste, las encontrarás en la hoja llamada "UNIDAD_COMPRA", digita el número que aparece en la primer columna, por ejemplo: primer columna 1, segunda columna Canasta, si es una canasta digitas el 1',
+            'Cuantas unidades componen tu unidad de compra, si tu compras al proveedor por canasta de 30 unidades, el valor que debes digitar será 30',
+            'Ingresa el valor que pagas a tu proveedor por cada unidad de compra, por ejemplo: si compras por caja de 30 unidades, el valor por cada caja de 30 unidades, si tienes decimales solo ingresa 2 digitos. (Sin el signo $ y sin puntos',
+            'Las unidades de venta ya las creaste, en la hoja de este archivo llamada "UNIDAD_VENTA" las encontrarás, digita el número que aparece en la primer columna, por ejemplo: primer columna 1, segunda columna Canasta, si es una canasta digitas el 1',
+            'Ingresa la unidad en la que vendes a tus clientes este producto, por ejemplo: si compras por caja de 30 pero vendes por unidad, digitas 1',
+            'Aquí digitas el precio de venta que das a tus clientes de acuerdo a tu unidad de venta, si vendes por caja de 30, será este valor, si es por unidad; 1, será el valor de Una unidad. No ingreses el signo pesos ni puntos, si requieres puedes ingresar dos decimales con la coma',
+            'Ingresa en numero, el porcentaje de IVA que tiene este producto para la venta, no incluyas el signo %, por ejemplo si es 19%, solo ingresas 19, si no aplica dejas este campo vacio',
+            'Si para la venta de tu producto debes incluir otro impuesto adicional al IVA, ingresa en numero el porcentaje del impuesto sin incluir el signo %, por ejemplo 4%, solo ingresas 4,  si no aplica dejas este campo vacio',
+            'Ingresa en número de días el tiempo que tu proveedor se toma para entregarte el pedido una vez le envias la solicitud, por ejemplo 5 días, ingresas solo 5'
             ]
         lstCampoObligatorio = [
             'SI', 'NO', 'SI',
@@ -671,31 +671,6 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
                                     )
                         jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
                         response = JsonResponse(jsnData, safe=False)
-                        # with transaction.atomic():
-                        #     for i in (dtfProductos.values.tolist()):
-                        #         qrsCatalogoProductos = clsCatalogoProductosMdl()
-                        #         qrsCatalogoProductos.product_desc = i[0]
-                        #         print(i[1])
-                        #         if i[1] != 0:
-                        #             qrsCatalogoProductos.bar_code = int(i[1])
-                        #         qrsCatalogoProductos.trademark = i[2]
-                        #         qrsCatalogoProductos.product_cat_id = int(i[3])
-                        #         qrsCatalogoProductos.product_subcat_id = int(i[4])
-                        #         qrsCatalogoProductos.purchase_unit_id = int(i[5])
-                        #         qrsCatalogoProductos.quantity_pu = int(i[6])
-                        #         qrsCatalogoProductos.cost_pu = float(i[7])
-                        #         qrsCatalogoProductos.sales_unit_id = int(i[8])
-                        #         qrsCatalogoProductos.quantity_su = int(i[9])
-                        #         qrsCatalogoProductos.full_sale_price = float(i[10])
-                        #         qrsCatalogoProductos.split = int(i[6]/i[9])
-                        #         if i[11] != 0:
-                        #             qrsCatalogoProductos.iva = float(i[11])
-                        #         if i[12] != 0:
-                        #             qrsCatalogoProductos.other_tax = float(i[12])
-                        #         qrsCatalogoProductos.del_time = int(i[13])
-                        #         qrsCatalogoProductos.save()
-                        # jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
-                        # response = JsonResponse(jsnData, safe=False)
                 else:
                     jsnData['error'] = 'Compruebe el formato del archivo'
                     response = JsonResponse(jsnData, safe=False)
@@ -929,7 +904,7 @@ class clsExportarCatalogoProductosViw(APIView):
         srlCatalogoProductos = clsCatalogoProductosMdlSerializer(qrsCatalogoProductos, many=True)
         dtfCatalogoProductos = pd.DataFrame(srlCatalogoProductos.data)
         dtfCatalogoProductos = dtfCatalogoProductos.rename(columns={
-            'id':'Nº',
+            'id':'Código',
             'date_creation': 'Fecha de creación',
             'date_update': 'Fecha de actualización',
             'product_desc': 'Descripción producto',
@@ -949,7 +924,7 @@ class clsExportarCatalogoProductosViw(APIView):
             'state_display': 'Estado'
             })
         lstNombresColumnas = [
-            'Nº', 
+            'Código', 
             'Fecha de creación',
             'Fecha de actualización',
             'Descripción producto',
@@ -975,6 +950,308 @@ class clsExportarCatalogoProductosViw(APIView):
             dtfCatalogoProductos.to_excel(writer, sheet_name='CATALOGO_PRODUCTOS', index=False)
             fncAgregarAnchoColumna(writer, True, dtfCatalogoProductos, 'CATALOGO_PRODUCTOS')
         return response
+
+''' 3.11 Vista menú listas de precios'''
+class clsMenuListasPreciosViw(LoginRequiredMixin, TemplateView):
+    template_name = 'modulo_configuracion/lista_precios.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['options_title'] = 'Opciones'
+        context['options_url'] = reverse_lazy('configuracion:carga_masiva_listas_precios')
+        context['create_title'] = 'Crear lista de precios'
+        context['create_url'] = reverse_lazy('configuracion:crear_lista_precios')
+        context['search_title'] = 'Ver listas de precios'
+        context['search_url'] = reverse_lazy('configuracion:ver_lista_precios')
+        return context
+
+''' 3.12 Vista para carga masiva de listas de precios'''
+class clsCargaMasivaListasPreciosViw(LoginRequiredMixin, TemplateView):
+    template_name = 'modulo_configuracion/carga_masiva_listas_precios.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        lstNombresColumnas = [
+            'Nombre subcategoría',
+            'Categoría producto'
+            ]
+        tplValidaciones = (
+            ((True, 'product_subcat', clsSubcategoriaProductoMdl), (True, 60), (True, 1), (False,)),
+            ((False,), (True, 3), (True, 1), (True, clsCategoriaProductoMdl))
+            )
+        jsnData = {}
+        try:
+            action = request.POST['action']
+            if action == 'frmCargarArchivojsn':
+                filSubcategoriasProducto = request.FILES['file']
+                if str(filSubcategoriasProducto).endswith('.xlsx'):
+                    dtfSubcategorias = pd.read_excel(filSubcategoriasProducto)
+                    dtfSubcategorias = dtfSubcategorias.fillna(0)
+                    lstValidarImportacion = [ fncValidarImportacionlst(dtfSubcategorias, i, j) for (i, j) in zip(lstNombresColumnas, tplValidaciones) ]
+                    lstValidarImportacion = [ i for n in lstValidarImportacion for i in n ]
+                    if len(lstValidarImportacion):
+                        jsnSubcategoriaProducto = dtfSubcategorias.to_json(orient="split")
+                        jsnData['jsnSubcategoriaProducto'] = jsnSubcategoriaProducto
+                        jsnData['lstValidarImportacion'] = lstValidarImportacion
+                        jsnData['strErrorArchivo'] = 'El archivo presenta errores, desea descargarlos?'
+                        response = JsonResponse(jsnData, safe=False)
+                    else:
+                        with transaction.atomic():
+                            for i in (dtfSubcategorias.values.tolist()):
+                                clsSubcategoriaProductoMdl.objects.create(
+                                product_subcat = i[0],
+                                product_cat_id = int(i[1])
+                                )
+                        jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
+                        response = JsonResponse(jsnData, safe=False)
+                else:
+                    jsnData['error'] = 'Compruebe el formato del archivo'
+                    response = JsonResponse(jsnData, safe=False)
+            elif action == 'btnArchivoErroresjsn':
+                jsnSubcategoriaProducto = request.POST['jsnSubcategoriaProducto']
+                dtfSubcategorias = pd.read_json(jsnSubcategoriaProducto, orient='split')
+                lstValidarImportacion = json.loads(request.POST['lstValidarImportacion'])
+                lstErroresCeldas = list( dict.fromkeys([ i[1] for i in lstValidarImportacion ]) )
+                dtfSubcategorias = fncAgregarErroresDataframedtf(dtfSubcategorias, lstValidarImportacion, lstErroresCeldas)
+                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = 'attachment; filename="subcategoria_productos.xlsx"'
+                with pd.ExcelWriter(response) as writer:
+                    dtfSubcategorias.to_excel(writer, sheet_name='VALIDAR', index=False)
+                    fncAgregarFormatoColumnasError(writer, lstValidarImportacion, 'VALIDAR', lstNombresColumnas)
+                    fncAgregarAnchoColumna(writer, False, dtfSubcategorias, 'VALIDAR')
+        except Exception as e:
+            jsnData['error'] = str(e)
+            response = JsonResponse(jsnData, safe=False)
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+''' 3.13 Vista para exportar plantilla de lista de precios'''
+class clsExportarPlantillaListaPreciosViw(APIView):
+
+    def get(self, request):
+        lstCeldasExcel = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1', 'I1', 'J1', 'K1', 'L1', 'M1', 'N1']
+        lstComentariosExcel = [
+            'Ingrersa el nombre y una descripción breve del producto por ejemplo: Coca cola pet x 12',
+            'Este espacio solo permite el ingreso de números, digita el código de barras del producto',
+            'Ingresa la marca de tu producto',
+            'Como ya creaste las categorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "CATEGORIA" donde encontraras las que ya has creado, ahí puedes validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna). Por ejemplo la categoria se llama Bebidas y el numero que aparece al inicio es 1, digitas 1 en este campo',
+            'Como ya creaste las subcategorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "SUBCATEGORIA" allí encontraras las que ya has creado, podrás validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna)',
+            'Las unidades de compra ya las creaste, las encontrarás en la hoja llamada "UNIDAD_COMPRA", digita el número que aparece en la primer columna, por ejemplo: primer columna 1, segunda columna Canasta, si es una canasta digitas el 1',
+            'Cuantas unidades componen tu unidad de compra, si tu compras al proveedor por canasta de 30 unidades, el valor que debes digitar será 30',
+            'Ingresa el valor que pagas a tu proveedor por cada unidad de compra, por ejemplo: si compras por caja de 30 unidades, el valor por cada caja de 30 unidades, si tienes decimales solo ingresa 2 digitos. (Sin el signo $ y sin puntos',
+            'Las unidades de venta ya las creaste, en la hoja de este archivo llamada "UNIDAD_VENTA" las encontrarás, digita el número que aparece en la primer columna, por ejemplo: primer columna 1, segunda columna Canasta, si es una canasta digitas el 1',
+            'Ingresa la unidad en la que vendes a tus clientes este producto, por ejemplo: si compras por caja de 30 pero vendes por unidad, digitas 1',
+            'Aquí digitas el precio de venta que das a tus clientes de acuerdo a tu unidad de venta, si vendes por caja de 30, será este valor, si es por unidad; 1, será el valor de Una unidad. No ingreses el signo pesos ni puntos, si requieres puedes ingresar dos decimales con la coma',
+            'Ingresa en numero, el porcentaje de IVA que tiene este producto para la venta, no incluyas el signo %, por ejemplo si es 19%, solo ingresas 19, si no aplica dejas este campo vacio',
+            'Si para la venta de tu producto debes incluir otro impuesto adicional al IVA, ingresa en numero el porcentaje del impuesto sin incluir el signo %, por ejemplo 4%, solo ingresas 4,  si no aplica dejas este campo vacio',
+            'Ingresa en número de días el tiempo que tu proveedor se toma para entregarte el pedido una vez le envias la solicitud, por ejemplo 5 días, ingresas solo 5'
+        ]
+        qrsCategoriaProducto = clsCategoriaProductoMdl.objects.filter(state='AC')
+        srlCategoriaProducto = clsCategoriaProductoMdlSerializer(qrsCategoriaProducto, many=True)
+        dtfCategoriaProducto = pd.DataFrame(srlCategoriaProducto.data)
+        dtfCategoriaProducto = dtfCategoriaProducto.rename(columns={'id':'Código', 'product_cat':'Categoría'})
+        qrsSubcategoriaPorducto = clsSubcategoriaProductoMdl.objects.filter(state='AC')
+        srlSubcategoriaProducto = ProductSubcategorySerializer(qrsSubcategoriaPorducto, many=True)
+        dtfSubcategoria = pd.DataFrame(srlSubcategoriaProducto.data)
+        dtfSubcategoria = dtfSubcategoria.rename(columns={'id':'Código', 'product_subcat':'Subcategoría'})
+        dtfSubcategoria = dtfSubcategoria.drop(['product_cat'], axis=1)
+        qrsUnidadCompra = clsUnidadCompraMdl.objects.filter(state='AC')
+        srlUnidadCompra = clsUnidadCompraMdlSerializer(qrsUnidadCompra, many=True)
+        dtfUnidadCompra = pd.DataFrame(srlUnidadCompra.data)
+        dtfUnidadCompra = dtfUnidadCompra.rename(columns={'id':'Código', 'purchase_unit':'Unidad de compra'})
+        qrsUnidadVenta = clsUnidadVentaMdl.objects.filter(state='AC')
+        srlUnidadVenta = clsUnidadVentaMdlSerializer(qrsUnidadVenta, many=True)
+        dtfUnidadVenta = pd.DataFrame(srlUnidadVenta.data)
+        dtfUnidadVenta = dtfUnidadVenta.rename(columns={'id':'Código', 'sales_unit':'Unidad de venta'})
+        dtfPlantillaProductos = pd.DataFrame(
+            {
+                'Descripción producto':[],
+                'Código de barras':[],
+                'Marca':[],
+                'Categoría producto':[],
+                'Subcategoría producto':[],
+                'Unidad de compra':[],
+                'Cantidad unidad de compra':[],
+                'Precio de compra':[],
+                'Unidad de venta':[],
+                'Cantidad unidad de venta':[],
+                'Precio de venta':[],
+                'Iva':[],
+                'Otros impuestos':[],
+                'Tiempo de entrega proveedor':[],
+            }, 
+            index = [i for i in range (0, 0)]
+            )
+        lstNombresColumnasPlantilla = list(dtfPlantillaProductos.columns.values)
+        lstTotalColumnas = [ i for i in range (1, len(lstNombresColumnasPlantilla) + 1) ]
+        lstTipoDato = [
+            'Alfabético', 
+            'Numérico',  
+            'AlfaNumérico',
+            'Numérico', 
+            'Numérico', 
+            'Numérico', 
+            'Numérico', 
+            'Decimal', 
+            'Numérico', 
+            'Numérico', 
+            'Decimal', 
+            'Decimal', 
+            'Decimal', 
+            'Numérico'
+            ]
+        lstLongitudMaxima = [
+            100,
+            30, 
+            100,
+            2, 
+            2, 
+            2, 
+            4,
+            13, 
+            2, 
+            4, 
+            13,
+            2, 
+            2, 
+            2
+            ]
+        lstCaracteresEspeciales = [
+            'PERMITE Ñ', 'NO PERMITE', 'PERMITE Ñ',
+            'NO PERMITE', 'NO PERMITE', 'NO PERMITE', 'NO PERMITE',
+            'PERMITE .', 'NO PERMITE', 'NO PERMITE', 'PERMITE .',
+            'PERMITE .', 'PERMITE .', 'NO PERMITE'
+            ]
+        lstObservaciones = [
+            'Ingrersa el nombre y una descripción breve del producto por ejemplo: Coca cola pet x 12',
+            'Este espacio solo permite el ingreso de números, digita el código de barras del producto',
+            'Ingresa la marca de tu producto',
+            'Como ya creaste las categorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "CATEGORIA" donde encontraras las que ya has creado, ahí puedes validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna). Por ejemplo la categoria se llama Bebidas y el numero que aparece al inicio es 1, digitas 1 en este campo',
+            'Como ya creaste las subcategorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "SUBCATEGORIA" allí encontraras las que ya has creado, podrás validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna)',
+            'Las unidades de compra ya las creaste, las encontrarás en la hoja llamada "UNIDAD_COMPRA", digita el número que aparece en la primer columna, por ejemplo: primer columna 1, segunda columna Canasta, si es una canasta digitas el 1',
+            'Cuantas unidades componen tu unidad de compra, si tu compras al proveedor por canasta de 30 unidades, el valor que debes digitar será 30',
+            'Ingresa el valor que pagas a tu proveedor por cada unidad de compra, por ejemplo: si compras por caja de 30 unidades, el valor por cada caja de 30 unidades, si tienes decimales solo ingresa 2 digitos. (Sin el signo $ y sin puntos',
+            'Las unidades de venta ya las creaste, en la hoja de este archivo llamada "UNIDAD_VENTA" las encontrarás, digita el número que aparece en la primer columna, por ejemplo: primer columna 1, segunda columna Canasta, si es una canasta digitas el 1',
+            'Ingresa la unidad en la que vendes a tus clientes este producto, por ejemplo: si compras por caja de 30 pero vendes por unidad, digitas 1',
+            'Aquí digitas el precio de venta que das a tus clientes de acuerdo a tu unidad de venta, si vendes por caja de 30, será este valor, si es por unidad; 1, será el valor de Una unidad. No ingreses el signo pesos ni puntos, si requieres puedes ingresar dos decimales con la coma',
+            'Ingresa en numero, el porcentaje de IVA que tiene este producto para la venta, no incluyas el signo %, por ejemplo si es 19%, solo ingresas 19, si no aplica dejas este campo vacio',
+            'Si para la venta de tu producto debes incluir otro impuesto adicional al IVA, ingresa en numero el porcentaje del impuesto sin incluir el signo %, por ejemplo 4%, solo ingresas 4,  si no aplica dejas este campo vacio',
+            'Ingresa en número de días el tiempo que tu proveedor se toma para entregarte el pedido una vez le envias la solicitud, por ejemplo 5 días, ingresas solo 5'
+            ]
+        lstCampoObligatorio = [
+            'SI', 'NO', 'SI',
+            'SI', 'SI', 'SI', 'SI',
+            'SI', 'SI', 'SI', 'SI',
+            'NO', 'NO', 'SI'
+            ]
+        dtfInstructivoPlantilla = pd.DataFrame(
+            {'Nº': lstTotalColumnas, 
+            'NOMBRE CAMPO': lstNombresColumnasPlantilla, 
+            'TIPO DE DATO': lstTipoDato,
+            'LONGITUD MAX': lstLongitudMaxima,
+            'CARACTERES ESPECIALES': lstCaracteresEspeciales,
+            'OBSERVACIONES': lstObservaciones,
+            'OBLIGATORIO': lstCampoObligatorio,
+            }, 
+            index = [i for i in range (0, len(lstTipoDato))]
+            )
+        response = HttpResponse(content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="catalogo_productos.xlsx"'
+        with pd.ExcelWriter(response) as writer:
+            dtfPlantillaProductos.to_excel(writer, sheet_name='PLANTILLA', index=False)
+            dtfInstructivoPlantilla.to_excel(writer, sheet_name='INSTRUCTIVO', index=False)
+            dtfCategoriaProducto.to_excel(writer, sheet_name='CATEGORIA', index=False)
+            dtfSubcategoria.to_excel(writer, sheet_name='SUBCATEGORIA', index=False)
+            dtfUnidadCompra.to_excel(writer, sheet_name='UNIDAD_COMPRA', index=False)
+            dtfUnidadVenta.to_excel(writer, sheet_name='UNIDAD_VENTA', index=False)
+            fncAgregarAnchoColumna(writer, False, dtfPlantillaProductos, 'PLANTILLA') 
+            fncAgregarAnchoColumna(writer, True, dtfInstructivoPlantilla, 'INSTRUCTIVO')
+            fncAgregarAnchoColumna(writer, True, dtfCategoriaProducto, 'CATEGORIA')
+            fncAgregarAnchoColumna(writer, True, dtfSubcategoria, 'SUBCATEGORIA')
+            fncAgregarAnchoColumna(writer, True, dtfUnidadCompra, 'UNIDAD_COMPRA')
+            fncAgregarAnchoColumna(writer, True, dtfUnidadVenta, 'UNIDAD_VENTA')
+            fncAgregarComentarioCeldas(writer, 'PLANTILLA', lstCeldasExcel, lstComentariosExcel)
+        return response
+
+''' 3.14 Vista para crear lista de precios'''
+class clsCrearListaPreciosViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
+    model = clsCatalogoProductosMdl
+    form_class = clsCrearProductoFrm
+    template_name = 'modulo_configuracion/crear_lista_precios.html'
+    success_url = reverse_lazy("configuracion:ver_lista_precios")
+    url_redirect = success_url
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        jsnData = {}
+        try:
+            action = request.POST['action']
+            if action == 'frmCrearProductojsn':
+                frmCrearProducto = clsCrearProductoFrm(request.POST)
+                jsnData = frmCrearProducto.save()
+            else:
+                jsnData['error'] = 'No ha ingresado a ninguna opción'
+        except Exception as e:
+            jsnData['error'] = str(e)
+        return JsonResponse(jsnData, safe=False)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Crear lista de precios'
+        context['action'] = 'frmCrearListaPreciosjsn'
+        
+        return context
+
+''' 3.15 Vista para ver lista de precios'''
+class clsVerListaPreciosViw(LoginRequiredMixin, ListView):
+    model = clsCatalogoProductosMdl
+    template_name = 'modulo_configuracion/ver_lista_precios.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        jsnData = {}
+        try:
+            action = request.POST['action']
+            if action == 'slcBuscarProductosjsn':
+                jsnData = []
+                strBuscarProducto = request.POST['term'].strip()
+                if len(strBuscarProducto):
+                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=strBuscarProducto) | Q(id__icontains=strBuscarProducto))[0:10]
+                for i in qrsCatalogoProductos:
+                    dctJsn = i.toJSON()
+                    dctJsn['value'] = i.product_desc
+                    jsnData.append(dctJsn)
+            elif action == 'frmEliminarProductojsn':
+                qrsCatalogoProductos = clsCatalogoProductosMdl.objects.get(pk=request.POST['id'])
+                if qrsCatalogoProductos.state == "AC":
+                    qrsCatalogoProductos.state = "IN"
+                    qrsCatalogoProductos.save()
+                else:
+                    qrsCatalogoProductos.state = "AC"
+                    qrsCatalogoProductos.save()
+                jsnData = qrsCatalogoProductos.toJSON()
+            else:
+                jsnData['error'] = 'Ha ocurrido un error'
+        except Exception as e:
+            jsnData['error'] = str(e)
+        return JsonResponse(jsnData, safe=False)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title_table'] = 'Búsqueda de Productos'
+        context['create_url'] = reverse_lazy('configuracion:crear_producto')
+        context['list_url'] = reverse_lazy("configuracion:listar_productos")
+        context['options_url'] = reverse_lazy('configuracion:opciones_producto')
+        return context
 
 #################################################################################################
 # 4. PARAMETRIZACIÓN CATÁLOGO DE PROVEEDORES (MENÚ, OPCIONES CATALOGO, CRUD, IMPORTAR Y EXPORTAR)
@@ -1104,11 +1381,11 @@ class clsExportarPlantillaProveedoresViw(APIView):
         qrsDepartamentos = clsDepartamentosMdl.objects.all()
         srlDepartamentos = clsDepartamentosMdlSerializer(qrsDepartamentos, many=True)
         dtfDepartamentos = pd.DataFrame(srlDepartamentos.data)
-        dtfDepartamentos = dtfDepartamentos.rename(columns={'id':'Nº', 'department_name':'Departamento'})
+        dtfDepartamentos = dtfDepartamentos.rename(columns={'id':'Código', 'department_name':'Departamento'})
         qrsCiudades = clsCiudadesMdl.objects.all()
         srlCiudades = clsCiudadesMdlSerializer(qrsCiudades, many=True)
         dtfCiudades = pd.DataFrame(srlCiudades.data)
-        dtfCiudades = dtfCiudades.rename(columns={'id':'Nº', 'city_name':'Ciudad'})
+        dtfCiudades = dtfCiudades.rename(columns={'id':'Código', 'city_name':'Ciudad'})
         dtfProveedores = pd.DataFrame(
             {
                 'Tipo de persona':[],
@@ -1194,26 +1471,7 @@ class clsExportarPlantillaProveedoresViw(APIView):
             'NO PERMITE', 
             'NO PERMITE'
             ]
-        lstObservaciones = [
-            'NT = Natural, JU = Jurídica', 
-            'CC = Cédula, NI = Nit, RU = Rut',
-            'Si es Nº Nit, ingrese el digito de verificación sin -', 
-            '',
-            '', 
-            '', 
-            '', 
-            '', 
-            '',
-            'Ingrese el Nº de Departamento de la hoja DEPARTAMENTO',
-            'Ingrese el Nº de Ciudad de la hoja CIUDAD',
-            '', 
-            '', 
-            'Ingrese el valor mínimo de compra si el proveedor la exige, de lo contrario deje este campo vacío',
-            'CD = Con despacho, SD = Sin despacho, MX = Mixta',
-            'CR = Crédito, CO = Contado',
-            'Si selecciona Crédito, ingrese Nº de días (15, 30, 45, 60)',
-            'Si selecciona Crédito, ingrese cupo de crédito'
-            ]
+        lstObservaciones = lstComentariosExcel
         lstCampoObligatorio = [
             'SI', 
             'SI', 
@@ -1492,7 +1750,7 @@ class clsExportarCatalogoProveedoresViw(APIView):
         srlCatalogoProveedores = clsCatalogoProveedoresMdlSerializer(qrsCatalogoProveedores, many=True)
         dtfProveedores = pd.DataFrame(srlCatalogoProveedores.data)
         dtfProveedores = dtfProveedores.rename(columns={
-            'id':'Nº',
+            'id':'Código',
             'date_creation': 'Fecha de creación',
             'date_update': 'Fecha de actualización',
             'person_type_display':'Tipo de persona',
@@ -1516,7 +1774,7 @@ class clsExportarCatalogoProveedoresViw(APIView):
             'state_display': 'Estado'
             })
         lstNombresColumnas = [
-            'Nº',
+            'Código',
             'Fecha de creación',
             'Fecha de actualización',
             'Tipo de persona',
@@ -1757,23 +2015,23 @@ class clsExportarPlantillaClientesViw(APIView):
         qrsDepartamentos = clsDepartamentosMdl.objects.all()
         srlDepartamentos = clsDepartamentosMdlSerializer(qrsDepartamentos, many=True)
         dtfDepartamentos = pd.DataFrame(srlDepartamentos.data)
-        dtfDepartamentos = dtfDepartamentos.rename(columns={'id':'Nº', 'department_name':'Departamento'})
+        dtfDepartamentos = dtfDepartamentos.rename(columns={'id':'Código', 'department_name':'Departamento'})
         qrsCiudades = clsCiudadesMdl.objects.all()
         srlCiudades = clsCiudadesMdlSerializer(qrsCiudades, many=True)
         dtfCiudades = pd.DataFrame(srlCiudades.data)
-        dtfCiudades = dtfCiudades.rename(columns={'id':'Nº', 'city_name':'Ciudad'})
+        dtfCiudades = dtfCiudades.rename(columns={'id':'Código', 'city_name':'Ciudad'})
         qrsCategoriaCliente = clsCategoriaClienteMdl.objects.filter(state='AC')
         srlCategoriaCliente = clsCategoriaClienteMdlSerializer(qrsCategoriaCliente, many=True)
         dtfCategoriaCliente = pd.DataFrame(srlCategoriaCliente.data)
-        dtfCategoriaCliente = dtfCategoriaCliente.rename(columns={'id':'Nº', 'customer_cat':'Nombre categoría'})
+        dtfCategoriaCliente = dtfCategoriaCliente.rename(columns={'id':'Código', 'customer_cat':'Nombre categoría'})
         qrsZonaCliente = clsZonaClienteMdl.objects.filter(state='AC')
         srlZonaCliente = clsZonaClienteMdlSerializer(qrsZonaCliente, many=True)
         dtfZonaCliente = pd.DataFrame(srlZonaCliente.data)
-        dtfZonaCliente = dtfZonaCliente.rename(columns={'id':'Nº', 'customer_zone':'Nombre zona'})
+        dtfZonaCliente = dtfZonaCliente.rename(columns={'id':'Código', 'customer_zone':'Nombre zona'})
         qrsAsesorComercial = clsAsesorComercialMdl.objects.filter(state='AC')
         srlAsesorComercial = CustomerAdvisorSerializer(qrsAsesorComercial, many=True)
         dtfAsesorComercial = pd.DataFrame(srlAsesorComercial.data)
-        dtfAsesorComercial = dtfAsesorComercial.rename(columns={'id':'Nº', 'advisor':'Nombre asesor'})
+        dtfAsesorComercial = dtfAsesorComercial.rename(columns={'id':'Código', 'advisor':'Nombre asesor'})
         dtfCatalogoClientes = pd.DataFrame(
             {
                 'Tipo de persona':[],
@@ -1859,26 +2117,7 @@ class clsExportarPlantillaClientesViw(APIView):
             'NO PERMITE', 
             'NO PERMITE'
             ]
-        lstObservaciones = [
-            'NT = Natural, JU = Jurídica', 
-            'CC = Cédula, NI = Nit, RU = Rut',
-            'Si es Nº Nit, ingrese el digito de verificación sin -', 
-            'Ej. Convergencia SAS',
-            'Ej. Juliana Barrera',
-            'Ej. 3006652254', 
-            'Ej. convergencia@convergenciasas.com', 
-            'Ingrese el Nº de Departamento de la hoja DEPARTAMENTO',
-            'Ingrese el Nº de Ciudad de la hoja CIUDAD',
-            'Ingrese el Nº de Zona de la hoja ZONA',
-            'Ej. Calle 128B # 92 - 17', 
-            'Ej. 12:54 pm',
-            'Ej. 12:54 pm',
-            'Ingrese el Nº de Categoría de la hoja CATEGORIA',
-            'Ingrese el Nº de Asesor de la hoja ASESOR',
-            'CR = Crédito, CO = Contado',
-            'Si selecciona Crédito, ingrese Nº de días (15, 30, 45, 60)',
-            'Si selecciona Crédito, ingrese cupo de crédito, Ej. 500000'
-            ]
+        lstObservaciones = lstComentariosExcel
         lstCampoObligatorio = [
             'SI', 
             'SI', 
@@ -2290,7 +2529,7 @@ class clsExportarCatalogoClientesViw(APIView):
         srlCatalogoClientes = clsCatalogoClientesMdlSerializer(qrsCatalogoClientes, many=True)
         dtfCatalogoClientes = pd.DataFrame(srlCatalogoClientes.data)
         dtfCatalogoClientes = dtfCatalogoClientes.rename(columns={
-            'id':'Nº',
+            'id':'Código',
             'date_creation': 'Fecha de creación',
             'date_update': 'Fecha de actualización',
             'person_type_display':'Tipo de persona',
@@ -2314,7 +2553,7 @@ class clsExportarCatalogoClientesViw(APIView):
             'state_display': 'Estado'
             })
         lstNombresColumnas = [
-            'Nº',
+            'Código',
             'Fecha de creación',
             'Fecha de actualización',
             'Tipo de persona',
@@ -2344,6 +2583,93 @@ class clsExportarCatalogoClientesViw(APIView):
             dtfCatalogoClientes.to_excel(writer, sheet_name='CATALOGO_CLIENTES', index=False)
             fncAgregarAnchoColumna(writer, True, dtfCatalogoClientes, 'CATALOGO_CLIENTES')
         return response
+
+''' 5.9 Vista menú tiempos de entrega'''
+class clsMenuTiemposEntregaViw(LoginRequiredMixin, TemplateView):
+    template_name = 'modulo_configuracion/tiempos_entrega.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['create_title'] = 'Asignar tiempos de entrega'
+        context['create_url'] = reverse_lazy('configuracion:crear_tiempos_entrega')
+        context['search_title'] = 'Ver tiempos de entrega'
+        context['search_url'] = reverse_lazy('configuracion:ver_tiempos_entrega')
+        return context
+
+''' 5.10 Vista para asignar tiempos de entrega'''
+class clsCrearTiempoEntregaViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
+    model = clsCatalogoProductosMdl
+    form_class = clsCrearProductoFrm
+    template_name = 'modulo_configuracion/crear_tiempo_entrega.html'
+    success_url = reverse_lazy("configuracion:ver_tiempo_entrega")
+    url_redirect = success_url
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        jsnData = {}
+        try:
+            action = request.POST['action']
+            if action == 'frmCrearProductojsn':
+                frmCrearProducto = clsCrearProductoFrm(request.POST)
+                jsnData = frmCrearProducto.save()
+            else:
+                jsnData['error'] = 'No ha ingresado a ninguna opción'
+        except Exception as e:
+            jsnData['error'] = str(e)
+        return JsonResponse(jsnData, safe=False)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Crear lista de precios'
+        context['action'] = 'frmCrearListaPreciosjsn'
+        
+        return context
+
+''' 5.11 Vista para ver tiempos de entrega'''
+class clsVerTiempoEntregaViw(LoginRequiredMixin, ListView):
+    model = clsCatalogoProductosMdl
+    template_name = 'modulo_configuracion/ver_tiempos_entrega.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        jsnData = {}
+        try:
+            action = request.POST['action']
+            if action == 'slcBuscarProductosjsn':
+                jsnData = []
+                strBuscarProducto = request.POST['term'].strip()
+                if len(strBuscarProducto):
+                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=strBuscarProducto) | Q(id__icontains=strBuscarProducto))[0:10]
+                for i in qrsCatalogoProductos:
+                    dctJsn = i.toJSON()
+                    dctJsn['value'] = i.product_desc
+                    jsnData.append(dctJsn)
+            elif action == 'frmEliminarProductojsn':
+                qrsCatalogoProductos = clsCatalogoProductosMdl.objects.get(pk=request.POST['id'])
+                if qrsCatalogoProductos.state == "AC":
+                    qrsCatalogoProductos.state = "IN"
+                    qrsCatalogoProductos.save()
+                else:
+                    qrsCatalogoProductos.state = "AC"
+                    qrsCatalogoProductos.save()
+                jsnData = qrsCatalogoProductos.toJSON()
+            else:
+                jsnData['error'] = 'Ha ocurrido un error'
+        except Exception as e:
+            jsnData['error'] = str(e)
+        return JsonResponse(jsnData, safe=False)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title_table'] = 'Búsqueda de Productos'
+        context['create_url'] = reverse_lazy('configuracion:crear_producto')
+        context['list_url'] = reverse_lazy("configuracion:listar_productos")
+        context['options_url'] = reverse_lazy('configuracion:opciones_producto')
+        return context
 
 #################################################################################################
 # 6. PARAMETRIZACIÓN CATÁLOGO DE BODEGAS (MENÚ, OPCIONES CATALOGO, CRUD Y EXPORTAR)
@@ -2657,23 +2983,23 @@ class clsExportarPlantillaHistoricoMovimientosViw(APIView):
         qrsProductos = clsCatalogoProductosMdl.objects.all()
         srlProductos = clsCatalogoProductosPlantillajson(qrsProductos, many=True)
         dtfProductos = pd.DataFrame(srlProductos.data)
-        dtfProductos = dtfProductos.rename(columns={'id':'Nº', 'product_desc':'Descripción producto'})
+        dtfProductos = dtfProductos.rename(columns={'id':'Código', 'product_desc':'Descripción producto'})
         qrsProveedores = clsCatalogoProveedoresMdl.objects.all()
         srlProveedores = clsCatalogoProveedoresPlantillajson(qrsProveedores, many=True)
         dtfProveedores = pd.DataFrame(srlProveedores.data)
-        dtfProveedores = dtfProveedores.rename(columns={'id':'Nº', 'identification':'Nº Identificación', 'supplier_name':'Nombre proveedor'})
+        dtfProveedores = dtfProveedores.rename(columns={'id':'Código', 'identification':'Nº Identificación', 'supplier_name':'Nombre proveedor'})
         qrsClientes = clsCatalogoClientesMdl.objects.all()
         srlClientes = clsCatalogoClientesPlantillajson(qrsClientes, many=True)
         dtfClientes = pd.DataFrame(srlClientes.data)
-        dtfClientes = dtfClientes.rename(columns={'id':'Nº', 'identification':'Nº Identificación', 'business_name':'Nombre cliente'})
+        dtfClientes = dtfClientes.rename(columns={'id':'Código', 'identification':'Nº Identificación', 'business_name':'Nombre cliente'})
         qrsBodegas = clsCatalogoBodegasMdl.objects.all()
         srlBodegas = clsCatalogoBodegasPlantillajson(qrsBodegas, many=True)
         dtfBodegas = pd.DataFrame(srlBodegas.data)
-        dtfBodegas = dtfBodegas.rename(columns={'id':'Nº', 'warehouse_name':'Nombre bodega', 'contact_name':'Responsable'})
+        dtfBodegas = dtfBodegas.rename(columns={'id':'Código', 'warehouse_name':'Nombre bodega', 'contact_name':'Responsable'})
         qrsCiudad = clsCiudadesMdl.objects.all()
         srlCiudad = clsCiudadesMdlSerializer(qrsCiudad, many=True)
         dtfCiudad = pd.DataFrame(srlCiudad.data)
-        dtfCiudad = dtfCiudad.rename(columns={'id':'Nº', 'city_name':'Ciudad'})
+        dtfCiudad = dtfCiudad.rename(columns={'id':'Código', 'city_name':'Ciudad'})
         dtfHistoricoPedidos = pd.DataFrame(
             {
                 'Fecha de creación':[],
@@ -3049,7 +3375,6 @@ class clsExportarPlantillaHistoricoMovimientosViw(APIView):
 class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/historico_movimientos.html'
     
-    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -3487,105 +3812,6 @@ class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
                                         total_price = float(orden_compra[7]),
                                         store_id = int(orden_compra[8]),
                                         condition = orden_compra[9],
-                                        ) 
-                                    for entrada_almacen in (lstTablasDocumentos[2].values.tolist()):
-                                        clsHistoricoEntradasAlmacenMdl.objects.create(
-                                        date_creation = entrada_almacen[0].date(),
-                                        doc_number = str(entrada_almacen[1]),
-                                        identification_id = int(entrada_almacen[2]),
-                                        product_code_id = int(entrada_almacen[3]),
-                                        quantity = int(entrada_almacen[4]),
-                                        unit_price = float(entrada_almacen[5]),
-                                        total_price = float(entrada_almacen[6]),
-                                        store_id = int(entrada_almacen[7]),
-                                        crossing_doc = str(entrada_almacen[8]),
-                                        condition = entrada_almacen[9],
-                                        batch = str(entrada_almacen[10]),
-                                        expiration_date = entrada_almacen[11].date(),
-                                        ) 
-                                    for salida_almacen in (lstTablasDocumentos[3].values.tolist()):
-                                        clsHistoricoSalidasAlmacenMdl.objects.create(
-                                        date_creation = salida_almacen[0].date(),
-                                        doc_number = str(salida_almacen[1]),
-                                        identification_id = int(salida_almacen[2]),
-                                        product_code_id = int(salida_almacen[3]),
-                                        quantity = int(salida_almacen[4]),
-                                        unit_price = float(salida_almacen[5]),
-                                        discount = float(salida_almacen[6]),
-                                        total_price = float(salida_almacen[7]),
-                                        store_id = int(salida_almacen[8]),
-                                        crossing_doc = str(salida_almacen[9]),
-                                        condition = salida_almacen[10],
-                                        batch = str(salida_almacen[11]),
-                                        expiration_date = salida_almacen[12].date(),
-                                        ) 
-                                    for ajuste_inventario in (dtfHistoricoAjustesInventario.values.tolist()):
-                                        clsHistoricoAjustesInventarioMdl.objects.create(
-                                        date_creation = ajuste_inventario[0].date(),
-                                        doc_number = str(ajuste_inventario[1]),
-                                        type = ajuste_inventario[2],
-                                        store_id = int(ajuste_inventario[3]),
-                                        product_code_id = int(ajuste_inventario[4]),
-                                        quantity = int(ajuste_inventario[5]),
-                                        total_cost = float(ajuste_inventario[6]),
-                                        batch = str(ajuste_inventario[7]),
-                                        expiration_date = ajuste_inventario[8].date(),
-                                        ) 
-                                    for devolucion_cliente in (dtfHistoricoDevolucionesCliente.values.tolist()):
-                                        clsHistoricoDevolucionesClienteMdl.objects.create(
-                                        date_creation = devolucion_cliente[0].date(),
-                                        doc_number = str(devolucion_cliente[1]),
-                                        identification_id = int(devolucion_cliente[2]),
-                                        product_code_id = int(devolucion_cliente[3]),
-                                        quantity = int(devolucion_cliente[4]),
-                                        store_id = int(devolucion_cliente[5]),
-                                        batch = str(devolucion_cliente[6]),
-                                        expiration_date = devolucion_cliente[7].date(),
-                                        crossing_doc = str(devolucion_cliente[8]),
-                                        )
-                                    for devolucion_proveedor in (dtfHistoricoDevolucionesProveedor.values.tolist()):
-                                        clsHistoricoDevolucionesProveedorMdl.objects.create(
-                                        date_creation = devolucion_proveedor[0].date(),
-                                        doc_number = str(devolucion_proveedor[1]),
-                                        identification_id = int(devolucion_proveedor[2]),
-                                        product_code_id = int(devolucion_proveedor[3]),
-                                        quantity = int(devolucion_proveedor[4]),
-                                        store_id = int(devolucion_proveedor[5]),
-                                        batch = str(devolucion_proveedor[6]),
-                                        expiration_date = devolucion_proveedor[7].date(),
-                                        crossing_doc = str(devolucion_proveedor[8]),
-                                        )
-                                    for historico_obsequios in (dtfHistoricoObsequios.values.tolist()):
-                                        clsHistoricoObsequiosMdl.objects.create(
-                                        date_creation = historico_obsequios[0].date(),
-                                        doc_number = str(historico_obsequios[1]),
-                                        store_id = int(historico_obsequios[2]),
-                                        product_code_id = int(historico_obsequios[3]),
-                                        quantity = int(historico_obsequios[4]),
-                                        total_cost = float(historico_obsequios[5]),
-                                        batch = str(historico_obsequios[6]),
-                                        expiration_date = historico_obsequios[7].date(),
-                                        )
-                                    for traslado_bodega in (dtfHistoricoTrasladosBodegas.values.tolist()):
-                                        clsHistoricoTrasladosBodegasMdl.objects.create(
-                                        date_creation = traslado_bodega[0].date(),
-                                        doc_number = str(traslado_bodega[1]),
-                                        type = traslado_bodega[2],
-                                        store_id = int(traslado_bodega[3]),
-                                        product_code_id = int(traslado_bodega[4]),
-                                        quantity = int(traslado_bodega[5]),
-                                        total_cost = float(traslado_bodega[6]),
-                                        batch = str(traslado_bodega[7]),
-                                        expiration_date = traslado_bodega[8].date(),
-                                        )
-                                    for saldo_inicial in (dtfHistoricoSaldoInicial.values.tolist()):
-                                        clsHistoricoSaldoInicialMdl.objects.create(
-                                        date_creation = saldo_inicial[0].date(),
-                                        product_code_id = int(saldo_inicial[1]),
-                                        store_id = int(saldo_inicial[2]),
-                                        balance = int(saldo_inicial[3]),
-                                        batch = str(saldo_inicial[4]),
-                                        expiration_date = saldo_inicial[5].date(),
                                         )
                                 data['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
                                 response = JsonResponse(data, safe=False)
@@ -3734,11 +3960,11 @@ class clsExportarPlantillaAjustesInventarioViw(APIView):
         qrsProductos = clsCatalogoProductosMdl.objects.all()
         srlProductos = clsCatalogoProductosPlantillajson(qrsProductos, many=True)
         dtfProductos = pd.DataFrame(srlProductos.data)
-        dtfProductos = dtfProductos.rename(columns={'id':'Nº', 'product_desc':'Descripción producto'})
+        dtfProductos = dtfProductos.rename(columns={'id':'Código', 'product_desc':'Descripción producto'})
         qrsBodegas = clsCatalogoBodegasMdl.objects.all()
         srlBodegas = clsCatalogoBodegasPlantillajson(qrsBodegas, many=True)
         dtfBodegas = pd.DataFrame(srlBodegas.data)
-        dtfBodegas = dtfBodegas.rename(columns={'id':'Nº', 'warehouse_name':'Nombre bodega', 'contact_name':'Responsable'})
+        dtfBodegas = dtfBodegas.rename(columns={'id':'Código', 'warehouse_name':'Nombre bodega', 'contact_name':'Responsable'})
         dtfHistoricoAjustesInventario = pd.DataFrame(
             {
                 'Bodega':[],
@@ -4038,7 +4264,6 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
         context['action'] = 'add'
         return context
 
-
 #################################################################################################
 # VISTA PARA PRUEBAS
 #################################################################################################
@@ -4149,191 +4374,3 @@ class clsExportarPlantillaPrueba(APIView):
             dtfObsequios.to_excel(writer, sheet_name='OBSEQUIOS', index=False)
             dtfTraslados.to_excel(writer, sheet_name='TRASLADOS_BODEGA', index=False)
         return response
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# dtf= pd.DataFrame()
-# dtf2= 'saldos por bodega'
-
-# dtf= dtf.assign(Ajustar= dtf.apply(lambda x: fncValidaAjustebol(dtf, x['Product_Code'], x['Batch'], x['Quantity'], 
-#  
-
-# lstCeldaError = []
-#     if tplArchivo[0][0] == True:
-#         strTipoDato = tplArchivo[0][1]
-#         strError = 'Tipo de dato'
-#         lstValoresColumna = dtf[strNombreColumna].tolist()
-#         for i in range(0, len(lstValoresColumna)):
-#             if lstValoresColumna[i] != 0:
-#                 if strTipoDato == float:
-#                     fltDato = float(lstValoresColumna[i])
-#                     if type(fltDato) == strTipoDato:
-#                         pass
-#                     else:
-#                         lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#                 elif strTipoDato == str:
-#                     strDato = str(lstValoresColumna[i])
-#                     if type(strDato) == strTipoDato:
-#                         pass
-#                     else:
-#                         lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#                 elif strTipoDato == int:
-#                     intDato = int(lstValoresColumna[i])
-#                     if type(intDato) == strTipoDato:
-#                         pass
-#                     else:
-#                         lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#                 elif strTipoDato == 'mail':
-#                     strError = 'No es un correo valido'
-#                     def fncValidarCorreobol(strCorreo):
-#                         strExpresionRegular = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
-#                         return re.match(strExpresionRegular, strCorreo) is not None
-#                     bolValidarCorreo = fncValidarCorreobol(lstValoresColumna[i])
-#                     if bolValidarCorreo == True:
-#                         pass
-#                     else:
-#                         lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#                 elif strTipoDato == time:
-#                     strError = 'No es un formato hora'
-#                     if type(lstValoresColumna[i]) == strTipoDato:
-#                         pass
-#                     else:
-#                         lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#                 elif strTipoDato == Timestamp:
-#                     strError = 'No es un formato fecha'
-#                     if type(lstValoresColumna[i]) == strTipoDato:
-#                         pass
-#                     else:
-#                         lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#                 elif strTipoDato == 'identification':
-#                     mdlBaseDatos = tplArchivo[0][2]
-#                     strError = 'Registro ya existe'
-#                     lstValoresColumna = dtf[strNombreColumna].tolist()
-#                     qrsBaseDatos = mdlBaseDatos.objects.all()
-#                     dtf = qrsBaseDatos.to_dataframe()
-#                     lstColumnaRelacion = dtf['identification'].tolist()
-#                     for i in range(0, len(lstValoresColumna)):
-#                         if lstValoresColumna[i] in lstColumnaRelacion:
-#                             lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#                         else:
-#                             pass
-#                 elif strTipoDato == 'bar_code':
-#                     mdlBaseDatos = tplArchivo[0][2]
-#                     strError = 'Registro ya existe'
-#                     lstValoresColumna = dtf[strNombreColumna].tolist()
-#                     qrsBaseDatos = mdlBaseDatos.objects.all()
-#                     dtf = qrsBaseDatos.to_dataframe()
-#                     lstColumnaRelacion = dtf['bar_code'].tolist()
-#                     for i in range(0, len(lstValoresColumna)):
-#                         if lstValoresColumna[i] in lstColumnaRelacion:
-#                             lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#                         else:
-#                             pass
-#                 else:
-#                     pass
-#             else:
-#                 pass
-#     if tplArchivo[1][0] == True:
-#         intLongitudMax = tplArchivo[1][1]
-#         strError = 'Longitud max'
-#         lstValoresColumna = dtf[strNombreColumna].tolist()
-#         for i in range(0, len(lstValoresColumna)):
-#             if lstValoresColumna[i] != 0:
-#                 if len(str(lstValoresColumna[i])) <= intLongitudMax:
-#                     print('yeag')
-#                     pass
-#                 else:
-#                     lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#             else:
-#                 pass
-#     if tplArchivo[2][0] == True:
-#         intLongitudMin = tplArchivo[2][1]
-#         strError = 'Campo obligatorio'
-#         lstValoresColumna = dtf[strNombreColumna].tolist()
-#         for i in range(0, len(lstValoresColumna)):
-#             if len(str(lstValoresColumna[i])) >= intLongitudMin:
-#                 pass
-#             else:
-#                 lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#     if tplArchivo[3][0] == True:
-#         mdlBaseDatos = tplArchivo[3][1]
-#         strError = 'No existe en base de datos'
-#         lstValoresColumna = dtf[strNombreColumna].tolist()
-#         qrsBaseDatos = mdlBaseDatos.objects.all()
-#         dtf = qrsBaseDatos.to_dataframe()
-#         lstColumna = dtf['id'].tolist()
-#         for i in range(0, len(lstValoresColumna)):
-#             if lstValoresColumna[i] in lstColumna:
-#                 pass
-#             else:
-#                 lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#     if len(tplArchivo) > 4:
-#         if tplArchivo[4][0] == True:
-#             strTipoDato = tplArchivo[4][1]
-#             strError = 'No es una opción valida, recuerde el uso de mayusculas'
-#             lstValoresColumna = dtf[strNombreColumna].tolist()
-#             for i in range(0, len(lstValoresColumna)):
-#                 if len(strTipoDato) == 2:
-#                     if lstValoresColumna[i] == strTipoDato[0]:
-#                         pass
-#                     elif str(lstValoresColumna[i]) == strTipoDato[1]:
-#                         pass
-#                     else:
-#                         lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#                 elif len(strTipoDato) > 2:
-#                     if lstValoresColumna[i] == strTipoDato[0]:
-#                         pass
-#                     elif str(lstValoresColumna[i]) == strTipoDato[1]:
-#                         pass
-#                     elif str(lstValoresColumna[i]) == strTipoDato[2]:
-#                         pass
-#                     else:
-#                         lstCeldaError.append((strNombreColumna, i, strError, lstValoresColumna[i]))
-#     return lstCeldaError
-
-
-
-
-#     dtfProductos = dtfProductos.rename(
-                    #         columns={
-                    #             'Descripción producto':'product_desc',
-                    #             'Código de barras':'bar_code',
-                    #             'Marca':'trademark',
-                    #             'Categoría producto':'product_cat',
-                    #             'Subcategoría producto':'product_subcat',
-                    #             'Unidad de compra':'purchase_unit',
-                    #             'Cantidad unidad de compra':'quantity_pu',
-                    #             'Precio de compra':'cost_pu',
-                    #             'Unidad de venta':'sales_unit',
-                    #             'Cantidad unidad de venta':'quantity_su',
-                    #             'Precio de venta':'full_sale_price',
-                    #             'Iva':'iva',
-                    #             'Otros impuestos':'other_tax',
-                    #             'Tiempo de entrega proveedor':'del_time',
-                    #             }
-                    #         )
-                        # user = settings.DATABASES['default']['USER']
-                        # password = settings.DATABASES['default']['PASSWORD']
-                        # database_name = settings.DATABASES['default']['NAME']
-
-                        # database_url = 'sqlite://///Users/andres/Desktop/biapp/db.sqlite3'
-                        # engine = create_engine(database_url, echo=False)
-                        # dtfProductos.to_sql(clsCatalogoProductosMdl, con=engine)

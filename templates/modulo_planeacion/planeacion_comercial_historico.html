@@ -12,127 +12,366 @@
     </li>
 {% endblock menu-header %}
 {% block content-window %}    
-    <div class="card card-primary card-outline">
-        <div class="card-header">
-            <h2 class="card-title">
-                <i class="fas fa-search"></i>
-                Consultar indicadores comerciales
-            </h2>
-        </div>
-        <div class="card-body">
-            <div class="accordion" id="accordionIndicadoresVentas">
-                <div class="card">
-                    <div class="card-header" id="hdnIndicadoresVentas">
-                        <h2 class="mb-0">
-                            <button 
-                                class="btn btn-link btn-block text-left" 
-                                type="button" data-toggle="collapse" 
-                                data-target="#cllIndicadoresVentas" 
-                                aria-expanded="false" 
-                                aria-controls="cllIndicadoresVentas">
-                                Ver indicadores de venta actual
-                            </button>
-                        </h2>
-                    </div>
-                    <div 
-                        id="cllIndicadoresVentas" 
-                        class="collapse" 
-                        aria-labelledby="hdnIndicadoresVentas" 
-                        data-parent="#accordionIndicadoresVentas">  
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label>Seleccione indicador a consultar:</label>
-                                        <select name="select" class="form-control">
-                                            <option value="value1">-------------</option>
-                                            <option value="value1">Venta total</option>
-                                            <option value="value2">Profundización de venta</option>
-                                            <option value="value3">Clientes nuevos</option>
-                                            <option value="value3">Tasa de retención de clientes</option>
-                                            <option value="value3">Margén de ventas</option>
-                                        </select>
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <h2 class="card-title">
+            <i class="fas fa-plus"></i>
+            {{ title }}
+        </h2>
+    </div>
+    <div class="card-body">
+        <div class="accordion" id="accordionHistoricoIndicadores">
+            <div class="card card-primary card-outline">
+                <div class="card-header" id="headingIndicadoresActuales">
+                    <h2 class="mb-0">
+                        <button 
+                            class="btn btn-block text-left collapsed" 
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#cllIndicadoresActual"
+                            aria-expanded="false"
+                            aria-controls="cllIndicadoresActual">
+                            <i class="fas fa-angle-right"></i>
+                            Indicadores de venta actual
+                        </button>
+                    </h2>
+                </div>
+                <div id="cllIndicadoresActual" class="collapse" aria-labelledby="headingIndicadoresActuales" data-parent="#accordionHistoricoIndicadores">
+                    <div class="card-body">
+                        <div class="accordion" id="accordionIndicadoresActuales">
+                            <div class="card card-primary card-outline">
+                                <div class="card-header" id="hdnIndicadoresGeneralesActual">
+                                    <div class="mb-0">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <button 
+                                                    class="btn collapsed"
+                                                    type="button" 
+                                                    data-toggle="collapse" 
+                                                    data-target="#cllIndicadorGeneralActual" 
+                                                    aria-expanded="false" 
+                                                    aria-controls="cllIndicadorGeneralActual">
+                                                    <i class="fas fa-angle-right"></i>
+                                                    Indicadores generales
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label>Seleecione tipo de indicador:</label>
-                                        <select name="select" class="form-control">
-                                            <option value="value1">-------------</option>
-                                            <option value="value1">General</option>
-                                            <option value="value2">Detallado</option>
-                                        </select>
+                                <div id="cllIndicadorGeneralActual" class="collapse" aria-labelledby="hdnIndicadoresGeneralesActual" data-parent="#accordionIndicadoresActuales">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>Indicador:</label>
+                                                    <select 
+                                                        id="slcIndicadorGeneralActual" 
+                                                        class="form-control slcIndicador">
+                                                        <option value=""></option>
+                                                        <option value="Total_Sales_Objetive">Venta total</option>
+                                                        <option value="Customer_Retention_Rate">Ventas nuevas</option>
+                                                        <option value="Sales_Deepening">Profundización de clientes</option>
+                                                        <option value="New_Customers">Clientes nuevos</option>
+                                                        <option value="Margin">Margén de ventas</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4" id="colObjetivoGeneralActual" hidden="true">
+                                                <div class="form-group">
+                                                    <label>Objetivo:</label>
+                                                    <input 
+                                                        type="text" 
+                                                        class="form-control"
+                                                        readonly="true"
+                                                        autocomplete="off" 
+                                                        id="iptObjetivoIndicadorGeneralActual">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4" id="colRealGeneralActual" hidden="true">
+                                                <div class="form-group">
+                                                    <label>Real:</label>
+                                                    <input 
+                                                        type="text" 
+                                                        class="form-control"
+                                                        readonly="true"
+                                                        autocomplete="off"
+                                                        id="iptRealIndicadorGeneralActual">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="form-group" id="lblCumplimientoGeneral" hidden="true">
+                                            <label>Cumplimiento:</label>
+                                        </div>
+                                        <div class="progress" id="prgBarCumplimientoGeneral" hidden="true">
+                                            <div 
+                                                class="progress-bar progress-bar-striped progress-bar-animated" 
+                                                role="progressbar"
+                                                aria-valuenow="75"
+                                                aria-valuemin="0" 
+                                                aria-valuemax="100" 
+                                                style="width: 75%"
+                                                id="prgBarIndicadorGeneralActual">
+                                                <span 
+                                                    style="text-align: center" 
+                                                    id="txtProgressBar">
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <hr>
                                     </div>
                                 </div>
                             </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <button type="button" class="btn btn-block btn-outline-primary">Consultar</button>
-                                    </div>
+                            <div class="card card-primary card-outline">
+                                <div class="card-header" id="hdnIndicadoresDetalladosActuales">
+                                    <h5 class="mb-0">
+                                        <button 
+                                            class="btn collapsed" 
+                                            type="button" 
+                                            data-toggle="collapse" 
+                                            data-target="#cllIndicadoresDetalladosActuales" 
+                                            aria-expanded="false" 
+                                            aria-controls="cllIndicadoresDetalladosActuales">
+                                            <i class="fas fa-angle-right"></i>
+                                            Indicadores detallados
+                                        </button>
+                                    </h5>
                                 </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <figure class="highcharts-figure">
-                                        <div id="grfVentaMensual"></div>
-                                    </figure>
+                                <div id="cllIndicadoresDetalladosActuales" class="collapse" aria-labelledby="hdnIndicadoresDetalladosActuales" data-parent="#accordionIndicadoresActuales">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>Categoría:</label>
+                                                    <select 
+                                                        id="slcCategoriaIndicadorActual" 
+                                                        class="form-control selectCategoria"
+                                                        required="true">
+                                                        <option value=""></option>
+                                                        <option value="City">Ciudad</option>
+                                                        <option value="Zones">Zona</option>
+                                                        <option value="Customer_Category">Categoría clientes</option>
+                                                        <option value="Adviser">Asesor comercial</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4" id="colDetalleCategoriaActual" hidden="true">
+                                                <div class="form-group">
+                                                    <label>Detalle categoría:</label>
+                                                    <select 
+                                                        id="slcCategoriaIndicadorDetalleActual"
+                                                        class="form-control">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4" id="colIndicadorDetalleActual" hidden="true">
+                                                <div class="form-group">
+                                                    <label>Indicador:</label>
+                                                    <select 
+                                                        id="slcIndicadorDetalladoActual" 
+                                                        class="form-control slcIndicador">
+                                                        <option value=""></option>
+                                                        <option value="Total_Sales_Objetive">Venta total</option>
+                                                        <option value="Customer_Retention_Rate">Ventas nuevas</option>
+                                                        <option value="Sales_Deepening">Profundización de clientes</option>
+                                                        <option value="New_Customers">Clientes nuevos</option>
+                                                        <option value="Margin">Margén de ventas</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row" id="rowMetaIndicadorDetalleActual" hidden="true">
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>Objetivo:</label>
+                                                    <input 
+                                                        type="text" 
+                                                        class="form-control"
+                                                        readonly="true"
+                                                        autocomplete="off" 
+                                                        id="iptObjetivoIndicadorDetalleActual">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>Real:</label>
+                                                    <input 
+                                                        type="text" 
+                                                        class="form-control"
+                                                        readonly="true"
+                                                        autocomplete="off"
+                                                        id="iptRealIndicadorDetalleActual">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="form-group" id="lblCumplimientoDetalleActual" hidden="true">
+                                            <label>Cumplimiento:</label>
+                                        </div>
+                                        <div class="progress" id="rowBarCumplimientoIndicadorDetalleActual" hidden="true">
+                                            <div 
+                                                class="progress-bar progress-bar-striped progress-bar-animated" 
+                                                role="progressbar" 
+                                                aria-valuenow="75" 
+                                                aria-valuemin="0" 
+                                                aria-valuemax="100" 
+                                                style="width: 0%"
+                                                id="prgBarCumplimientoDetalleActual">
+                                                <span
+                                                    style="text-align: center" 
+                                                    id="txtProgressBarDetallado">
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-header" id="hdnHistoricoVentas">
-                        <h2 class="mb-0">
-                            <button 
-                                class="btn btn-link btn-block text-left" 
-                                type="button" data-toggle="collapse" 
-                                data-target="#cllHistoricoVentas" 
-                                aria-expanded="false" 
-                                aria-controls="cllHistoricoVentas">
-                                Ver historico de indicadores de venta
-                            </button>
-                        </h2>
-                    </div>
-                    <div 
-                        id="cllHistoricoVentas" 
-                        class="collapse" 
-                        aria-labelledby="hdnHistoricoVentas" 
-                        data-parent="#accordionIndicadoresVentas">
+            </div>
+            <hr>
+            <div class="card card-primary card-outline">
+                <div class="card-header" id="headingHistoricoIndicadores">   
+                    <h2 class="mb-0">
+                        <button 
+                            class="btn btn-block text-left collapsed" 
+                            type="button" 
+                            data-toggle="collapse" 
+                            data-target="#cllHistoricoIndicadores" 
+                            aria-expanded="false" 
+                            aria-controls="cllHistoricoIndicadores">
+                            <i class="fas fa-angle-right"></i>
+                            Histórico de indicadores
+                        </button>
+                    </h2>
+                </div>
+                <div id="cllHistoricoIndicadores" class="collapse" aria-labelledby="headingHistoricoIndicadores" data-parent="#accordionHistoricoIndicadores">
+                    <div class="card-body">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label>Seleccione indicador a consultar:</label>
-                                        <select name="select" class="form-control">
-                                            <option value="value1">-------------</option>
-                                            <option value="value1">Venta total</option>
-                                            <option value="value2">Profundización de venta</option>
-                                            <option value="value3">Clientes nuevos</option>
-                                            <option value="value3">Tasa de retención de clientes</option>
-                                            <option value="value3">Margén de ventas</option>
-                                        </select>
+                            <div class="accordion" id="accHistoricoIndicadores">
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header" id="hdnIndicadoresGeneralesHistorico">
+                                        <div class="mb-0">
+                                            <div class="row">
+                                                <div class="col-lg-4">
+                                                    <button 
+                                                        class="btn collapsed"
+                                                        type="button" 
+                                                        data-toggle="collapse" 
+                                                        data-target="#cllIndicadorGeneralHistorico" 
+                                                        aria-expanded="false" 
+                                                        aria-controls="cllIndicadorGeneralHistorico">
+                                                        <i class="fas fa-angle-right"></i>
+                                                        Indicadores generales
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="cllIndicadorGeneralHistorico" class="collapse" aria-labelledby="hdnIndicadoresGeneralesHistorico" data-parent="#accHistoricoIndicadores">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-4">
+                                                    <div class="form-group">
+                                                        <label>Indicador:</label>
+                                                        <select 
+                                                            id="slcIndicadorGeneralHistorico" 
+                                                            class="form-control slcIndicador"
+                                                            required="true">
+                                                            <option value=""></option>
+                                                            <option value="Total_Sales_Objetive">Venta total</option>
+                                                            <option value="Customer_Retention_Rate">Ventas nuevas</option>
+                                                            <option value="Sales_Deepening">Profundización de clientes</option>
+                                                            <option value="New_Customers">Clientes nuevos</option>
+                                                            <option value="Margin">Margén de ventas</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row" id="rowGraficoHistoricoGeneral" hidden="true">
+                                                <div class="col-lg-12">
+                                                    <figure class="highcharts-figure">
+                                                        <div id="grfHistoricoGeneral"></div>
+                                                    </figure>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label>Seleecione tipo de indicador:</label>
-                                        <select name="select" class="form-control">
-                                            <option value="value1">-------------</option>
-                                            <option value="value1">General</option>
-                                            <option value="value2">Detallado</option>
-                                        </select>
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header" id="hdnIndicadoresDetalladosHistorico">
+                                        <h5 class="mb-0">
+                                            <button 
+                                                class="btn collapsed" 
+                                                type="button" 
+                                                data-toggle="collapse" 
+                                                data-target="#cllIndicadoresDetalladosHistorico" 
+                                                aria-expanded="false" 
+                                                aria-controls="cllIndicadoresDetalladosHistorico">
+                                                <i class="fas fa-angle-right"></i>
+                                                Indicadores detallados
+                                            </button>
+                                        </h5>
                                     </div>
-                                </div>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <button type="button" class="btn btn-block btn-outline-primary">Consultar</button>
+                                    <div id="cllIndicadoresDetalladosHistorico" class="collapse" aria-labelledby="hdnIndicadoresDetalladosHistorico" data-parent="#accHistoricoIndicadores">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-4">
+                                                    <div class="form-group">
+                                                        <label>Categoría:</label>
+                                                        <select 
+                                                            id="slcCategoriaIndicadorHistorico" 
+                                                            class="form-control selectCategoria"
+                                                            required="true">
+                                                            <option value=""></option>
+                                                            <option value="City">Ciudad</option>
+                                                            <option value="Zones">Zona</option>
+                                                            <option value="Customer_Category">Categoría clientes</option>
+                                                            <option value="Adviser">Asesor comercial</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4" id="colDetalleCategoriaHistorico" hidden="true">
+                                                    <div class="form-group">
+                                                        <label>Detalle categoría:</label>
+                                                        <select 
+                                                            id="slcDetalleCategoriaIndicadorHistorico"
+                                                            required="true"
+                                                            class="form-control">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4" id="colIndicadorDetalleHistorico" hidden="true">
+                                                    <div class="form-group">
+                                                        <label>Indicador:</label>
+                                                        <select 
+                                                            id="slcIndicadorHistoricoDetallado" 
+                                                            class="form-control slcIndicador">
+                                                            <option value=""></option>
+                                                            <option value="Total_Sales_Objetive">Venta total</option>
+                                                            <option value="Customer_Retention_Rate">Ventas nuevas</option>
+                                                            <option value="Sales_Deepening">Profundización de clientes</option>
+                                                            <option value="New_Customers">Clientes nuevos</option>
+                                                            <option value="Margin">Margén de ventas</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row" id="rowGraficoHistoricoDetallado" hidden="true">
+                                                <div class="col-lg-12">
+                                                    <figure class="highcharts-figure">
+                                                        <div id="grfHistoricoDetallado"></div>
+                                                    </figure>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -145,5 +384,5 @@
 </div>
 {% endblock content-window %}
 {% block extrajs %}  
-    <script src="{% static 'js/planeacion/planeacion_comercial_establecer_indicadores.js' %}"></script>
+    <script src="{% static 'js/planeacion/planeacion_comercial_historico.js' %}"></script>
 {% endblock %}

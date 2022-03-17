@@ -86,6 +86,55 @@ urlpatterns = [
         clsExportarCatalogoProductosViw.as_view(), 
         name='exportar_catalogo_productos'
         ),
+    # Listas de precios
+    path(
+        'listas_precios/', 
+        clsMenuListasPreciosViw.as_view(), 
+        name='listas_precios'
+        ),
+    # Carga masiva de lista de precios
+    path(
+        'carga_masiva_listas_precios/', 
+        clsCargaMasivaListasPreciosViw.as_view(), 
+        name='carga_masiva_listas_precios'
+        ),
+    # Exportar plantilla lista de precios
+    path(
+        'exportar_plantilla_lista_precios/', 
+        clsExportarPlantillaListaPreciosViw.as_view(), 
+        name='exportar_plantilla_lista_precios'
+        ),
+    # Crear lista de precios
+    path(
+        'crear_lista_precios/', 
+        clsCrearListaPreciosViw.as_view(), 
+        name='crear_lista_precios'
+        ),
+    # Ver lista de precios
+    path(
+        'ver_lista_precios/', 
+        clsVerListaPreciosViw.as_view(), 
+        name='ver_lista_precios'
+        ),
+
+    # Tiempos de entrega
+    path(
+        'tiempos_entrega/', 
+        clsMenuTiemposEntregaViw.as_view(), 
+        name='tiempos_entrega'
+        ),
+    # Crear tiempos de entrega
+    path(
+        'crear_tiempos_entrega/', 
+        clsCrearTiempoEntregaViw.as_view(), 
+        name='crear_tiempos_entrega'
+        ),
+    # Ver tiempos de entrega
+    path(
+        'ver_tiempos_entrega/', 
+        clsVerTiempoEntregaViw.as_view(), 
+        name='ver_tiempos_entrega'
+        ),
 
     # Catálogo de proveedores
     path(

@@ -97,7 +97,13 @@ class PersonAdmin(ImportExportModelAdmin):
 class PersonAdmin(ImportExportModelAdmin):
     pass
 
+''' Admin salidas de almacén '''
+@admin.register(clsSalidasAlmacenMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
 ''' Admin historico movimientos '''
 @admin.register(clsHistoricoMovimientosMdl)
 class PersonAdmin(ImportExportModelAdmin):
     pass
+

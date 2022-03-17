@@ -67,13 +67,91 @@ class clsPlaneacionComercialEstablecerIndicadoresViw(LoginRequiredMixin, Validat
                 lstIndicadoresGenerales = ['Total_Sales_Objetive', 'Customer_Retention_Rate', 'Sales_Deepening', 'New_Customers', 'Margin']
                 lstQrsIndicadores = [ {i: fncRetornarDataGraficolst('General', i)} for i in lstIndicadoresGenerales ]
                 response = JsonResponse(lstQrsIndicadores, safe=False)
-            if action == 'btnConsultarCiudadesClientesjsn':
-                
-                
-                # lstCiudades = dtfCatalogoClientes['city'].tolist()
-                # lstDuplicadosCiudades = fncDuplicadoListatpl(lstCiudades)
-                
-                response = JsonResponse(dtfCiudadesClientes, safe=False)
+            elif action == 'btnConsultarCiudadesClientesjsn':
+                lstSelectCiudad = fncRetornarDataSelectdct('modulo_configuracion_clssalidasalmacenmdl')
+                if type(lstSelectCiudad) == str:
+                    jsnData['strError'] = lstSelectCiudad
+                    response = JsonResponse(jsnData, safe=False)
+                else:
+                    jsnData['lstSelectCiudad'] = lstSelectCiudad
+                    response = JsonResponse(jsnData, safe=False)
+            elif action == 'slcIndicadorCiudadjsn':
+                intCiudad = request.POST['intCiudad']
+                strIndicadorCiudad = request.POST['strIndicadorCiudad']
+                dctIndicadorCiudad = fncRetornarDataGraficolst('City', strIndicadorCiudad, intCiudad)
+                response = JsonResponse(dctIndicadorCiudad, safe=False)
+            elif action == 'btnConsultarZonasClientesjsn':
+                lstSelectZonas = fncRetornarDataSelectdct('modulo_configuracion_clszonaclientemdl', 'customer_zone')
+                if type(lstSelectZonas) == str:
+                    jsnData['strError'] = lstSelectZonas
+                    response = JsonResponse(jsnData, safe=False)
+                else:
+                    jsnData['lstSelectZonas'] = lstSelectZonas
+                    response = JsonResponse(jsnData, safe=False)
+            elif action == 'slcIndicadorZonajsn':
+                intZona = request.POST['intZona']
+                strIndicadorZona = request.POST['strIndicadorZona']
+                dctIndicadorZona = fncRetornarDataGraficolst('Zones', strIndicadorZona, intZona)
+                response = JsonResponse(dctIndicadorZona, safe=False)
+            elif action == 'btnConsultarCategoriasClientesjsn':
+                lstSelectCategoriaCliente = fncRetornarDataSelectdct('modulo_configuracion_clscategoriaclientemdl', 'customer_cat')
+                if type(lstSelectCategoriaCliente) == str:
+                    jsnData['strError'] = lstSelectCategoriaCliente
+                    response = JsonResponse(jsnData, safe=False)
+                else:
+                    jsnData['lstSelectCategoriaCliente'] = lstSelectCategoriaCliente
+                    response = JsonResponse(jsnData, safe=False)
+            elif action == 'slcIndicadorCategoriaClientejsn':
+                intCategoriaCliente = request.POST['intCategoriaCliente']
+                strIndicadorCategoriaCliente = request.POST['strIndicadorCategoriaCliente']
+                dctIndicadorCategoriaCliente = fncRetornarDataGraficolst('Customer_Category', strIndicadorCategoriaCliente, intCategoriaCliente)
+                response = JsonResponse(dctIndicadorCategoriaCliente, safe=False)
+            elif action == 'btnConsultarAsesoresComercialesjsn':
+                lstSelectAsesorComercial = fncRetornarDataSelectdct('modulo_configuracion_clsasesorcomercialmdl', 'advisor')
+                if type(lstSelectAsesorComercial) == str:
+                    jsnData['strError'] = lstSelectAsesorComercial
+                    response = JsonResponse(jsnData, safe=False)
+                else:
+                    jsnData['lstSelectAsesorComercial'] = lstSelectAsesorComercial
+                    response = JsonResponse(jsnData, safe=False)
+            elif action == 'slcIndicadorAsesorComercialjsn':
+                intAsesorComercial = request.POST['intAsesorComercial']
+                strIndicadorAsesorComercial = request.POST['strIndicadorAsesorComercial']
+                dctIndicadorAsesorComercial = fncRetornarDataGraficolst('Adviser', strIndicadorAsesorComercial, intAsesorComercial)
+                response = JsonResponse(dctIndicadorAsesorComercial, safe=False)
+            elif action == 'btnGuardarPlaneacionComercialjsn':
+                lstIndicadoresGenerales = json.loads(request.POST['lstIndicadoresGenerales'])
+                lstTablaCiudades = json.loads(request.POST['lstTablaCiudades'])
+                lstTablaZonas = json.loads(request.POST['lstTablaZonas'])
+                lstTablaCategoriaCliente = json.loads(request.POST['lstTablaCategoriaCliente'])
+                lstTablaAsesorComercial = json.loads(request.POST['lstTablaAsesorComercial'])
+                lstIndicadoresDetallados = [lstTablaCiudades, lstTablaZonas, lstTablaCategoriaCliente, lstTablaAsesorComercial]
+                def fncGuardarIndicadorGeneral(strIndicador, fltObjetivo):
+                    with transaction.atomic():
+                        clsIndicadoresComercialesMdl.objects.create(
+                            creation_date = datetime.now(),
+                            indicator = strIndicador,
+                            set = 'General',
+                            objetive = float(fltObjetivo)
+                        )
+                def fncGuardarIndicadorDetallado(strIndicador, strSet, intSubset, fltObjetivo):
+                    with transaction.atomic():
+                        clsIndicadoresComercialesMdl.objects.create(
+                            creation_date = datetime.now(),
+                            indicator = strIndicador,
+                            set = strSet,
+                            subset = intSubset,
+                            objetive = float(fltObjetivo)
+                        )
+                for i in lstIndicadoresGenerales:
+                    if i['fltObjetivo'] != '':
+                        fncGuardarIndicadorGeneral(i['strIndicador'], i['fltObjetivo'])
+                for i in lstIndicadoresDetallados:
+                    if len(i) >1:
+                        for j in i:
+                            fncGuardarIndicadorDetallado(j['intIndicador'], j['strSet'], j['intSubset'], j['fltObjetivoIndicador'])
+                jsnData['strSuccess'] = 'Se ha establecido su planeación comercial'
+                response = JsonResponse(jsnData, safe=False)
             else:
                 jsnData['error'] = 'No se encontraron resultados'
         except Exception as e:
@@ -95,25 +173,72 @@ class clsPlaneacionComercialHistoricoViw(LoginRequiredMixin, ValidatePermissionR
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        data = {}
+        jsnData = {}
         try:
             action = request.POST['action']
-            if action == 'jsnConsultarIndicadoresjsn':
-                print('si')
-                jsnData = []
-                qrsIndicadorVentaTotal = fncRetornarDataGraficolst('General', 'Total_Sales_Objetive')
-                print(qrsIndicadorVentaTotal)
-                # qrsIndicadorVentasNuevas = fncRetornarDataGraficolst('General', 'Customer_Retention_Rate')
-                # qrsIndicadorProfundizacionClientes = fncRetornarDataGraficolst('General', 'Sales_Deepening')
-                # qrsIndicadorClientesNuevos = fncRetornarDataGraficolst('General', 'New_Customers')
-                # qrsIndicadorMargenVentas = fncRetornarDataGraficolst('General', 'Margin')
-
-                print('si')
+            if action == 'jsnConsultarIndicadorGeneralActual':
+                jsnData['fltObjetivoGeneralActual'] = float(5300000)
+                jsnData['fltRealGeneralActual'] = float(2700000)
+                jsnData['strCumplimientoIndicador'] = '50%'
+                response = JsonResponse(jsnData, safe=False)
+            elif action == 'btnConsultarCiudadesjsn':
+                lstSelect = fncRetornarDataSelectdct('modulo_configuracion_clssalidasalmacenmdl')
+                if type(lstSelect) == str:
+                    jsnData['strError'] = lstSelect
+                    response = JsonResponse(jsnData, safe=False)
+                else:
+                    jsnData['lstSelect'] = lstSelect
+                    response = JsonResponse(jsnData, safe=False)
+            elif action == 'btnConsultarZonasjsn':
+                lstSelect = fncRetornarDataSelectdct('modulo_configuracion_clszonaclientemdl', 'customer_zone')
+                if type(lstSelect) == str:
+                    jsnData['strError'] = lstSelect
+                    response = JsonResponse(jsnData, safe=False)
+                else:
+                    jsnData['lstSelect'] = lstSelect
+                    response = JsonResponse(jsnData, safe=False)
+            elif action == 'btnConsultarCategoriaClientejsn':
+                lstSelect = fncRetornarDataSelectdct('modulo_configuracion_clscategoriaclientemdl', 'customer_cat')
+                if type(lstSelect) == str:
+                    jsnData['strError'] = lstSelect
+                    response = JsonResponse(jsnData, safe=False)
+                else:
+                    jsnData['lstSelect'] = lstSelect
+                    response = JsonResponse(jsnData, safe=False)
+            elif action == 'btnConsultarAsesorComercialjsn':
+                lstSelect = fncRetornarDataSelectdct('modulo_configuracion_clsasesorcomercialmdl', 'advisor')
+                if type(lstSelect) == str:
+                    jsnData['strError'] = lstSelect
+                    response = JsonResponse(jsnData, safe=False)
+                else:
+                    jsnData['lstSelect'] = lstSelect
+                    response = JsonResponse(jsnData, safe=False)
+            elif action == 'jsnConsultarIndicadorDetalladoActual':
+                jsnData['fltObjetivo'] = float(5300000)
+                jsnData['fltReal'] = float(2700000)
+                jsnData['strCumplimientoIndicador'] = '50%'
+                response = JsonResponse(jsnData, safe=False)
+            elif action == 'jsnConsultarHistoricoIndicadorGeneral':
+                intIndicadorGeneral = request.POST['intIndicadorGeneral']
+                dctIndicadorAsesorComercial = fncRetornarDataGraficolst('General', intIndicadorGeneral)
+                response = JsonResponse(dctIndicadorAsesorComercial, safe=False)
+            elif action == 'jsnConsultarIndicadorDetalladoHistorico':
+                strSet = request.POST['strSet']
+                intIndicadorDetalladoHistorico = request.POST['intIndicadorDetalladoHistorico']
+                intDetalleCategoriaActual = request.POST['intDetalleCategoriaActual']
+                dctIndicadorCategoriaCliente = fncRetornarDataGraficolst(strSet, intIndicadorDetalladoHistorico, intDetalleCategoriaActual)
+                response = JsonResponse(dctIndicadorCategoriaCliente, safe=False)
             else:
-                data['error'] = 'No se encontraron resultados'
+                jsnData['error'] = 'No se encontraron resultados'
         except Exception as e:
-            data['error'] = str(e)
-        return JsonResponse(data, safe=False)
+            jsnData['error'] = str(e)
+            response = JsonResponse(jsnData, safe=False)
+        return response
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Planeación comercial - Historico indicadores'
+        return context
 
 #################################################################################################
 # 2. PLANEACIÓN COMPRAS

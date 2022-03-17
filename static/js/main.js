@@ -33,6 +33,7 @@ function fncCargarLibreriaSelect2(strClase, strPlaceholder) {
         theme: "bootstrap4",
         language: 'es',
         placeholder: strPlaceholder,
+        allowClear: true
     });    
 }
 
@@ -149,6 +150,41 @@ function fncMensajeAlertamns(strTituloMensaje, strContenidoMensaje, fncRetorno) 
                 btnClass: 'btn-red',
                 action: function () {
                     
+                }
+            },
+        }
+    })
+}
+
+// Función que muestra un mensaje de confirmación y se ejecuta una acción de acuerdo a la decisión
+// strTituloMensaje: Titulo del mensaje para la confirmación del envío del formulario
+// strContenidoMensaje: Contenido del mensaje para la confirmación del envío del formulario
+// fncRetornoSi: Función que se ejecutara si selecciona SI
+// fncRetornoNo: Función que se ejecutara si selecciona NO
+function fncMensajeConfirmacionmns(strTituloMensaje, strContenidoMensaje, fncRetornoSi, fncRetornoNo) {
+    $.confirm({
+        theme: 'material',
+        title: strTituloMensaje,
+        icon: 'fa fa-info',
+        content: strContenidoMensaje,
+        columnClass: 'small',
+        typeAnimated: true,
+        cancelButtonClass: 'btn-primary',
+        draggable: true,
+        dragWindowBorder: false,
+        buttons: {
+            info: {
+                text: "Si",
+                btnClass: 'btn-primary',
+                action: function () {
+                    fncRetornoSi();
+                }
+            },
+            danger: {
+                text: "No",
+                btnClass: 'btn-red',
+                action: function () {
+                    fncRetornoNo();
                 }
             },
         }

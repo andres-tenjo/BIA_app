@@ -6,6 +6,7 @@ from pandas import pandas as pd
 from collections import defaultdict
 import re
 from pandas import Timestamp
+from apps.Modelos.Several_func import fncConsultalst
 
 # BIA Fields
 from apps.modulo_configuracion.api.serializers import *
@@ -320,7 +321,41 @@ def fncRetornarDataGraficolst(strSet, strIndicator, intSubset=None):
         lstDataGrafico = False
     return lstDataGrafico
 
-def fncRetornarDataSelect(strNombreTabla):
+def fncRetornarDataSelectdct(strNombreTabla, StrColumnaDescripcion=None):
+    lstIndicador = []
     if strNombreTabla == 'modulo_configuracion_clssalidasalmacenmdl':
         strConsultaSalidas = f'SELECT identification_id FROM {strNombreTabla}'
         strConsultaCatalogoClientes = 'SELECT id, city_id FROM modulo_configuracion_clscatalogoclientesmdl'
+        strConsultaCiudades = 'SELECT id, city_name FROM modulo_configuracion_clsciudadesmdl'
+        lstConsultaSalidas = fncConsultalst(strConsultaSalidas, [])
+        lstConsultaCatalogoClientes = fncConsultalst(strConsultaCatalogoClientes, [])
+        lstConsultaCiudades = fncConsultalst(strConsultaCiudades, [])
+        dtfConsultaSalidas = pd.DataFrame(lstConsultaSalidas, columns=['id'])
+        dtfCatalogoClientes = pd.DataFrame(lstConsultaCatalogoClientes, columns=['id', 'city'])
+        dtfCiudades = pd.DataFrame(lstConsultaCiudades, columns=['city', 'city_name'])
+        dtfUnidos = dtfConsultaSalidas.merge(dtfCatalogoClientes, how='left', on='id')
+        dtfUnidos = dtfUnidos.merge(dtfCiudades, how='left', on='city')
+        lstCodigosCiudades = dtfUnidos['city'].unique()
+        lstCodigosCiudades = [ int(i) for i in lstCodigosCiudades]
+        if len(lstCodigosCiudades) > 1:
+            lstNombresCiudades = dtfUnidos['city_name'].unique()
+            lstNombresCiudades = [ str(i) for i in lstNombresCiudades]
+            for i, j in zip(lstCodigosCiudades, lstNombresCiudades):
+                dctDataSelect = {}
+                dctDataSelect['id'] = i
+                dctDataSelect['text'] = j
+                lstIndicador.append(dctDataSelect)
+        else:
+            lstIndicador = 'No puede establecer indicadores para esta categoría ya que no tiene creadas mas de 1'
+    else:
+        strConsulta = f'SELECT id, {StrColumnaDescripcion} FROM {strNombreTabla}'
+        lstConsulta = fncConsultalst(strConsulta, [])
+        if len(lstConsulta) > 1:
+            for i in lstConsulta:
+                dctDataSelect = {}
+                dctDataSelect['id'] = i[0]
+                dctDataSelect['text'] = i[1]
+                lstIndicador.append(dctDataSelect)
+        else:
+            lstIndicador = 'No puede establecer indicadores para esta categoría ya que no tiene creadas mas de 1'
+    return lstIndicador
