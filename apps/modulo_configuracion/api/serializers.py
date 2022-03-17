@@ -205,10 +205,10 @@ class clsEntradasAlmacenMdlSerializador(serializers.ModelSerializer):
         model = clsEntradasAlmacenMdl
         exclude = ('user_update', 'update_date', 'total_cost')
 
-class clsTblDetalleEntradaAlmacenSerializador(serializers.ModelSerializer):
+class clsDetalleEntradaAlmacenSerializador(serializers.ModelSerializer):
     
     class Meta:
-        model = clsTblDetalleEntradaAlmacen
+        model = clsDetalleEntradaAlmacen
         exclude = ('state',)
 
 class clsDevolucionesClienteMdlSerializador(serializers.ModelSerializer):
