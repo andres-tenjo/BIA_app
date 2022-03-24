@@ -1,28 +1,16 @@
-# import numpy as np
 import pandas as pd
-# import datetime as dt
-# from collections import defaultdict
-# import datetime as dt
-# from django.db import connection
-# import sqlite3
-from apps.Modelos.Several_func import *
+from apps.Modelos.Several_func import fncConsultalst
+from apps.Modelos.Customer_Credit import fncClienteCreditotpl
 
 # Inactiva las condiciones de compra a un proveedor cuando se inactiva un producto
 # intProducto: Corresponde al código del producto para consultar (int)
 # strNombreTabla: Corresponde al nombre de la tabla de la condición comercial donde se va a realizar la inactivación (str)
 # Actualiza la tabla seleccionada en la condición específica para la inactivación
 def fncInactivaCondicionProducto(intProducto, strNombreTabla):
-    # strDescuentoVolumen= f'''SELECT state FROM {strNombreTabla} SET state= %s WHERE product_id= %s AND state= %s'''
-    strDescuentoVolumen= f'''UPDATE {strNombreTabla} SET state= %s WHERE product_id= %s AND state= %s'''
-    # lstDescuentoVolumen= fncConsultalst(strDescuentoVolumen, [intProducto, 'AC'])
-    fncConsultalst(strDescuentoVolumen, ['IN', intProducto, 'AC'])
+    strConsulta= f'''UPDATE {strNombreTabla} SET state= %s WHERE product_code_id= %s AND state= %s'''
+    fncConsultalst(strConsulta, ['IN', intProducto, 'AC'])
     return print('Se actualizó el estado de la condición para el producto')
-    # if len(lstDescuentoVolumen)== 0: return
-    # else:
-    #     strActualizaDescuentoVolumen= f'UPDATE {strNombreTabla} SET state= %s'
-    #     fncConsultalst(strActualizaDescuentoVolumen, ['IN'])
-    #     return
-
+    
 # Confirma si existe inventario para uno o varios productos en una bodega específica
 # intVariable: Corresponde al código del producto o al código de la bodega como valor del filtro (int)
 # strColumnaFiltro: Corresponde a la columna donde se va a realizar el filtro en la tabla (str)
@@ -33,7 +21,7 @@ def fncExisteInventariotpl(intVariable, strColumnaFiltro):
     lstSaldoInventario= fncConsultalst(strSaldoInventario, [intVariable])
     if len(lstSaldoInventario)== 0: return (True, '')
     else:
-        lstBoleano= [True if i[0][2]== 0 else False for i in lstSaldoInventario]
+        lstBoleano= [0 if i[2]== 0 else 1 for i in lstSaldoInventario]
         if sum(lstBoleano)== 0: return (True, '')
         else: 
             dtfSaldoInventario= pd.DataFrame(lstSaldoInventario, columns= ['Código Producto', 'Lote', 'Inventario Disponible', 
@@ -47,8 +35,10 @@ def fncExisteInventariotpl(intVariable, strColumnaFiltro):
 # strTablaGeneral: Corresponde al nombre de la tabla de general a consultar (str)
 # strColumna1: Corresponde al nombre de la columna en la tabla a importar (str)
 # strColumna2: Corresponde al nombre a asignar al cuadro de datos para la columna específica consultada (str)
+# strColumna3: Corresponde al nombre de la columna a filtrar (str)
+# strValor: Corresponde al filtro a usar en la columna (str)
 # Retorna una tupla un boleano y un cuadro de datos, según el resultado de la consulta (tuple(bool, pandas.DataFrame))
-def fncDAbiertoProductotpl(intProducto, strTablaDetalle, strTablaGeneral, strColumna1, strColumna2):
+def fncDAbiertoProductotpl(intProducto, strTablaDetalle, strTablaGeneral, strColumna1, strColumna2, strColumna3, strValor):
     strConsultaDetalle= f'''SELECT doc_number_id FROM {strTablaDetalle} WHERE product_code_id= %s'''
     lstConsultaDetalle= fncConsultalst(strConsultaDetalle, [intProducto])
     if len(lstConsultaDetalle)== 0: return True, 
@@ -58,15 +48,15 @@ def fncDAbiertoProductotpl(intProducto, strTablaDetalle, strTablaGeneral, strCol
         lstDatos= []
         for i in lstDocumentos:
             strConsultaGeneral= f'''SELECT id, creation_date, doc_number, {strColumna1} FROM {strTablaGeneral}
-            WHERE id= %s AND condition= %s'''
-            lstConsultaGeneral= fncConsultalst(strConsultaGeneral, [i, 'AB'])
+            WHERE id= %s AND {strColumna3}= %s'''
+            lstConsultaGeneral= fncConsultalst(strConsultaGeneral, [i, strValor])
             if len(lstConsultaGeneral)== 0: pass
             else: lstDatos.append(lstConsultaGeneral)
         if len(lstDatos)== 0: return True,
         else: 
             lstCuadroDatos= [pd.DataFrame(i, columns= ['key', 'Fecha Creacion', 'N° Documento', f'{strColumna2}'])\
                 for i in lstDatos]
-            if len(lstCuadroDatos)==1: dtfConsultaGeneral= lstCuadroDatos[0]
+            if len(lstCuadroDatos)== 1: dtfConsultaGeneral= lstCuadroDatos[0]
             else: dtfConsultaGeneral= pd.concat(lstCuadroDatos)
             return False, dtfConsultaGeneral.merge(dtfConsultaDetalle, how= 'left', on= 'key')
 
@@ -88,47 +78,27 @@ def fncValidaConfirmaciontpl(lstConfirmacion):
 def fncInactivarProductotpl(intProducto):
     lstConfirmacion= [fncExisteInventariotpl(intProducto, 'product_code_id'),
     fncDAbiertoProductotpl(intProducto, 'modulo_configuracion_clsdetallepedidosmdl', 
-    'modulo_configuracion_clspedidosmdl', 'identification_id', 'Código Cliente'), 
+    'modulo_configuracion_clspedidosmdl', 'identification_id', 'Código Cliente', 'condition', 'AB'), 
     fncDAbiertoProductotpl(intProducto, 'modulo_configuracion_clsdetalleordenescompramdl', 
-    'modulo_configuracion_clsordenescompramdl', 'identification_id', 'Código Proveedor'),
+    'modulo_configuracion_clsordenescompramdl', 'identification_id', 'Código Proveedor', 'condition', 'AB'),
     fncDAbiertoProductotpl(intProducto, 'modulo_configuracion_clsdetallelistapreciosmdl', 
-    'modulo_configuracion_clslistapreciosmdl', 'store_id', 'Código Bodega'),
+    'modulo_configuracion_clslistapreciosmdl', 'store_id', 'Código Bodega', 'state', 'AC'),
     fncDAbiertoProductotpl(intProducto, 'modulo_configuracion_clsdetallecotizacionesmdl', 
-    'modulo_configuracion_clscotizacionesmdl', 'identification_id', 'Código Cliente')]
-    # lstConfirmacion.append(fncExisteInventariotpl(intProducto, 'product_code_id'))
-    # strSaldoInventario= '''SELECT product_code_id, batch, inventory_avail, store_id FROM 
-    # modulo_configuracion_clssaldosinventariomdl WHERE product_code_id= %s'''
-    # lstSaldoInventario= fncConsultalst(strSaldoInventario, [intProducto])
-    # if len(lstSaldoInventario)== 0: lstConfirmacion.append((True, ''))
-    # else:        
-    #     if lstSaldoInventario[0][2]== 0: lstConfirmacion.append((True, ''))
-    #     else: lstConfirmacion.append((False, pd.DataFrame(lstSaldoInventario, columns= ['Código Producto', 
-    #     'Lote', 'Inventario Disponible', 'Bodega'])))
-    # lstConfirmacion.append(fncDAbiertoProductotpl(intProducto, 'modulo_configuracion_clsdetallepedidosmdl', 
-    # 'modulo_configuracion_clspedidosmdl', 'identification_id', 'Código Cliente'))
-    # lstConfirmacion.append(fncDAbiertoProductotpl(intProducto, 'modulo_configuracion_clsdetalleordenescompramdl', 
-    # 'modulo_configuracion_clsordenescompramdl', 'identification_id', 'Código Proveedor'))
-    # lstConfirmacion.append(fncDAbiertoProductotpl(intProducto, 'modulo_configuracion_clsdetallelistapreciosmdl', 
-    # 'modulo_configuracion_clslistapreciosmdl', 'store_id', 'Código Bodega'))
-    # lstConfirmacion.append(fncDAbiertoProductotpl(intProducto, 'modulo_configuracion_clsdetallecotizacionesmdl', 
-    # 'modulo_configuracion_clscotizacionesmdl', 'identification_id', 'Código Cliente'))
+    'modulo_configuracion_clscotizacionesmdl', 'identification_id', 'Código Cliente', 'condition', 'AB')]
     fncInactivaCondicionProducto(intProducto, 'modulo_configuracion_clscondiciondescuentoproveedormdl')
     fncInactivaCondicionProducto(intProducto, 'modulo_configuracion_clscondicionminimacompramdl')
-    # for i in lstConfirmacion:
-    #     if i[0]== True: pass
-    #     else: lstDatos.append(i[1])
-    # if len(lstDatos)== 0: return True
-    # else: return lstDatos
     return fncValidaConfirmaciontpl(lstConfirmacion)
 
 # Confirma si existen documentos abiertos para una bodega específica
 # intBodega: Corresponde al código de la bodega (int)
 # strTablaGeneral: Corresponde al nombre de la tabla de general a consultar (str)
+# strColumna: Corresponde al nombre de la columna a filtrar (str)
+# strValor: Corresponde al filtro a usar en la columna (str)
 # Retorna una tupla un boleano y un cuadro de datos, según el resultado de la consulta (tuple(bool, pandas.DataFrame))
-def fncDAbiertoBodegatpl(intBodega, strTablaGeneral):
-    strConsultaDocumento= f'''SELECT creation_date, doc_number, condition FROM {strTablaGeneral} WHERE store_id= %s
-    AND condition= %s'''
-    lstConsultaDocumento= fncConsultalst(strConsultaDocumento, [intBodega, 'AB'])
+def fncDAbiertoBodegatpl(intBodega, strTablaGeneral, strColumna, strValor):
+    strConsultaDocumento= f'''SELECT creation_date, doc_number, {strColumna} FROM {strTablaGeneral} WHERE store_id= %s
+    AND {strColumna}= %s'''
+    lstConsultaDocumento= fncConsultalst(strConsultaDocumento, [intBodega, strValor])
     if len(lstConsultaDocumento)== 0: return (True, '')
     else: return (False, pd.DataFrame(lstConsultaDocumento, columns= ['Fecha Creacion', 'N° Documento', 'Estado']))
 
@@ -138,15 +108,10 @@ def fncDAbiertoBodegatpl(intBodega, strTablaGeneral):
 # de por qué no se puede inactivar el asesor (bool, pandas.DataFrame)
 def fncInactivaBodegatpl(intBodega):
     lstConfirmacion= [fncExisteInventariotpl(intBodega, 'store_id'), 
-    fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clspedidosmdl'),
-    fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clsordenescompramdl'), 
-    fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clslistapreciosmdl'), 
-    fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clscotizacionesmdl')]
-    # lstConfirmacion.append(fncExisteInventariotpl(intBodega, 'store_id'))
-    # lstConfirmacion.append(fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clspedidosmdl'))
-    # lstConfirmacion.append(fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clsordenescompramdl'))
-    # lstConfirmacion.append(fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clslistapreciosmdl'))
-    # lstConfirmacion.append(fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clscotizacionesmdl'))
+    fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clspedidosmdl', 'condition', 'AB'),
+    fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clsordenescompramdl', 'condition', 'AB'), 
+    fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clslistapreciosmdl', 'state', 'AC'), 
+    fncDAbiertoBodegatpl(intBodega, 'modulo_configuracion_clscotizacionesmdl', 'condition', 'AB')]
     return fncValidaConfirmaciontpl(lstConfirmacion)
 
 # Confirma si existen documentos documentos abiertos para un proveedor específico
@@ -179,20 +144,15 @@ def fncInactivaProveedortpl(intProveedor):
     fncInactivaCondicionProveedor(intProveedor, 'modulo_configuracion_clscondicionminimacompramdl')
     return fncValidaConfirmaciontpl(lstConfirmacion)
 
-# Confirma si un asesor comercial se puede inactivar
 # Confirma si un asesor comercial o una categoría de cliente o una zona se puede inactivar
 # intAsesor: Corresponde al código del asesor (int)
 # intVariable: Corresponde al código del producto o al código de la bodega como valor del filtro (int)
 # strColumnaFiltro: Corresponde a la columna donde se va a realizar el filtro en la tabla (str)
 # Retorna un valor booleano (True) que confirma si el asesor se puede inactivar o un cuadro de datos con la información
 # de por qué no se puede inactivar el asesor (bool, pandas.DataFrame)
-# def fncInactivarAsesortpl(intAsesor):
 def fncInactivarAtrClientetpl(intVariable, strColumnaFiltro):
-    # strCatalogoCliente= '''SELECT id, identification, business_name FROM modulo_configuracion_clscatalogoclientesmdl
-    # WHERE commercial_advisor_id= %s'''
     strCatalogoCliente= f'''SELECT id, identification, business_name FROM modulo_configuracion_clscatalogoclientesmdl
     WHERE {strColumnaFiltro}= %s'''
-    # lstCatalogoCliente= fncConsultalst(strCatalogoCliente, [intAsesor])
     lstCatalogoCliente= fncConsultalst(strCatalogoCliente, [intVariable])
     if len(lstCatalogoCliente)== 0: return (True, )
     else: return (False, pd.DataFrame(lstCatalogoCliente, columns= ['Código Cliente', 'Identificación', 'Nombre Cliente']))
@@ -218,7 +178,7 @@ def fncInactivaCategoriaProductotpl(intCategoriaProducto):
     strSubCategoria= 'SELECT id, product_subcat FROM modulo_configuracion_clssubcategoriaproductomdl WHERE product_cat_id= %s'
     lstSubCategoria= fncConsultalst(strSubCategoria, [intCategoriaProducto])
     if len(lstSubCategoria)== 0: lstConfirmacion= [(True, )]
-    else: lstConfirmacion[(False, pd.DataFrame(lstSubCategoria, columns= ['Código SubCategoría', 'Nombre SubCategoría']))]
+    else: lstConfirmacion= [(False, pd.DataFrame(lstSubCategoria, columns= ['Código SubCategoría', 'Nombre SubCategoría']))]
     lstConfirmacion.append(fncInactivaAtrProductotpl(intCategoriaProducto, 'product_cat_id'))
     return fncValidaConfirmaciontpl(lstConfirmacion)
 
@@ -245,3 +205,15 @@ def fncDAbiertoClientetpl(intCliente, strNombreTabla):
     lstDocumento= fncConsultalst(strDocumento, [intCliente, 'AB'])
     if len(lstDocumento)== 0: return (True, )
     else: return (False, pd.DataFrame(lstDocumento, columns= ['Fecha Creación', 'N° Documento', 'Código Cliente']))
+
+# Confirma si un cliente se puede inactivar
+# intCliente: Corresponde al códigodel cliente a inactivar (int)
+# Retorna un valor booleano (True) que confirma si el asesor se puede inactivar o un cuadro de datos con la información
+# de por qué no se puede inactivar el asesor (bool, pandas.DataFrame)
+def fncInactivaClientetpl(intCliente):
+    lstConfirmacion= [fncDAbiertoClientetpl(intCliente, 'modulo_configuracion_clspedidosmdl')]
+    lstConfirmacion.append(fncDAbiertoClientetpl(intCliente, 'modulo_configuracion_clscotizacionesmdl'))
+    tplCredito= fncClienteCreditotpl(intCliente)
+    if isinstance(tplCredito[0], str)== True: lstConfirmacion.append((True, ))
+    else: lstConfirmacion.append((False, tplCredito[0]))
+    return fncValidaConfirmaciontpl(lstConfirmacion)   

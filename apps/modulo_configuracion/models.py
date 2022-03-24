@@ -415,13 +415,13 @@ class clsCondicionMinimaCompraMdl(BaseModel):
 
     def toJSON(self):
         item = model_to_dict(self)
-        item['supplier'] = self.supplier.toJSON()
-        item['product'] = self.product.toJSON()
+        item['identification'] = self.identification.toJSON()
+        item['product_code'] = self.product_code.toJSON()
         item['state'] = {'id': self.state, 'name': self.get_state_display()}
         return item
 
     def __str__(self):
-        return self.supplier.supplier_name
+        return self.identification.supplier_name
 
 # Tabla Descuento por proveedor
 class clsCondicionDescuentoProveedorMdl(BaseModel):
@@ -449,13 +449,13 @@ class clsCondicionDescuentoProveedorMdl(BaseModel):
 
     def toJSON(self):
         item = model_to_dict(self)
-        item['supplier'] = self.supplier.toJSON()
-        item['product'] = self.product.toJSON()
+        item['identification'] = self.identification.toJSON()
+        item['product_code'] = self.product_code.toJSON()
         item['state'] = {'id': self.state, 'name': self.get_state_display()}
         return item
 
     def __str__(self):
-        return self.supplier.supplier_name
+        return self.identification.supplier_name
 
 
 ''' Tablas catálogo de clientes '''
@@ -608,7 +608,7 @@ class clsCatalogoClientesMdl(BaseModel):
     commercial_advisor = models.ForeignKey(clsAsesorComercialMdl, on_delete=models.CASCADE)
     pay_method = models.CharField('Metodo de pago', max_length=200, choices=PAYMETHOD)
     credit_days = models.PositiveSmallIntegerField('Días de crédito', blank=True, null=True)
-    credit_value = models.DecimalField('Cupo crédito', max_digits=10, decimal_places=2, default=0, blank=True, null=True)
+    approved_amount = models.DecimalField('Cupo crédito', max_digits=10, decimal_places=2, default=0, blank=True, null=True)
     state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
     objects = DataFrameManager()
     
@@ -1448,6 +1448,7 @@ class clsDetallePedidosMdl(models.Model):
 class clsOrdenesCompraMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
     identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete= models.CASCADE)
+    delivery_date= models.DateTimeField('Fecha de entrega', blank= True, null= True)
     subtotal= models.DecimalField('Subtotal', max_digits= 30, decimal_places= 2)
     iva= models.DecimalField('IVA', max_digits= 10, decimal_places= 2)
     discount= models.DecimalField('Descuento', max_digits= 20, decimal_places= 2)
@@ -1619,7 +1620,7 @@ def fncGenerarNumeroDocumento(sender, instance, **kwargs):
     elif sender== clsListaPreciosMdl:
         clsListaPreciosMdl.objects.filter(pk= instance.pk).update(doc_number= f'LTP-{instance.pk}')
     elif sender== clsCotizacionesMdl:
-        clsCotizacionesMdl.objects.filter(pk= isntace.pk).update(doc_number= f'COT-{instance.pk}')
+        clsCotizacionesMdl.objects.filter(pk= instance.pk).update(doc_number= f'COT-{instance.pk}')
     
 
 post_save.connect(fncGenerarNumeroDocumento, sender=clsAjusteInventarioMdl)

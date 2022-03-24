@@ -1,10 +1,7 @@
-import numpy as np
 import pandas as pd
 import datetime as dt
 from apps.Modelos.Several_func import *
 import sqlite3
-import time
-
 
 # Filtra la fecha de inicio para una consulta en una tabla de datos con fechas
 # datFecha: Fecha de inicio para el filtro de la consulta (dt.datetime)
