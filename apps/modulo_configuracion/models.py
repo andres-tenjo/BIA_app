@@ -1392,7 +1392,7 @@ class clsHistoricoMovimientosMdl(models.Model):
         return self.doc_number
 
 # Tabla de pedidos
-class clsPedidosMdl(BaseModel):
+class clsPedidosMdl(BaseModel):     
     doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
     identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete= models.CASCADE)
     delivery_date= models.DateTimeField('Fecha de entrega')
