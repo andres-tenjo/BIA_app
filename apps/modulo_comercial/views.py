@@ -38,7 +38,7 @@ from apps.modulo_configuracion.forms import *
 
 '''Vista para la ventana promociones'''
 class PromotionView(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListView):
-    model = Promotions
+    #model = Promotions
     template_name = 'modulo_comercial/promociones.html'
 
     @method_decorator(csrf_exempt)

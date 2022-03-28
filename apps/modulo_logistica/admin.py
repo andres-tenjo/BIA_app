@@ -23,14 +23,14 @@ class PersonAdmin(ImportExportModelAdmin):
 class PersonAdmin(ImportExportModelAdmin):
     pass
 
-''' Admin salidas de almacén '''
-@admin.register(WarehouseOutFlows)
-class PersonAdmin(ImportExportModelAdmin):
-    pass
+# ''' Admin salidas de almacén '''
+# @admin.register(WarehouseOutFlows)
+# class PersonAdmin(ImportExportModelAdmin):
+#     pass
 
-@admin.register(WarehouseOutFlowsDetail)
-class PersonAdmin(ImportExportModelAdmin):
-    pass
+# @admin.register(WarehouseOutFlowsDetail)
+# class PersonAdmin(ImportExportModelAdmin):
+#     pass
 
 ''' Admin inventario '''
 @admin.register(Inventory)

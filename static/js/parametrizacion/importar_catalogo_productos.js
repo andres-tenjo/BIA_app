@@ -32,6 +32,7 @@ $('#form').on('submit', function (e) {
             }); 
         }
         else if (data.hasOwnProperty('strErrorArchivo')){
+            console.log('si');
             var strErrorArchivo = data.strErrorArchivo;
             var jsnProductos = data.jsnProductos;
             var lstValidarImportacion = data.lstValidarImportacion;

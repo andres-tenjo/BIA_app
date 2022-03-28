@@ -1621,6 +1621,20 @@ def fncGenerarNumeroDocumento(sender, instance, **kwargs):
     elif sender== clsCotizacionesMdl:
         clsCotizacionesMdl.objects.filter(pk= isntace.pk).update(doc_number= f'COT-{instance.pk}')
     
+# # Función que genera un nuevo QR-CODE para una instancia de una tabla
+# # sender: Tabla de datos
+# # instance: Instancia del modelo
+# def fncGenerarNumeroDocumento(sender, instance, **kwargs):
+#     qrcode_img = qrcode.make(instance.id)
+#     canvas = Image.new('RGB', (290, 290), 'white')
+#     draw = ImageDraw.Draw(canvas)
+#     canvas.paste(qrcode_img)
+#     fname = f'qr_code-{instance.id}'+'.png'
+#     buffer = BytesIO()
+#     canvas.save(buffer, 'PNG')
+#     instance.qr_code.save(fname, File(buffer), save=False)
+#     canvas.close()
+
 
 post_save.connect(fncGenerarNumeroDocumento, sender=clsAjusteInventarioMdl)
 post_save.connect(fncGenerarNumeroDocumento, sender=clsEntradasAlmacenMdl)
