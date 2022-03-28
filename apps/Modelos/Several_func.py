@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 from collections import defaultdict
-import datetime as dt
 from django.db import connection
 import sqlite3
 
@@ -156,15 +155,16 @@ def fncOrganizadtf(dtfDatos, strNombreColumnaFecha, strNombreColumnaValor, strFr
 # strLote: Es el lote del producto, si aplica (str)
 # intCantidad: Es la cantidad a ajustar (int)
 # Retorna False si el ajuste no se puede realizar, de lo contrario retorna True (bool)
-def fncValidaAjustebol(dtfSaldosBodega, intCodigoProducto, intBodega, strLote, intCantidad, bolTipoAjuste= False):
-    dtfSaldoProducto= dtfSaldosBodega.loc[(dtfSaldosBodega['product_code']== intCodigoProducto)\
-                                          & (dtfSaldosBodega['batch']== strLote) & (dtfSaldosBodega['store']== intBodega)]
-    if dtfSaldoProducto.empty: 
-       if (dtfSaldoProducto.empty) & (bolTipoAjuste== False): return False
-       else: return True
+def fncValidaAjustebol(intCodigoProducto, intBodega, strLote, intCantidad, bolTipoAjuste= False):
+    strSaldo= '''SELECT inventory_avail FROM modulo_configuracion_clssaldosinventariomdl 
+    WHERE product_code_id= %s AND batch= %s AND store_id= %s'''
+    lstSaldo= fncConsultalst(strSaldo, [intCodigoProducto, strLote, intBodega])
+    if len(lstSaldo)== 0:
+        if bolTipoAjuste== False: return False
+        else: return True
     else:
         if bolTipoAjuste== False:
-            if dtfSaldoProducto.iloc[0]['inventory_avail']- intCantidad< 0: return False
+            if lstSaldo[0][0]- intCantidad< 0: return False
             else: return True
         else: return True
 
@@ -176,12 +176,9 @@ def fncConsultalst(strConsulta, varParametro):
     with connection.cursor() as cursor:
         sqlite3.register_adapter(np.int64, lambda val: int(val))
         sqlite3.register_adapter(np.int32, lambda val: int(val))
-        try:
-            lstConsulta= cursor.execute(strConsulta, varParametro).fetchall()
-            return lstConsulta
-        except:
-            return 'No existe tabla de datos'
-
+        lstConsulta= cursor.execute(strConsulta, varParametro).fetchall()
+        return lstConsulta
+        
 # Conecta con la base de datos sqlite3 sin realizar ningúna consulta
 def fncConecta():
     with connection.cursor() as cursor:
@@ -304,3 +301,29 @@ def fncCuadroConsultalst(lstNombreTabla):
     if len(lstNombreTabla)> 1: lstDatos= [pd.read_sql_query(f'SELECT * FROM {i}', connection) for i in lstNombreTabla]
     else: lstDatos= pd.read_sql_query(f'SELECT * FROM {lstNombreTabla[0]}', connection)
     return lstDatos
+
+# Entrega al última posición de una llave primaria de una tabla de datos específica
+# strNombreTabla: Corresponde al nombre de la tabla que se va a consultar (str)
+# Retorna un entero con el consecutivo de la llave primaria de la tabla (int)
+def fncLlavePrimariaint(strNombreTabla):
+    strConsultaLlave= f'SELECT id FROM {strNombreTabla}'
+    lstConsultaLlave= fncConsultalst(strConsultaLlave, [])
+    if isinstance(lstConsultaLlave, list):
+        if len(lstConsultaLlave)== 0: return 1
+        else: return int(max([i[0] for i in lstConsultaLlave])+ 1)
+    else: 'No existe la tabla de datos'
+
+# Actualiza el valor del costo por unidad de compra del producto en el catálogo de productos
+# dtfDatos: Corresponde al cuadro de datos de la entrada a almacén (pandas.DataFrame)
+# Actualiza el valor de la columna costo por unidad de compra
+def fncActualizaCostoPU(dtfDatos):
+    dtfDatos= dtfDatos.reset_index()
+    dtfDatos.drop(['index'], axis= 1, inplace= True)
+    for i, val in enumerate(dtfDatos['product_code'].unique()):
+        strCatalogo= 'SELECT split FROM modulo_configuracion_clscatalogoproductosmdl WHERE id= %s'
+        lstCatalogo= fncConsultalst(strCatalogo, [val])
+        fltNuevoCosto= float(dtfDatos.iloc[i]['unitary_cost'])* int(lstCatalogo[0][0])
+        strActualiza= 'UPDATE modulo_configuracion_clscatalogoproductosmdl SET cost_pu= %s WHERE id= %s'
+        lstActualiza= fncConsultalst(strActualiza, [float(fltNuevoCosto), val])
+    print('Se actualizó el costo por unidad de compra')
+    return
