@@ -1,6 +1,6 @@
 # Python libraries
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import time
 from pandas import pandas as pd
 
@@ -8,6 +8,7 @@ from pandas import pandas as pd
 from apps.Modelos.Several_func import *
 from apps.Modelos.Update_Balances import *
 from apps.Modelos.Parameters import *
+from apps.Modelos.Information_Inactivation import *
 
 # Django libraries
 from django.conf import settings
@@ -795,8 +796,31 @@ class clsListarCatalogoProductosViw(LoginRequiredMixin, ListView):
             elif action == 'frmEliminarProductojsn':
                 qrsCatalogoProductos = clsCatalogoProductosMdl.objects.get(pk=request.POST['id'])
                 if qrsCatalogoProductos.state == "AC":
-                    qrsCatalogoProductos.state = "IN"
-                    qrsCatalogoProductos.save()
+                    # with transaction.atomic():
+                    #     qrsAjusteInventario = clsEntradasAlmacenMdl()
+                    #     qrsAjusteInventario.identification= clsCatalogoProveedoresMdl.objects.get(pk= 1)
+                    #     qrsAjusteInventario.total_cost= dtfEntrada['total_cost'].sum()
+                    #     qrsAjusteInventario.store= clsCatalogoBodegasMdl.objects.get(id= 1)
+                    #     qrsAjusteInventario.crossing_doc= 'OC-01'
+                    #     qrsAjusteInventario.condition= 'CA'
+                    #     qrsAjusteInventario.save()
+                    #     for i in dtfEntrada.to_records(index= False):
+                    #         qrsDetalleAjuste = clsDetalleEntradaAlmacen()
+                    #         qrsDetalleAjuste.doc_number = clsEntradasAlmacenMdl.objects.get(id= 4)
+                    #         qrsDetalleAjuste.product_code = clsCatalogoProductosMdl.objects.get(id= i[0])                            
+                    #         qrsDetalleAjuste.quantity = i[2]
+                    #         qrsDetalleAjuste.unitary_cost= i[1]
+                    #         qrsDetalleAjuste.total_cost= i[5]
+                    #         qrsDetalleAjuste.batch = i[3]
+                    #         qrsDetalleAjuste.expiration_date= datetime(2021, 3, 10)
+                    #         qrsDetalleAjuste.state= i[4]
+                    #         qrsDetalleAjuste.save()
+                    bolEvaluacion= fncInactivarProductotpl(qrsCatalogoProductos.id)
+                    if bolEvaluacion== True:
+                        qrsCatalogoProductos.state = "IN"
+                        qrsCatalogoProductos.save()
+                    else:
+                        print(bolEvaluacion)
                 else:
                     qrsCatalogoProductos.state = "AC"
                     qrsCatalogoProductos.save()
@@ -4091,11 +4115,18 @@ class clsImportarAjustesInventarioViw(LoginRequiredMixin, TemplateView):
                 if str(filAjustesInventario).endswith('.xlsx'):
                     dtfHistoricoAjustesInventario = pd.read_excel(filAjustesInventario)
                     dtfHistoricoAjustesInventario = dtfHistoricoAjustesInventario.fillna(0)
+                    lstPruebaAjuste= [(fncValidaAjustebol(dtfHistoricoAjustesInventario.iloc[i]['Código producto'], 
+                    dtfHistoricoAjustesInventario.iloc[i]['Bodega'], dtfHistoricoAjustesInventario.iloc[i]['Lote'], 
+                    dtfHistoricoAjustesInventario.iloc[i]['Cantidad'], bolTipoAjuste= False), i)\
+                        for i, val in enumerate(dtfHistoricoAjustesInventario['Código producto'].unique())\
+                            if dtfHistoricoAjustesInventario.iloc[i]['Tipo de ajuste']== 'SA']
+                    lstAjusteValida= [('Tipo de ajuste', i[1], 'No hay inventario en bodega para descontar unidades de ajuste',
+                    dtfHistoricoAjustesInventario.iloc[i[1]]['Tipo de ajuste']) for i in lstPruebaAjuste if i[0]== False]
                     lstValidarAjustesInventario = [ fncValidarImportacionlst(dtfHistoricoAjustesInventario, i, j) for (i, j) in zip(lstHistoricoAjustesInventario, tplHistoricoAjustesInventario) ]
                     lstValidarAjustesInventario = [ i for n in lstValidarAjustesInventario for i in n ]
+                    for i in lstAjusteValida: lstValidarAjustesInventario.append(i)
                     dctValidaciones = {}
                     if len(lstValidarAjustesInventario):
-                        dtfHistoricoAjustesInventario.loc[:,'Fecha de creación'] = dtfHistoricoAjustesInventario['Fecha de creación'].astype(str)
                         dtfHistoricoAjustesInventario.loc[:,'Fecha de vencimiento'] = dtfHistoricoAjustesInventario['Fecha de vencimiento'].astype(str)
                         dctValidaciones['dtfHistoricoAjustesInventarioError'] = dtfHistoricoAjustesInventario.to_json(orient="split")
                         dctValidaciones['lstValidarAjustesInventario'] = lstValidarAjustesInventario
@@ -4105,18 +4136,40 @@ class clsImportarAjustesInventarioViw(LoginRequiredMixin, TemplateView):
                         response = JsonResponse(jsnData, safe=False)
                     else:
                         with transaction.atomic():
+                            qrsAjusteInventario = clsAjusteInventarioMdl()           
+                            qrsAjusteInventario.total_cost = float(dtfHistoricoAjustesInventario['Costo total'].sum())
+                            qrsAjusteInventario.save()
                             for ajuste_inventario in (dtfHistoricoAjustesInventario.values.tolist()):
-                                clsHistoricoAjustesInventarioMdl.objects.create(
-                                date_creation = ajuste_inventario[0].date(),
-                                doc_number = str(ajuste_inventario[1]),
-                                type = ajuste_inventario[2],
-                                store_id = int(ajuste_inventario[3]),
-                                product_code_id = int(ajuste_inventario[4]),
-                                quantity = int(ajuste_inventario[5]),
-                                total_cost = float(ajuste_inventario[6]),
-                                batch = str(ajuste_inventario[7]),
-                                expiration_date = ajuste_inventario[8].date(),
-                                ) 
+                                clsDetalleAjusteInventarioMdl.objects.create(
+                                doc_number_id= qrsAjusteInventario.id,
+                                store_id= int(ajuste_inventario[0]),
+                                type= str(ajuste_inventario[1]),
+                                product_code_id= int(ajuste_inventario[2]),
+                                batch= str(ajuste_inventario[5]),
+                                expiration_date= datetime.now()+ timedelta(weeks= 520) if ajuste_inventario[6]== 0.0\
+                                    else datetime.strptime(str(ajuste_inventario[6]), '%Y-%m-%d %H:%M:%S'),
+                                quantity= int(ajuste_inventario[3]),
+                                unitary_cost= float(ajuste_inventario[4]/ int(ajuste_inventario[3])),
+                                total_cost= float(ajuste_inventario[4])
+                                )
+                        dtfActualizaSaldo= dtfHistoricoAjustesInventario.rename(columns= {'Bodega': 'store_id', 'Tipo de ajuste': 'type',
+                        'Código producto': 'product_code_id', 'Cantidad': 'quantity', 'Costo total': 'total_cost', 'Lote': 'batch',
+                        'Fecha de vencimiento': 'expiration_date'})
+                        strCatalogo= 'SELECT id, cost_pu, split FROM modulo_configuracion_clscatalogoproductosmdl WHERE id= %s'
+                        lstConsulta= [fncConsultalst(strCatalogo, [i]) for i in dtfActualizaSaldo['product_code_id'].unique()]
+                        lstDatos= [i[0] for i in lstConsulta]
+                        intIdentificacion= fncConsultalst('SELECT id_number FROM modulo_configuracion_clsperfilempresamdl', [])[0][0]
+                        strConsecutivo= fncConsultalst('SELECT doc_number FROM modulo_configuracion_clsajusteinventariomdl', 
+                        [])[- 1][0]
+                        datFechaCreacion= fncConsultalst('SELECT creation_date FROM modulo_configuracion_clsajusteinventariomdl', 
+                        [])[- 1][0]
+                        dtfCatalogo= pd.DataFrame(lstDatos, columns= ['product_code_id', 'cost_pu', 'split'])
+                        dtfActualizaSaldo= dtfActualizaSaldo.merge(dtfCatalogo, how= 'left', on= 'product_code_id')
+                        dtfActualizaSaldo= dtfActualizaSaldo.assign(doc_number= strConsecutivo, creation_date= datFechaCreacion, 
+                        unitary_cost= dtfActualizaSaldo['cost_pu']/ dtfActualizaSaldo['split'], condition= 'EN', 
+                        identification= intIdentificacion, user_id_id= request.user.id)
+                        dtfActualizaSaldo.drop(['cost_pu', 'split'], axis= 1, inplace= True)
+                        fncActualizaSaldo('Ajuste_De_Inventario', dtfActualizaSaldo)                                
                         jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
                         response = JsonResponse(jsnData, safe=False)
                 else:
@@ -4128,7 +4181,7 @@ class clsImportarAjustesInventarioViw(LoginRequiredMixin, TemplateView):
                 if 'dtfHistoricoAjustesInventarioError' in dctValidaciones:
                     dtfHistoricoAjustesInventarioError = pd.read_json(dctValidaciones['dtfHistoricoAjustesInventarioError'], orient='split')
                     lstValidarAjustesInventario = dctValidaciones['lstValidarAjustesInventario']
-                    lstFilasAjustesInventarioError = list( dict.fromkeys([ i[1] for i in lstValidarAjustesInventario ]) )
+                    lstFilasAjustesInventarioError = list( dict.fromkeys([ i[1] for i in lstValidarAjustesInventario ]))
                     dtfHistoricoAjustesInventarioError = fncAgregarErroresDataframedtf(dtfHistoricoAjustesInventarioError, lstValidarAjustesInventario, lstFilasAjustesInventarioError)
                 response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
                 response['Content-Disposition'] = 'attachment; filename="errores_historico_pedidos.xlsx"'
@@ -4182,11 +4235,11 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
                     srlSaldosInventario = clsSaldosInventarioMdlSerializador(qrsSaldosInventario, many=True)
                     dtfsaldosInventario = pd.DataFrame(srlSaldosInventario.data)
                 bolAjuste = fncValidaAjustebol(
-                    dtfsaldosInventario, 
                     dctVariables['intIdProducto'],
                     dctVariables['intIdBodega'],
-                    dctVariables['strLote'],
-                    dctVariables['intCantidad'],
+                    # dctVariables['strLote'],
+                    '0',
+                    int(dctVariables['intCantidad']),
                     bolTipoAjuste = True if dctVariables['strTipoAjusteId'] == 'EN' else False
                     )
                 if bolAjuste == True:
@@ -4208,12 +4261,12 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
                     return JsonResponse(data, safe=False)
             elif action == 'jsnGuardarAjuste':
                 lstOrdenColumnas = [
-                        'creation_date', 'doc_number', 'type', 'product_code', 'quantity', 
-                        'batch', 'expiration_date', 'unitary_cost', 'total_cost', 
-                        'condition', 'store', 'identification', 'user_id'
+                        'creation_date', 'doc_number', 'type', 'quantity', 
+                        'batch', 'expiration_date', 'unitary_cost', 'total_cost', 'crossing_doc',
+                        'condition', 'identification', 'product_code_id', 'store_id', 'user_id_id'
                         ]
                 qrsclsPerfilEmpresaMdl = clsPerfilEmpresaMdl.objects.all()
-                intIdentificacionusuario = [ i.jsnObtenerIdentificacion() for i in qrsclsPerfilEmpresaMdl]
+                intIdentificacionusuario = [i.jsnObtenerIdentificacion() for i in qrsclsPerfilEmpresaMdl]
                 dctLstAjustesInventario = json.loads(request.POST['dctLstAjustesInventario'])
                 fltCostoTotalAjuste = dctLstAjustesInventario['fltCostoTotal']
                 lstAjustesInventario = dctLstAjustesInventario['lstAjustesInventario']
@@ -4223,10 +4276,10 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
                     qrsAjusteInventario.save()
                     for i in lstAjustesInventario:
                         qrsDetalleAjuste = clsDetalleAjusteInventarioMdl()
-                        qrsDetalleAjuste.doc_number_id = qrsAjusteInventario.id
-                        qrsDetalleAjuste.store_id = i['intIdBodega']
+                        qrsDetalleAjuste.doc_number_id = qrsAjusteInventario.id                        
+                        qrsDetalleAjuste.store_id = i['intIdBodega']                        
                         qrsDetalleAjuste.type = i['strTipoAjusteId']
-                        qrsDetalleAjuste.product_code_id = i['intIdProducto']
+                        qrsDetalleAjuste.product_code_id = i['intIdProducto']                        
                         qrsDetalleAjuste.batch = i['strLote']
                         qrsDetalleAjuste.expiration_date = datetime.strptime(i['datFechaVencimiento'],"%d/%m/%Y")
                         qrsDetalleAjuste.quantity = int(i['intCantidad'])
@@ -4243,10 +4296,12 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
                 dtfDetalleAjusteInventario = dtfDetalleAjusteInventario.rename(columns={'doc_number':'id_ajuste'})
                 dtfAjusteInventario = dtfAjusteInventario.merge(dtfDetalleAjusteInventario, on='id_ajuste', how='outer')
                 dtfAjusteInventario = dtfAjusteInventario.drop(['id_ajuste', 'cost_total', 'id'], axis=1)
-                dtfAjusteInventario = dtfAjusteInventario.assign(identification=intIdentificacionusuario[0]['id_number'])
+                dtfAjusteInventario = dtfAjusteInventario.assign(identification=intIdentificacionusuario[0]['id_number'], crossing_doc= '')
+                dtfAjusteInventario.rename(columns= {'product_code': 'product_code_id', 'store': 'store_id', 'user_id': 'user_id_id'}, inplace= True)
                 dtfAjusteInventario = dtfAjusteInventario.reindex(columns = lstOrdenColumnas)
+                dtfAjusteInventario.at[0, 'batch']= '0'
+                dtfAjusteInventario.at[0, 'expiration_date']= '0'
                 strActualizarSaldo = fncActualizaSaldo('Ajuste_De_Inventario', dtfAjusteInventario)
-                print(strActualizarSaldo)
                 if strActualizarSaldo == 'se actualizó el histórico y la bodega':
                     data['msg'] = 'Se han actualizado el historico de movimientos y el saldo de inventarios'
                 else:
@@ -4271,14 +4326,14 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
 class clsExportarPlantillaPrueba(APIView):
 
     def get(self, request):
-        lstConsultas = [clsEntradasAlmacenMdl, clsTblDetalleEntradaAlmacen,
+        lstConsultas = [clsEntradasAlmacenMdl, clsDetalleEntradaAlmacen,
                         clsDevolucionesClienteMdl, clsDetalleDevolucionesClienteMdl,
                         clsDevolucionesProveedorMdl, clsDetalleDevolucionesProveedorMdl,
                         clsSalidasAlmacenMdl, clsDetalleSalidasAlmacenMdl,
                         clsObsequiosMdl, clsDetalleObsequiosMdl,
                         clsTrasladosBodegasMdl, clsDetalleTrasladosBodegaMdl,
                     ]
-        lstSerializadores = [clsEntradasAlmacenMdlSerializador, clsTblDetalleEntradaAlmacenSerializador,
+        lstSerializadores = [clsEntradasAlmacenMdlSerializador, clsDetalleEntradaAlmacenSerializador,
                             clsDevolucionesClienteMdlSerializador, clsDetalleDevolucionesClienteMdlSerializador,
                             clsDevolucionesProveedorMdlSerializador, clsDetalleDevolucionesProveedorMdlSerializador,
                             clsSalidasAlmacenMdlSerializador, clsDetalleSalidasAlmacenMdlSerializador,
