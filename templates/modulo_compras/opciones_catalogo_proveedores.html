@@ -1,0 +1,767 @@
+{% extends 'bia/modulo_compras.html' %}
+
+{% load static %}
+{% block title-header %}
+{% endblock title-header %}
+
+{% block content-window %}
+
+<div class="accordion" id="accordionOne">
+  <div class="card card-primary card-outline">
+    <div class="card-header" id="headingOne">
+      <h2 class="mb-0">
+        <button 
+          class="btn btn-block text-left" 
+          type="button" 
+          data-toggle="collapse" 
+          data-target="#collapseOne" 
+          aria-expanded="true" 
+          aria-controls="collapseOne">
+          <i class="fas fa-angle-right"></i>
+          Carga masiva de proveedores
+        </button>
+      </h2>
+    </div>
+    <div 
+      id="collapseOne"
+      class="collapse" 
+      aria-labelledby="headingOne" 
+      data-parent="#accordionOne">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="list-group">
+              <a href="{% url 'configuracion:export_suppliers' %}" 
+              type="button"
+              id="downloadTemplate"  
+              class="list-group-item list-group-item-action" 
+                aria-current="true">
+                <i class="fas fa-cloud-download-alt"></i>
+                  Descargar plantilla
+              </a>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="list-group">
+              <a  
+                href="{% url 'configuracion:import_suppliers' %}" 
+                class="list-group-item list-group-item-action" 
+                aria-current="true">
+                <i class="fas fa-cloud-download-alt"></i>
+                  Importar archivo de proveedores
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="accordion" id="accordionTwo">
+  <div class="card card-primary card-outline">
+    <div class="card-header" id="headingTwo">
+      <h2 class="mb-0">
+        <button 
+          class="btn btn-block text-left" 
+          type="button" 
+          data-toggle="collapse" 
+          data-target="#collapseTwo" 
+          aria-expanded="true" 
+          aria-controls="collapseTwo">
+          <i class="fas fa-angle-right"></i>
+          Condiciones comerciales con proveedores
+        </button>
+      </h2>
+    </div>
+    <div 
+      id="collapseTwo" 
+      class="collapse" 
+      aria-labelledby="headingTwo" 
+      data-parent="#accordionTwo">
+      <div class="card-body">
+        <div class="col-lg-12">
+          <div class="accordion" id="accordionOptions">
+            <div class="card card-primary card-outline">
+              <div class="card-header" id="headingCantidad">
+                <h2 class="mb-0">
+                  <button 
+                    class="btn btn-block text-left" 
+                    type="button" 
+                    data-toggle="collapse" 
+                    data-target="#collapseCantidad" 
+                    aria-expanded="true" 
+                    aria-controls="collapseCantidad">
+                    <i class="fas fa-angle-right"></i>
+                    Cantidades mínimas de compra por producto:
+                  </button>
+                </h2>
+              </div>
+              <div 
+                id="collapseCantidad" 
+                class="collapse" 
+                aria-labelledby="headingCantidad" 
+                data-parent="#accordionOptions">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-lg-12">
+                      <div class="row justify-content-between">
+                        <div class="col-auto">
+                          <div class="form-group">
+                            <a href="#" type="button" class="btnAgregarCantidad">
+                              <i class="fas fa-plus-circle"></i>
+                              Crear condición de compra
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-12">
+                      <table class="table table-bordered table-hover" id="tblCantidadMinimas">
+                        <thead>
+                        <tr style="text-align: center;">
+                            <th style="width: 10%;">Nº</th>
+                            <th style="width: 20%;">Proveedor</th>
+                            <th style="width: 20%;">Producto</th>
+                            <th style="width: 15%;">Unidad de compra</th>
+                            <th style="width: 15%;">Cantidad mínima</th>
+                            <th style="width: 10%;">Estado</th>
+                            <th style="width: 10%;">Editar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card card-primary card-outline">
+              <div class="card-header" id="headingDescuento">
+                <h2 class="mb-0">
+                  <button 
+                    class="btn btn-block text-left" 
+                    type="button" 
+                    data-toggle="collapse" 
+                    data-target="#collapseDescuento" 
+                    aria-expanded="true" 
+                    aria-controls="collapseDescuento">
+                    <i class="fas fa-angle-right"></i>
+                    Descuentos por producto:
+                  </button>
+                </h2>
+              </div>
+              <div 
+                id="collapseDescuento" 
+                class="collapse" 
+                aria-labelledby="headingDescuento" 
+                data-parent="#accordionOptions">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-lg-12">
+                      <div class="row justify-content-between">
+                        <div class="col-auto">
+                          <div class="form-group">
+                            <a href="#" type="button" class="btnAgregarDescuento">
+                              <i class="fas fa-plus-circle"></i>
+                              Crear descuento
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-12">
+                      <table class="table table-bordered table-hover" id="tblDescuentos">
+                        <thead>
+                        <tr style="text-align: center;">
+                          <th style="width: 5%;">Nº</th>
+                          <th style="width: 15%;">Proveedor</th>
+                          <th style="width: 15%;">Producto</th>
+                          <th style="width: 15%;">Unidad de compra</th>
+                          <th style="width: 15%;">Precio de compra</th>
+                          <th style="width: 10%;">Cantidad mínima</th>
+                          <th style="width: 10%;">Descuento</th>
+                          <th style="width: 10%;">Estado</th>
+                          <th style="width: 5%;">Editar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>        
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content-window %}
+{% block js %}
+<script src="{% static 'js/parametrizacion/opciones_catalogo_proveedores.js' %}"></script>
+<div 
+  class="modal fade" 
+  id="myModalCantidades" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <form 
+    id="frmCantidades" 
+    enctype="multipart/form-data" 
+    method="post">
+    <div class="modal-dialog modal-lg" role="document">     
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 
+            class="modal-title" 
+            id="exampleModalLabel">
+              <b><i class="fas fa-plus"></i> 
+                <span>Crear condición de cantidad mínima de compra</span>
+              </b>
+          </h5>
+          <button 
+            type="button" 
+            class="close" 
+            data-dismiss="modal" 
+            aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input name="action" id="action_cantidad" type="hidden" value="">
+          <input name="id_cantidad" type="hidden" value="">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label>Proveedor:</label>
+                <select 
+                  type="text" 
+                  class="form-control buscar_proveedor" 
+                  autocomplete="off">
+                </select>
+              </div>  
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label>Buscar producto:</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    id="buscar_producto">
+              </div>  
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="form-group">
+                <label>Producto:</label>
+                <input 
+                    type="text"
+                    class="form-control"
+                    readonly="true"
+                    id="productDesc">
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="form-group">
+                <label>Unidad de compra:</label>
+                <input 
+                  type="text"
+                  class="form-control" 
+                  readonly="true"
+                  id="unidadCompra">
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="form-group">
+                <label>Cantidad mínima:</label>
+                <input 
+                  type="text"
+                  class="form-control touchNumber" 
+                  autocomplete="off"
+                  id="quantityMin">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <button 
+                type="button" 
+                class="btn btn-outline-primary btn-block"
+                id="agregarProductoTblCantidades">
+                <i class="fas fa-plus"></i> 
+                Agregar producto
+            </button>
+            </div>
+          </div>
+          <br>
+          <hr>
+          <div class="row">
+            <div class="col-lg-12">
+              <table class="table table-hover" id="tblCantidadesProductos">
+                <thead>
+                  <tr style="text-align: center">
+                    <th>Producto</th>
+                    <th>Unidad de compra</th>
+                    <th>Cantidad mínima</th>
+                    <th>Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <button 
+              type="button" 
+              class="btn btn-outline-danger btn-block"
+              id="eliminarProductosTblCantidades">
+              <i class="fas fa-trash-alt"></i> 
+              Eliminar productos
+            </button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-block btn-flat">
+              <i class="fas fa-save"></i> 
+              Guardar
+            </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div 
+  class="modal fade" 
+  id="myModalEditarCantidades" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <form 
+    id="frmEditarCantidades" 
+    enctype="multipart/form-data"
+    method="post">
+    <div class="modal-dialog" role="document">     
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 
+            class="modal-title">
+              <b><i class="fas fa-edit"></i> 
+                <span>Editar cantidad mínima de compra</span>
+              </b>
+          </h5>
+          <button 
+            type="button" 
+            class="close" 
+            data-dismiss="modal" 
+            aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input name="action" id="action_editar_cantidad" type="hidden" value="frmEditarCantidadMinimajsn">
+          <input id="id_cantidad" type="hidden" value="">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Proveedor:</label>
+                <input
+                  type="text" 
+                  class="form-control" 
+                  autocomplete="off" 
+                  readonly="true"
+                  id="proveedor_cantidad">
+              </div>  
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Producto:</label>
+                <input 
+                    type="text"
+                    class="form-control"
+                    readonly="true"
+                    id="producto_cantidad">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Unidad de compra:</label>
+                <input 
+                  type="text"
+                  class="form-control" 
+                  readonly="true"
+                  id="unidad_compra_cantidad">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Cantidad mínima:</label>
+                <input 
+                  type="text"
+                  class="form-control touchNumber" 
+                  autocomplete="off"
+                  id="editar_cantidad_minima">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Estado:</label>
+                <select 
+                  type="text"
+                  class="form-control" 
+                  autocomplete="off"
+                  id="estado_cantidad">
+                  <option value="AC">Activo</option>
+                  <option value="IN" selected>Inactivo</option>
+              </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-block btn-flat">
+              <i class="fas fa-save"></i> 
+              Guardar
+            </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div 
+  class="modal fade" 
+  id="myModalDescuentos" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <form 
+    id="frmDescuentos" 
+    enctype="multipart/form-data" 
+    method="post">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 
+            class="modal-title">
+            <b><i class="fas fa-plus"></i> 
+              <span>Crear condición de descuento</span>
+            </b>
+          </h5>
+          <button 
+            type="button" 
+            class="close" 
+            data-dismiss="modal" 
+            aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input name="action" id="action_descuento" type="hidden" value="">
+          <input name="id_descuento" type="hidden" value="">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label>Proveedor:</label>
+                <select 
+                  type="text" 
+                  class="form-control buscar_proveedor"
+                  autocomplete="off">
+                </select>
+              </div>  
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label>Buscar producto:</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    id="buscar_producto_descuento">
+              </div>  
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="form-group">
+                <label>Producto:</label>
+                <input 
+                    type="text"
+                    class="form-control"
+                    readonly="true"
+                    id="productDescription">
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="form-group">
+                <label>Unidad de compra:</label>
+                <input 
+                  type="text"
+                  class="form-control" 
+                  readonly="true"
+                  id="unidadCompraDescuento">
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="form-group">
+                <label>Precio de compra:</label>
+                <input 
+                  type="text"
+                  class="form-control" 
+                  readonly="true"
+                  id="precioCompra">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="form-group">
+                <label>Cantidad mínima:</label>
+                <input 
+                  type="text"
+                  class="form-control touchNumber" 
+                  autocomplete="off"
+                  id="cantidadMinima">
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="form-group">
+                <label>Descuento:</label>
+                <input 
+                  type="text"
+                  class="form-control touchPerc" 
+                  autocomplete="off"
+                  id="discountInput">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <button 
+                type="button" 
+                class="btn btn-outline-primary btn-block"
+                id="agregarProductoTblDescuentos">
+                <i class="fas fa-plus"></i> 
+                Agregar producto
+              </button>
+            </div>
+          </div>
+          <br>
+          <hr>
+          <div class="row">
+            <div class="col-lg-12">
+              <table class="table table-hover" id="tblDescuentosProductos">
+                <thead>
+                  <tr style="text-align: center">
+                    <th>Producto</th>
+                    <th>Unidad de compra</th>
+                    <th>Precio de compra</th>
+                    <th>Cantidad</th>
+                    <th>Descuento</th>
+                    <th>Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <button 
+              type="button" 
+              class="btn btn-outline-danger btn-block"
+              id="eliminarProductosTblDescuentos">
+              <i class="fas fa-trash-alt"></i> 
+              Eliminar productos
+            </button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button 
+            type="submit" 
+            class="btn btn-primary btn-block btn-flat">
+            <i class="fas fa-save"></i> 
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div 
+  class="modal fade" 
+  id="myModalEditarDescuentos" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <form 
+    id="frmEditarDescuentos" 
+    enctype="multipart/form-data"
+    method="post">
+    <div class="modal-dialog" role="document">     
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 
+            class="modal-title" 
+            id="exampleModalLabel">
+              <b><i class="fas fa-edit"></i> 
+                <span>Editar descuentos por producto</span>
+              </b>
+          </h5>
+          <button 
+            type="button" 
+            class="close" 
+            data-dismiss="modal" 
+            aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input name="action" id="action_editar_descuentos" type="hidden" value="frmEditarCondicionDescuentojsn">
+          <input id="id_descuentos" type="hidden" value="">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Proveedor:</label>
+                <input
+                  type="text" 
+                  class="form-control" 
+                  autocomplete="off" 
+                  readonly="true"
+                  id="proveedor_descuentos">
+              </div>  
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Producto:</label>
+                <input 
+                    type="text"
+                    class="form-control"
+                    readonly="true"
+                    id="producto_descuentos">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Unidad de compra:</label>
+                <input 
+                  type="text"
+                  class="form-control" 
+                  readonly="true"
+                  id="unidad_compra_descuento">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Precio de compra:</label>
+                <input 
+                  type="text"
+                  class="form-control" 
+                  readonly="true"
+                  id="precio_compra_descuento">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Cantidad mínima:</label>
+                <input 
+                  type="text"
+                  class="form-control touchNumber" 
+                  autocomplete="off"
+                  id="editar_cantidad_descuento">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Descuento:</label>
+                <input 
+                  type="text"
+                  class="form-control touchPerc" 
+                  autocomplete="off"
+                  id="editar_descuento_producto">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="form-group">
+                <label>Estado:</label>
+                <select 
+                  type="text"
+                  class="form-control" 
+                  autocomplete="off"
+                  id="estado_descuento">
+                  <option value="AC">Activo</option>
+                  <option value="IN" selected>Inactivo</option>
+              </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-block btn-flat">
+              <i class="fas fa-save"></i> 
+              Guardar
+            </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock js %}
+
+
+
+
+
+

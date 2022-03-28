@@ -30,11 +30,10 @@ from .forms import *
 from .models import *
 from .resources import *
 from apps.modulo_comercial.models import *
-from apps.modulo_logistica.models import *
+from apps.modulo_almacen.models import *
 from apps.modulo_compras.models import *
 from apps.functions_views import *
 from .api.serializers import *
-
 
 ################################################################################################
 ############################### VISTAS DEL MODULO PARAMETRIZACIÓN ##############################
@@ -775,7 +774,7 @@ class clsCrearProductoViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, C
 ''' 3.8 Vista para listar e inactivar productos'''
 class clsListarCatalogoProductosViw(LoginRequiredMixin, ListView):
     model = clsCatalogoProductosMdl
-    template_name = 'modulo_configuracion/listar_productos.html'
+    template_name = 'modulo_configuracion/ver_productos.html'
 
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
@@ -1206,7 +1205,8 @@ class clsCrearListaPreciosViw(LoginRequiredMixin, ValidatePermissionRequiredMixi
         context = super().get_context_data(**kwargs)
         context['title'] = 'Crear lista de precios'
         context['action'] = 'frmCrearListaPreciosjsn'
-        
+        context['list_url'] = self.success_url
+        context['menu_url'] = reverse_lazy("configuracion:carga_masiva_listas_precios")
         return context
 
 ''' 3.15 Vista para ver lista de precios'''

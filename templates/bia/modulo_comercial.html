@@ -15,85 +15,78 @@
     <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
         <li class="nav-item">
-            <a href="{% url 'comercial:promociones' %}" class="nav-link 
-                {% if request.resolver_match.view_name == 'comercial:promociones' %}active{% endif %}">
+            <a href="{% url 'comercial:ver_promociones' %}" class="nav-link 
+                {% if request.resolver_match.view_name == 'comercial:ver_promociones' %}active{% endif %}">
                 <i class="nav-icon fas fa-cart-arrow-down"></i>
                 <p>Promociones</p>
             </a>
         </li>
         <li class="nav-item">
-            <a href="{% url 'comercial:crear_pedido' %}" class="nav-link
-                {% if request.resolver_match.view_name == 'comercial:crear_pedido' %}active{% endif %}">
+            <a href="{% url 'comercial:menu_pedidos' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'comercial:menu_pedidos' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'comercial:crear_pedido' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'comercial:ver_pedidos' %}active{% endif %}">
                 <i class="nav-icon far fa-plus-square"></i>
                 <p>Pedidos</p>
             </a>
         </li>
         <li class="nav-item">
-            <a href="{% url 'comercial:crear_cotizacion_comercial' %}" class="nav-link
-                {% if request.resolver_match.view_name == 'comercial:crear_cotizacion_comercial' %}active{% endif %}">
+            <a href="{% url 'comercial:menu_cotizaciones' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'comercial:menu_cotizaciones' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'comercial:crear_cotizacion' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'comercial:ver_cotizaciones' %}active{% endif %}">
                 <i class="nav-icon far fa-plus-square"></i>
                 <p>Cotizaciones</p>
             </a>
         </li>
         <li class="nav-item">
-            <a href="{% url 'comercial:productos' %}" class="nav-link
-                {% if request.resolver_match.view_name == 'comercial:productos' %}active{% endif %}">
+            <a href="{% url 'comercial:ver_productos' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'comercial:ver_productos' %}active{% endif %}">
                 <i class="nav-icon fas fa-book"></i>
                 <p>Catálogo de productos</p>
             </a>
         </li>
         <li class="nav-item">
-            <a href="{% url 'comercial:ruta_visitas' %}" class="nav-link
-                {% if request.resolver_match.view_name == 'comercial:ruta_visitas' %}active{% endif %}">
-                <i class="nav-icon fas fa-car-side"></i>
-                <p>Ruta de visitas</p>
+            <a href="{% url 'comercial:menu_llamadas' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'comercial:menu_llamadas' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'comercial:crear_llamada' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'comercial:ver_agenda_llamadas' %}active{% endif %}">
+                <i class="nav-icon fas fa-book"></i>
+                <p>Agenda de llamadas</p>
             </a>
-        </li>
-        <li class="nav-item has-treeview
-            {% if request.resolver_match.view_name == 'comercial:listar_llamadas' %}menu-open{% endif %}
-            {% if request.resolver_match.view_name == 'comercial:agenda_llamadas' %}menu-open{% endif %}">
-            <a href="#" class="nav-link
-                {% if request.resolver_match.view_name == 'comercial:listar_llamadas' %}active{% endif %}
-                {% if request.resolver_match.view_name == 'comercial:agenda_llamadas' %}active{% endif %}">
-                <i class="nav-icon fas fa-calendar-plus"></i>
-                <p>
-                    Agenda de llamadas
-                    <i class="fas fa-angle-left right"></i>
-                </p>
-            </a>
-            <ul class="nav nav-treeview">
-                <li class="nav-item">
-                    <a href="{% url 'comercial:listar_llamadas' %}" class="nav-link
-                        {% if request.resolver_match.view_name == 'comercial:listar_llamadas' %}active{% endif %}">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>LLamadas a realizar</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'comercial:agenda_llamadas' %}" class="nav-link
-                        {% if request.resolver_match.view_name == 'comercial:agenda_llamadas' %}active{% endif %}">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Agendar llamada</p>
-                    </a>
-                </li>
-            </ul>
         </li>
         <li class="nav-item">
-            <a href="{% url 'comercial:cat_cliente' %}" class="nav-link
-                {% if request.resolver_match.view_name == 'comercial:cat_cliente' %}active{% endif %}
+            <a href="{% url 'comercial:catalogo_clientes' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'comercial:catalogo_clientes' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'comercial:opciones_cliente' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'comercial:importar_catalogo_clientes' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'comercial:crear_cliente' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'comercial:listar_clientes' %}active{% endif %}
-                {% if request.resolver_match.view_name == 'comercial:editar_cliente' %}active{% endif %}
-                {% if request.resolver_match.view_name == 'comercial:cargar_clientes' %}active{% endif %}">
+                {% if request.resolver_match.view_name == 'comercial:actualizar_cliente' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'comercial:exportar_catalogo_clientes' %}active{% endif %}">
                 <i class="nav-icon far fa-plus-square"></i>
                 <p>Catálogo de clientes</p>
             </a>
         </li>
         <li class="nav-item">
-            <a href="{% url 'comercial:cartera_cliente' %}" class="nav-link
-                {% if request.resolver_match.view_name == 'comercial:cartera_cliente' %}active{% endif %}">
+            <a href="{% url 'comercial:cartera_clientes' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'comercial:cartera_clientes' %}active{% endif %}">
                 <i class="nav-icon fas fa-money-check-alt"></i>
                 <p>Cartera clientes</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'comercial:tuberia_clientes' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'comercial:tuberia_clientes' %}active{% endif %}">
+                <i class="nav-icon fas fa-money-check-alt"></i>
+                <p>Tuberia clientes</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'comercial:pqr_clientes' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'comercial:pqr_clientes' %}active{% endif %}">
+                <i class="nav-icon fas fa-money-check-alt"></i>
+                <p>PQR Clientes</p>
             </a>
         </li>
     </ul>

@@ -26,8 +26,8 @@ def modulo_comercial(request):
 def modulo_compras(request):
     return render(request, 'bia/modulo_compras.html')
 
-def modulo_logistica(request):
-    return render(request, 'bia/modulo_logistica.html')
+def modulo_almacen(request):
+    return render(request, 'bia/modulo_almacen.html')
 
 def modulo_indicadores(request):
     return render(request, 'bia/modulo_indicadores.html')

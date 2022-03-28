@@ -1,0 +1,27 @@
+{% extends 'modulo_compras/plantilla_listar.html' %}
+{% load static %}
+{% block title %}
+    Compras | Ver evaluaciones proveedor
+{% endblock title %}
+    {% block menu %}
+    <li class="breadcrumb-item">
+        <a href="{{ create_url }}">
+            Crear evaluación proveedor
+        </a>
+    </li>
+    {% endblock menu %}
+
+    {% block columns %}
+    <tr style="text-align: center" class="table-active">
+        <th style="width: 5%;">Nº</th>
+        <th style="width: 10%;">Proveedor</th>
+        <th style="width: 20%;">Tipo de evaluación</th>
+        <th style="width: 10%;">Comprador</th>
+        <th style="width: 15%;">Puntaje general</th>
+        <th style="width: 10%;">Ver detalle</th>
+    </tr>
+    {% endblock columns %}
+{% block window-js %}
+    <script src="{% static 'js/compras/ver_evaluaciones_proveedor.js' %}"></script>
+{% endblock window-js %}
+

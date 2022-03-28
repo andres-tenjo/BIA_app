@@ -1,210 +1,197 @@
-{% extends 'bia/modulo_comercial.html' %}
+{% extends 'modulo_comercial/form.html' %}
 {% load static %}
 {% load widget_tweaks %}
-{% block title %} Comercial | Crear cliente {% endblock title %}
-{% block extra_css %}
-{% endblock extra_css %}
+{% block title %} Moduo comercial | Crear cliente {% endblock title %}
 {% block title-header %}
 {% endblock title-header %}
 
     {% block menu-header %}
     <li class="breadcrumb-item">
         <a href="{{ list_url }}">
-            Tabla de Clientes
+            Ver clientes
         </a>
     </li>
     <li class="breadcrumb-item">
         <a href="#">
             <i class="fas fa-question"></i>
+            Ver instructivo
         </a>
     </li>
     {% endblock menu-header %}
 
-    {% block content-window %}
-    <form id="formCustomer" method="post"> 
-        <div class="col-lg-12">
-            <div class="card card-primary card-outline">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-plus"></i>
-                        Crear cliente
-                    </h2>
+    {% block form %}
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Tipo de persona:</label>
+                {{ form.person_type }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <input type="hidden" action>
+                <label>* Tipo de identificación:</label>
+                {{ form.id_type }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Identificación Nº:</label>
+                {{ form.identification }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Nombre del cliente:</label>
+                {{ form.business_name }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Nombre de contacto:</label>
+                {{ form.contact_name }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Celular Nº:</label>
+                {{ form.cel_number }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Email:</label>
+                {{ form.email }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Departamento:</label>
+                <div class="input-group">
+                    {{ form.department }}
                 </div>
-                <div class="card-body">
-                    <input type="hidden" name="action" value="{{ action }}">
-                    <div class="row">
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                <input type="hidden" action>
-                                <label>* Tipo de identificación:</label>
-                                {{ form.id_type }}
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                <label>* Identificación Nº:</label>
-                                {{ form.id_number }}
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                <label>* Nombre:</label>
-                                {{ form.customer }}
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                <label>* Celular Nº:</label>
-                                {{ form.cel_number }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                <label>* Email:</label>
-                                {{ form.email }}
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                <label>* Ciudad:</label>
-                                <div class="input-group">
-                                    {{ form.city }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                <label>* Zona:</label>
-                                <div class="input-group">
-                                    {{ form.zone }}
-                                    <div class="input-group-append">
-                                        <button class="btn btn-success btn-flat btnAddZone" type="button">
-                                            <i class="fas fa-plus-circle"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                <label>Categoría:</label>
-                                <div class="input-group">
-                                    {{ form.category }}
-                                    <div class="input-group-append">
-                                        <button class="btn btn-success btn-flat btnAddCat" type="button">
-                                            <i class="fas fa-plus-circle"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg">
-                            <div class="form-group">
-                                <label>* Dirección:</label>
-                                <div class="input-group">
-                                    {{ form.address }}
-                                    <div class="input-group-append">
-                                        <button class="btn btn-success btn-flat btnAddAddress" type="button">
-                                            <i class="fas fa-plus-circle"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg">
-                            <div class="form-group">
-                                <label>* Horario de entrega:</label>
-                                {{ form.del_schedule2 }}
-                            </div>
-                        </div>
-                        <div class="col-lg">
-                            <div class="form-group">
-                                <label>* Método de pago:</label>
-                                {{ form.pay_method }}
-                            </div>
-                        </div>
-                        <div class="col-lg">
-                            <div class="form-group">
-                                <label>* Asesor:</label>
-                                <div class="input-group">
-                                    {{ form.advisor }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                <label>* Estado:</label>
-                                {{ form.state }}
-                            </div>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Ciudad:</label>
+                <div class="input-group">
+                    {{ form.city }}
                 </div>
-                <div class="card-footer">
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <button type="submit" class="btn btn-outline-primary btn-block btn-block">
-                                <i class="fas fa-save"></i> Guardar
-                            </button>
-                        </div>
-                        <div class="col-lg-4">
-                            <a href="{% url 'comercial:cat_cliente' %}" class="btn btn-outline-danger btn-block" type="button">
-                                <i class="fas fa-window-close"></i> Cancelar
-                            </a>
-                        </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Zona:</label>
+                <div class="input-group">
+                    {{ form.customer_zone }}
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-flat btnAddZone" type="button">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </form>
-
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Dirección:</label>
+                <div class="input-group">
+                    {{ form.delivery_address }}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Hora de entrega inicio:</label>
+                {{ form.del_schedule_init }}
+            </div>
+        </div>
+    </div>
     <div class="row">
-        <div class="col-lg-12">
-            <div class="collapse" id="paymentCredit">
-                <div class="card card-primary card-outline">
-                    <div class="card-header">
-                        <h2 class="card-title">
-                            <i class="fas fa-credit-card"></i>
-                            Información de crédito
-                        </h2>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Hora de entrega fin:</label>
+                {{ form.del_schedule_end }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Categoría cliente:</label>
+                <div class="input-group">
+                    {{ form.customer_cat }}
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-flat btnAddCat" type="button">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="form-group">
-                                    <label>Cupo de crédito:</label>
-                                    <input type="number" min="0" value="0" step=".01" class="form-control" autocomplete="off" name="limitCredit">
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <label>Tipo de crédito:</label>
-                                        {{ frmCredit.payment_type }}
-                                        <div class="input-group-append">
-                                            <button class="btn btn-success btn-flat btnAddPay" type="button">
-                                                <i class="fas fa-plus-circle"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Asesor:</label>
+                <div class="input-group">
+                    {{ form.commercial_advisor }}
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-flat btnAddAdv" type="button">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="myModalCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Método de pago:</label>
+                {{ form.pay_method }}
+            </div>
+        </div>
+    </div>
+    <h6 
+        id="textMethod" 
+        class="text-danger" 
+        hidden="true">
+        Ingrese el cupo y los días de crédito
+    </h6>
+    <br>
+    <div class="row" hidden="true" id="creditMethod">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Días de crédito:</label>
+                {{ form.credit_days }}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Cupo de crédito:</label>
+                {{ form.credit_value }}
+            </div>
+        </div>
+    </div>
+    <br>
+    <h6 class="text-primary">Los campos marcados con * son obligatorios</h6>
+    {% endblock form %}
+    {% block extrajs %}  
+    <script src="{% static 'js/parametrizacion/crear_cliente.js' %}"></script>
+    <script src="{% static 'js/parametrizacion/main.js' %}"></script>
+    <div 
+        class="modal fade bd-example-modal-lg" 
+        id="myModalCategory" 
+        tabindex="-1" 
+        role="dialog" 
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <form id="frmCatCust" enctype="multipart/form-data" method="post">
-            <div class="modal-dialog" role="document">     
+            <div class="modal-dialog modal-lg" role="document">     
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">
@@ -215,12 +202,31 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        {% for field in frmClientCat.visible_fields %}
-                            <div class="form-group">
-                                <label for="email">{{ field.label }}:</label>
-                                {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row px-3">
+                                    <div class="form-group">
+                                        <label>Nombre categoría cliente:</label>
+                                        <input 
+                                            type="text" 
+                                            name="cat_cust" 
+                                            class="form-control" 
+                                            required="true">
+                                    </div>
+                                </div>
+                                <table class="table table-bordered table-hover" id="tblMargin">
+                                    <thead>
+                                    <tr style="text-align: center;">
+                                        <th style="width: 40%;">Categoría producto</th>
+                                        <th style="width: 30%;">Margén máximo</th>
+                                        <th style="width: 30%;">Margén mínimo</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>    
                             </div>
-                        {% endfor %}
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary btn-block btn-flat">
@@ -231,8 +237,13 @@
             </div>
         </form>
     </div>
-    <div class="modal fade" id="myModalZone" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
+    <div 
+        class="modal fade" 
+        id="myModalZone" 
+        tabindex="-1" 
+        role="dialog" 
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <form id="frmCatZone" enctype="multipart/form-data" method="post">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -261,138 +272,41 @@
             </div>
         </form>
     </div>
-    <div class="modal fade bd-example-modal-xl" id="myModalAddress" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
-         aria-hidden="true">
-        <form id="frmAddress" enctype="multipart/form-data" method="post">
-            <div class="modal-dialog modal-xl" role="document">
+    <div 
+        class="modal fade" 
+        id="myModalAdvisor" 
+        tabindex="-1" 
+        role="dialog" 
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <form id="frmAdvisor" enctype="multipart/form-data" method="post">
+            <div class="modal-dialog" role="document">     
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">
-                            <b><i class="fas fa-map-marked-alt"></i> Registrar dirección</b>
+                            <b><i class="fas fa-user-plus"></i> Crear asesor comercial</b>
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
+                        {% for field in frmAdvisor.visible_fields %}
                         <div class="form-group">
-                            <div class="row">
-                                <select name="addressType" id="addressType">
-                                    <option></option>
-                                    <option>Calle</option>
-                                    <option>Carrera</option>
-                                    <option>Avenida</option>
-                                    <option>Transversal</option>
-                                </select>
-                                <input type="text" autocomplete="off" name="streetNumber" required>
-                                <select name="addressLet" id="addressLet">
-                                    <option></option>
-                                    <option>A</option>
-                                    <option>B</option>
-                                    <option>C</option>
-                                    <option>D</option>
-                                    <option>E</option>
-                                    <option>F</option>
-                                    <option>G</option>
-                                    <option>H</option>
-                                    <option>I</option>
-                                    <option>J</option>
-                                    <option>K</option>
-                                </select>
-                                <select name="addressBis" id="addressBis">
-                                    <option></option>
-                                    <option>BIS</option>
-                                </select>
-                                <input type="text" required name="number" autocomplete="off">
-                                <select name="numberLet">
-                                    <option></option>
-                                    <option>A</option>
-                                    <option>B</option>
-                                    <option>C</option>
-                                    <option>D</option>
-                                    <option>E</option>
-                                    <option>F</option>
-                                    <option>G</option>
-                                    <option>H</option>
-                                    <option>I</option>
-                                    <option>J</option>
-                                    <option>K</option>
-                                </select>
-                                <select name="numberBis">
-                                    <option></option>
-                                    <option>BIS</option>
-                                </select>
-                                <input type="text" name="nomStreet" required autocomplete="off">
-                                <select name="addressSur" id="addressSur">
-                                    <option></option>
-                                    <option>Sur</option>
-                                    <option>Este</option>
-                                    <option>Oeste</option>
-                                </select>
-                            </div>
+                            <label for="email">{{ field.label }}:</label>
+                            {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary btn-block btn-flat">
-                            <i class="fas fa-save"></i> Registrar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-    <div class="modal fade" id="myModalPayment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <form id="frmPayment" enctype="multipart/form-data" method="post">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">
-                            <b><i class="fas fa-user-plus"></i> Crear tipo de crédito</b>
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        {% for field in frmPayment.visible_fields %}
-                            <div class="form-group">
-                                <label for="email">{{ field.label }}:</label>
-                                {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
-                            </div>
                         {% endfor %}
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary btn-block btn-flat">
-                            <i class="fas fa-save"></i> Guardar tipo de crédito
+                            <i class="fas fa-save"></i> Guardar Asesor
                         </button>
                     </div>
                 </div>
             </div>
         </form>
     </div>
-    
-        
-    {% endblock %}
-    {% block extrajs %}  
-        <script src="{% static 'js/modulo_comercial/crear_cliente.js' %}"></script>
-        <script src="{% static 'js/main.js' %}"></script>
-        <script>
-            {% if form.errors %}
-                var errors = '';
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        errors += '{{ error }}\n';
-                    {% endfor %}
-                {% endfor %}
-                {% for error in form.non_field_errors %}
-                    errors += '{{ error }}\n';
-                {% endfor %}
-                Swal.fire({
-                    title: 'Error!',
-                    text: errors,
-                    icon: 'error'
-                });
-            {% endif %}
-        </script>
-    {% endblock extrajs %}  
+{% endblock extrajs %}
+{% block frm-submit %}
+{% endblock frm-submit %}

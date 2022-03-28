@@ -9,7 +9,7 @@ class CommercialIndicatorsView(TemplateView):
 class PurchaseIndicatorsView(TemplateView):
     template_name = 'modulo_indicadores/indicadores_compras.html'
 
-''' Vista para ventana de indicadores logistica'''
+''' Vista para ventana de indicadores almacen'''
 class LogisticsWarehouseIndicatorsView(TemplateView):
     template_name = 'modulo_indicadores/indicadores_almacen.html'
 

@@ -848,7 +848,6 @@ class clsDetalleAjusteInventarioMdl(models.Model):
         return str(self.id)
 
 
-
 ''' Tablas para historico de movimientos'''
 # Tabla de entradas de almacén
 class clsEntradasAlmacenMdl(BaseModel):

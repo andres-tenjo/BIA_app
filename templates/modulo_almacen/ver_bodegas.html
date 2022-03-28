@@ -1,0 +1,52 @@
+{% extends 'modulo_configuracion/list_view.html' %}
+{% load static %}
+{% block title %}
+    BIA | Bodegas
+{% endblock title %}
+    
+    {% block menu %}
+    <li class="breadcrumb-item">
+        <a href="{{ create_url }}">
+            Crear bodega
+        </a>
+    </li>
+    {% endblock menu %}
+    {% block input-search %}
+    <div class="form-group">
+        <label>Buscar bodega:</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            autocomplete="off" 
+            id="buscar_bodega">
+    </div> 
+    {% endblock input-search %}
+    {% block columns %}
+    <tr style="text-align: center" class="table-active">
+        <th style="width: 15%;">Bodega</th>
+        <th style="width: 10%;">Departamento</th>
+        <th style="width: 10%;">Ciudad</th>
+        <th style="width: 15%;">Dirección</th>
+        <th style="width: 10%;">Responsable</th>
+        <th style="width: 10%;">Estado</th>
+        <th style="width: 15%;">Opciones</th>
+    </tr>        
+    {% endblock columns %}
+    {% block export-catalogue %}
+    <div class="row">
+        <div class="col-lg-4">
+            <a
+                href="{% url 'configuracion:exportar_catalogo_bodegas' %}"
+                type="button"
+                id="exportCat"  
+                class="list-group-item list-group-item-action" 
+                aria-current="true">
+                <i class="fas fa-cloud-download-alt"></i>
+                Descargar catálogo de bodegas
+            </a>
+        </div>
+    </div>
+    {% endblock export-catalogue %}
+{% block window-js %}
+    <script src="{% static 'js/parametrizacion/listar_bodegas.js' %}"></script>
+{% endblock window-js %}

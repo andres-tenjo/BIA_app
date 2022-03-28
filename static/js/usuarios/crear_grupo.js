@@ -103,7 +103,7 @@ $(function () {
         });
     });
 
-    // Cargar permisos para el input del modulo logistica
+    // Cargar permisos para el input del modulo almacen
     $('#collapseThree').on('shown.bs.collapse', function () {
         $('#log_permission').select2({
             theme: "bootstrap4",
@@ -189,7 +189,7 @@ $(function () {
         }
     });
     
-    // Función para seleccionar los permisos del modulo logistica
+    // Función para seleccionar los permisos del modulo almacen
     $('#logistics').on('click', function () {
         v = $('#logistics').val();
         if(v == 1){

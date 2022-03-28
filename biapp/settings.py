@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'apps.home',
     'apps.modulo_comercial',
     'apps.modulo_compras',
-    'apps.modulo_logistica',
+    'apps.modulo_almacen',
     'apps.modulo_indicadores',
     'apps.modulo_reportes',
     'apps.modulo_configuracion',

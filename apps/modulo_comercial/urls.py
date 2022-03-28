@@ -2,50 +2,153 @@ from django.urls import path
 from apps.modulo_comercial import views
 
 urlpatterns = [
-    # Rutas vista promociones
-    path('promociones/', views.PromotionView.as_view(),name='promociones'),
+    # Promociones
+    path(
+        'ver_promociones/', 
+        views.clsVerPromocionesViw.as_view(),
+        name='ver_promociones'
+        ),
 
-    # Rutas vista pedidos
-    path('pedidos/', views.CreateOrderView.as_view(), name='crear_pedido'),
-    path('lista_pedidos/', views.SaleList.as_view(), name='listar_pedidos'),
-    #path('sale/invoice/pdf/<int:pk>/', views.SaleInvoicePdfView.as_view(), name='sale_invoice_pdf'),
+    # Menu pedidos
+    path(
+        'menu_pedidos/', 
+        views.clsMenuPedidosViw.as_view(), 
+        name='menu_pedidos'
+        ),   
+    # Crear pedido
+    path(
+        'crear_pedido/', 
+        views.clsCrearPedidoViw.as_view(), 
+        name='crear_pedido'
+        ),
+    # Ver pedidos
+    path(
+        'ver_pedidos/', 
+        views.clsVerPedidosViw.as_view(), 
+        name='ver_pedidos'
+        ),
+    # Imprimir pedido
+    #path(
+    # 'sale/invoice/pdf/<int:pk>/', 
+    # views.clsImprimirPedidoPdfViw.as_view(), 
+    # name='sale_invoice_pdf'
+    # ),
     
-    # Rutas vista cotizaciones
-    path('cotizaciones/', views.CreateQuoteView.as_view(), name='crear_cotizacion_comercial'),
-    path('lista_cotizaciones/', views.QuoteList.as_view(), name='listar_cotizaciones'),
+    # Exportar pedido
 
-    # Ruta vista productos
-    path('productos/', views.ProductView.as_view(),name='productos'),
+    # Menu cotizaciones
+    path(
+        'menu_cotizaciones/', 
+        views.clsMenuCotizacionesViw.as_view(), 
+        name='menu_cotizaciones'
+        ),
+    # Crear cotización
+    path(
+        'crear_cotizacion/', 
+        views.clsCrearCotizacionViw.as_view(), 
+        name='crear_cotizacion'
+        ),
+    # Ver cotización
+    path(
+        'ver_cotizaciones/', 
+        views.clsVerCotizacionesViw.as_view(),
+        name='ver_cotizaciones'
+        ),
+
+    # Ver productos
+    path(
+        'ver_productos/', 
+        views.clsVerCatalogoProductosViw.as_view(),
+        name='ver_productos'
+        ),
     
-    # Ruta vista visitas
-    path('ruta_visitas/', views.VisitsRouteView.as_view(),name='ruta_visitas'),
+    # Menu agenda llamadas
+    path(
+        'menu_llamadas/', 
+        views.clsMenuLlamadasViw.as_view(), 
+        name='menu_llamadas'
+        ),
+    # Crear llamada
+    path(
+        'crear_llamada/', 
+        views.clsCrearLlamadaView.as_view(),
+        name='crear_llamada'
+        ),
+    # Ver agenda de llamadas
+    path(
+        'ver_agenda_llamadas/', 
+        views.clsVerAgendaLlamadasViw.as_view(),
+        name='ver_agenda_llamadas'
+        ),
 
-    # Ruta vista llamadas
-    path('listar_llamadas/', views.CallCustomerView.as_view(),name='listar_llamadas'),
-    path('agenda_llamadas/', views.CreateCallCustomerView.as_view(),name='agenda_llamadas'),
-
-    # Rutas vista cliente
-    path('cliente/catalogo', views.clsMenuCatalogoClientesViw.as_view(), name='cat_cliente'),
-    path('cliente/crear', views.CustomerCreateView.as_view(), name='crear_cliente'),
-    path('cliente/listado', views.CustomerListView.as_view(), name='listar_clientes'),
-    path('cliente/actualizar', views.CustomerUpdateView.as_view(), name='editar_cliente'),
-    path('cliente/cargar', views.CatCliUploadView.as_view(), name='cargar_clientes'),
-
-    path('cliente/categoria/listado', views.CategoryCustListView.as_view(), name='crear_cat_cliente'),
-
-    path('cliente/zona/', views.ZoneCliView.as_view(), name='crear_zona_cliente'),
+    # Menu catálogo clientes
+    path(
+        'catalogo_clientes', 
+        views.clsMenuCatalogoClientesViw.as_view(), 
+        name='catalogo_clientes'
+        ),
+    # Opciones catálogo clientes
+    path(
+        'opciones_cliente',
+        views.clsOpcionesCatalogoClientesViw.as_view(), 
+        name='opciones_cliente'
+        ),
+    # Exportar plantilla cliente
+    path(
+        'exportar_plantilla', 
+        views.clsExportarPlantillaClientesViw.as_view(), 
+        name='exportar_plantilla'
+        ),
+    # Importar catálogo clientes
+    path(
+        'importar_catalogo_clientes', 
+        views.clsExportarPlantillaClientesViw.as_view(), 
+        name='importar_catalogo_clientes'
+        ),
+    # Crear cliente
+    path(
+        'crear_cliente', 
+        views.clsCrearClienteViw.as_view(), 
+        name='crear_cliente'
+        ),
+    # Ver cliente
+    path(
+        'listar_clientes', 
+        views.clsListarCatalogoClientesViw.as_view(), 
+        name='listar_clientes'
+        ),
+    # Editar cliente
+    path(
+        'actualizar_cliente/<int:pk>/', 
+        views.clsEditarClienteViw.as_view(), 
+        name = 'actualizar_cliente'
+        ),
+    # Exportar catálogo clientes
+    path(
+        'exportar_catalogo_clientes/', 
+        views.clsExportarCatalogoClientesViw.as_view(), 
+        name='exportar_catalogo_clientes'
+        ),
     
-    path('cliente/asesor/', views.AdvisorCliView.as_view(), name='crear_asesor_cliente'),
+    # Ver cartera cliente
+    path(
+        'cartera_clientes/', 
+        views.clsCarteraClientesViw.as_view(), 
+        name='cartera_clientes'
+        ),
     
-    # Ruta vista cartera cliente
-    path('cliente/cartera/', views.CarteraCliView.as_view(), name='cartera_cliente'),
+    # Ver tubería cliente
+    path(
+        'tuberia_clientes/', 
+        views.clsTuberiaClientesViw.as_view(), 
+        name='tuberia_clientes'
+        ),
     
-    # Ruta vista historico
-    path('historico_mov_comercial/', views.historico_mov_comercial, name='historico_mov_comercial'),
-    
-    # Ruta vista indicadores
-    path('indicadores_comerciales/', views.CommercialIndicatorsView.as_view(), name='indicadores_comerciales'),
+    # Ver pqr cliente
+    path(
+        'pqr_clientes/', 
+        views.clsPqrClientesViw.as_view(), 
+        name='pqr_clientes'
+        ),
 
-    # Ruta para pruebas
-    #path('select_anidados/', views.Select2.as_view(),name='select_anidados'),
     ]

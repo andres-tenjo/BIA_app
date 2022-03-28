@@ -1,0 +1,550 @@
+{% extends 'bia/modulo_compras.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title-header %}
+{% endblock title-header %}
+{% block menu-header %}
+    <li class="breadcrumb-item">
+      <a href="{{ create_url }}">
+          Crear Producto
+      </a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="{{ list_url }}">
+          Ver productos
+      </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+            Ver instructivo
+        </a>
+    </li>
+{% endblock menu-header %}
+
+{% block content-window %}
+<div class="row">
+  <div class="col-12">
+      <div class="card card-primary card-outline">
+          <div class="card-header">
+              <h2 class="card-title">
+                <i class="fas fa-cog"></i>
+                Opciones de catálogo  
+              </h2>
+          </div>
+          <div class="card-body">
+            <div class="accordion" id="accordionExample">
+              <div class="card card-primary card-outline">
+                <div class="card-header" id="headingOne">
+                  <h2 class="mb-0">
+                    <button 
+                      class="btn btn-block text-left" 
+                      type="button" 
+                      data-toggle="collapse" 
+                      data-target="#collapseOne" 
+                      aria-expanded="true" 
+                      aria-controls="collapseOne">
+                      <i class="fas fa-angle-right"></i>
+                      Opciones de producto
+                    </button>
+                  </h2>
+                </div>
+                <div 
+                  id="collapseOne" 
+                  class="collapse" 
+                  aria-labelledby="headingOne" 
+                  data-parent="#accordionExample">
+                  <div class="card-body">
+                    <div class="col-lg-9">
+                      <div class="accordion" id="accordionOptions">
+                        <div class="card card-primary card-outline">
+                          <div class="card-header" id="headingCategory">
+                            <h2 class="mb-0">
+                              <button 
+                                class="btn btn-block text-left" 
+                                type="button" 
+                                data-toggle="collapse" 
+                                data-target="#collapseCategory" 
+                                aria-expanded="true" 
+                                aria-controls="collapseCategory">
+                                <i class="fas fa-angle-right"></i>
+                                Categoría de producto
+                              </button>
+                            </h2>
+                          </div>
+                          <div 
+                            id="collapseCategory" 
+                            class="collapse" 
+                            aria-labelledby="headingCategory" 
+                            data-parent="#accordionOptions">
+                            <div class="card-body">
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <div class="row justify-content-between">
+                                    <div class="col-auto">
+                                      <div class="form-group">
+                                        <a href="#" type="button" class="btnAddCat">
+                                          <i class="fas fa-plus-circle"></i>
+                                          Crear categoria
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <table class="table table-bordered table-hover" id="catTable">
+                                    <thead>
+                                    <tr style="text-align: center;">
+                                        <th style="width: 15%;">Nº</th>
+                                        <th style="width: 40%;">Categoria</th>
+                                        <th style="width: 15%;">Estado</th>
+                                        <th style="width: 30%;">Opciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card card-primary card-outline">
+                          <div class="card-header" id="headingSubcategory">
+                            <h2 class="mb-0">
+                              <button 
+                                class="btn btn-block text-left" 
+                                type="button" 
+                                data-toggle="collapse" 
+                                data-target="#collapseSubcategory" 
+                                aria-expanded="true" 
+                                aria-controls="collapseSubcategory">
+                                <i class="fas fa-angle-right"></i>
+                                Subcategoría de producto
+                              </button>
+                            </h2>
+                          </div>
+                          <div 
+                            id="collapseSubcategory" 
+                            class="collapse" 
+                            aria-labelledby="headingSubcategory" 
+                            data-parent="#accordionOptions">
+                            <div class="card-body">
+                              <div class="row">
+                                <div class="col-lg-6">
+                                  <a href="#" type="button" class="btnAddSubcat">
+                                    <i class="fas fa-plus-circle"></i>
+                                    Crear subcategoría
+                                  </a>
+                                </div>
+                                <div class="col-lg-6">
+                                  <a href="{% url 'configuracion:importar_subcategorias_productos' %}" type="button" class="btnAddSubcat">
+                                    <i class="fas fa-upload"></i>
+                                    Cargar archivo de subcategorías
+                                  </a>
+                                </div>
+                              </div>
+                              <hr>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <table class="table table-bordered table-hover" id="subcatTable">
+                                    <thead>
+                                    <tr style="text-align: center;">
+                                        <th style="width: 10%;">Nº</th>
+                                        <th style="width: 25%;">Subcategoría</th>
+                                        <th style="width: 25%;">Categoría</th>
+                                        <th style="width: 15%;">Estado</th>
+                                        <th style="width: 25%;">Opciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card card-primary card-outline">
+                          <div class="card-header" id="headingUdc">
+                            <h2 class="mb-0">
+                              <button 
+                                class="btn btn-block text-left" 
+                                type="button" 
+                                data-toggle="collapse" 
+                                data-target="#collapseUdc" 
+                                aria-expanded="true" 
+                                aria-controls="collapseUdc">
+                                <i class="fas fa-angle-right"></i>
+                                Unidad de compra
+                              </button>
+                            </h2>
+                          </div>
+                          <div 
+                            id="collapseUdc" 
+                            class="collapse" 
+                            aria-labelledby="headingUdc" 
+                            data-parent="#accordionOptions">
+                            <div class="card-body">
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <div class="row justify-content-between">
+                                    <div class="col-auto">
+                                      <div class="form-group">
+                                        <a href="#" type="button" class="btnAddUdc">
+                                          <i class="fas fa-plus-circle"></i>
+                                          Crear unidad de compra
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <table class="table table-bordered table-hover" id="udcTable">
+                                    <thead>
+                                    <tr style="text-align: center;">
+                                        <th style="width: 15%;">Nº</th>
+                                        <th style="width: 40%;">Unidad de compra</th>
+                                        <th style="width: 15%;">Estado</th>
+                                        <th style="width: 30%;">Opciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card card-primary card-outline">
+                          <div class="card-header" id="headingUdv">
+                            <h2 class="mb-0">
+                              <button 
+                                class="btn btn-block text-left" 
+                                type="button" 
+                                data-toggle="collapse" 
+                                data-target="#collapseUdv" 
+                                aria-expanded="true" 
+                                aria-controls="collapseUdv">
+                                <i class="fas fa-angle-right"></i>
+                                Unidad de venta
+                              </button>
+                            </h2>
+                          </div>
+                          <div 
+                            id="collapseUdv" 
+                            class="collapse" 
+                            aria-labelledby="headingUdv" 
+                            data-parent="#accordionOptions">
+                            <div class="card-body">
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <div class="row justify-content-between">
+                                    <div class="col-auto">
+                                      <div class="form-group">
+                                        <a href="#" type="button" class="btnAddUdv">
+                                          <i class="fas fa-plus-circle"></i>
+                                          Crear unidad de venta
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <table class="table table-bordered table-hover" id="udvTable">
+                                    <thead>
+                                    <tr style="text-align: center;">
+                                        <th style="width: 15%;">Nº</th>
+                                        <th style="width: 40%;">Unidad de venta</th>
+                                        <th style="width: 15%;">Estado</th>
+                                        <th style="width: 30%;">Opciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+              </div>
+              </div>
+              <div class="card card-primary card-outline">
+                <div class="card-header" id="headingTwo">
+                  <h2 class="mb-0">
+                    <button 
+                      class="btn btn-block text-left" 
+                      type="button" 
+                      data-toggle="collapse" 
+                      data-target="#collapseTwo" 
+                      aria-expanded="true" 
+                      aria-controls="collapseTwo">
+                      <i class="fas fa-angle-right"></i>
+                      Carga masiva de productos
+                    </button>
+                  </h2>
+                </div>
+                <div 
+                  id="collapseTwo" 
+                  class="collapse" 
+                  aria-labelledby="headingTwo" 
+                  data-parent="#accordionExample">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="list-group">
+                          <button
+                            type="button"
+                            id="exportCat"  
+                            class="list-group-item list-group-item-action" 
+                            aria-current="true">
+                            <i class="fas fa-cloud-download-alt"></i>
+                              Descargar plantilla
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="list-group">
+                          <a 
+                            href="{% url 'configuracion:import_products' %}" 
+                            class="list-group-item list-group-item-action" 
+                            aria-current="true">
+                            <i class="fas fa-cloud-download-alt"></i>
+                              Importar archivo de productos
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content-window %}
+{% block js %}
+<script src="{% static 'js/parametrizacion/opciones_catalogo_productos.js' %}"></script>
+<div 
+  class="modal fade" 
+  id="myModalCategory" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <form 
+    id="frmCatProd" 
+    enctype="multipart/form-data" 
+    method="post">
+      <div class="modal-dialog" role="document">     
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 
+                    class="modal-title" 
+                    id="exampleModalLabel">
+                      <b><i class="fas fa-user-plus"></i> 
+                        <span>Crear categoría de producto</span>
+                      </b>
+                  </h5>
+                  <button 
+                    type="button" 
+                    class="close" 
+                    data-dismiss="modal" 
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <input name="action" id="act_cat" type="hidden" value="">
+                <input name="id" type="hidden" value="">
+                  {% for field in frmProductCat.visible_fields %}
+                      <div class="form-group">
+                          <label for="email">{{ field.label }}:</label>
+                          {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                      </div>
+                  {% endfor %}
+              </div>
+              <div class="modal-footer">
+                  <button 
+                    type="submit" 
+                    class="btn btn-primary btn-block btn-flat">
+                    <i class="fas fa-save"></i> 
+                    Guardar Categoría
+                  </button>
+              </div>
+          </div>
+      </div>
+  </form>
+</div>
+<div 
+  class="modal fade" 
+  id="myModalSubcategory" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <form 
+    id="frmSubcatProd" 
+    enctype="multipart/form-data" 
+    method="post">
+      <div class="modal-dialog" role="document">     
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 
+                    class="modal-title" 
+                    id="modalLabelSubc">
+                      <b><i class="fas fa-user-plus"></i> 
+                        <span>Crear subcategoría de producto</span>
+                      </b>
+                  </h5>
+                  <button 
+                    type="button" 
+                    class="close" 
+                    data-dismiss="modal" 
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <input name="action" id="act_subc" type="hidden" value="">
+                <input name="id" type="hidden" value="">
+                {% for field in frmProductSub.visible_fields %}
+                    <div class="form-group">
+                        <label for="email">{{ field.label }}:</label>
+                        {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                    </div>
+                {% endfor %}
+              </div>
+              <div class="modal-footer">
+                  <button 
+                    type="submit" 
+                    class="btn btn-primary btn-block btn-flat">
+                    <i class="fas fa-save"></i> 
+                    Guardar Subcategoría
+                  </button>
+              </div>
+          </div>
+      </div>
+  </form>
+</div>
+<div 
+  class="modal fade" 
+  id="myModalUdc" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <form 
+    id="frmUdcProd" 
+    enctype="multipart/form-data" 
+    method="post">
+      <div class="modal-dialog" role="document">     
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 
+                    class="modal-title" 
+                    id="modalLabelUdc">
+                    <b><i class="fas fa-user-plus"></i> 
+                      <span>Crear unidad de compra</span>
+                    </b>
+                  </h5>
+                  <button 
+                    type="button" 
+                    class="close" 
+                    data-dismiss="modal" 
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <input name="action" id="act_udc" type="hidden" value="">
+                <input name="id" type="hidden" value="">
+                {% for field in frmUdcProd.visible_fields %}
+                  <div class="form-group">
+                      <label for="email">{{ field.label }}:</label>
+                      {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="modal-footer">
+                  <button 
+                    type="submit" 
+                    class="btn btn-primary btn-block btn-flat">
+                      <i class="fas fa-save"></i> 
+                      Guardar
+                  </button>
+              </div>
+          </div>
+      </div>
+  </form>
+</div>
+<div 
+  class="modal fade" 
+  id="myModalUdv" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <form 
+    id="frmUdvProd" 
+    enctype="multipart/form-data" 
+    method="post">
+      <div class="modal-dialog" role="document">     
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 
+                    class="modal-title" 
+                    id="modalLabelUdv">
+                      <b><i class="fas fa-user-plus"></i> 
+                        <span>Crear unidad de venta</span>
+                      </b>
+                  </h5>
+                  <button 
+                    type="button" 
+                    class="close" 
+                    data-dismiss="modal" 
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                <input name="action" id="act_udv" type="hidden" value="">
+                <input name="id" type="hidden" value="">
+                {% for field in frmUdvProd.visible_fields %}
+                  <div class="form-group">
+                      <label for="email">{{ field.label }}:</label>
+                      {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="modal-footer">
+                  <button 
+                    type="submit" 
+                    class="btn btn-primary btn-block btn-flat">
+                    <i class="fas fa-save"></i> 
+                    Guardar
+                  </button>
+              </div>
+          </div>
+      </div>
+  </form>
+</div>
+{% endblock js %}

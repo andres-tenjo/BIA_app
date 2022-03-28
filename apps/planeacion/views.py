@@ -28,7 +28,7 @@ from apps.mixins import ValidatePermissionRequiredMixin
 from .forms import *
 from .models import *
 from apps.modulo_comercial.models import *
-from apps.modulo_logistica.models import *
+from apps.modulo_almacen.models import *
 from apps.modulo_compras.models import *
 from apps.functions_views import *
 from apps.Modelos.Several_func import *

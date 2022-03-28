@@ -1,15 +1,19 @@
+# Pyhton libraries
 from datetime import datetime, date
 from crum import get_current_user
 
+# Django libraries
 from django.db import models
 from django.db.models import Model
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.forms import model_to_dict
 
+# BIA files
 from apps.models import BaseModel
 from apps.choices import *
 from apps.modulo_configuracion.models import *
+
 
 ''' Tablas ordenes de compra '''
 class OrderPurchase(BaseModel):

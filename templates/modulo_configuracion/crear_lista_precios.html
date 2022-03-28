@@ -1,0 +1,185 @@
+{% extends 'modulo_configuracion/form.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Parametrización | Crear lista de precios {% endblock title %}
+{% block title-header %}
+{% endblock title-header %}
+
+    {% block menu-header %}
+    <li class="breadcrumb-item">
+        <a href="{{ menu_url }}">
+            Carga masiva
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            Ver listas de precios
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+            Ver instructivo
+        </a>
+    </li>
+    {% endblock menu-header %}
+    
+    {% block form %}
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Nombre lista:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    id="iptNombreLista">
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Bodega:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    id="iptBodega">
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* % Flete:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    id="iptFlete">
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row" id="filaDescripcionProducto">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Producto:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    id="iptProducto">
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Precio unitario:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    readonly="true" 
+                    id="iptPrecioUnitario">
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Cantidad:</label>
+                <input 
+                    type="text"
+                    class="form-control"
+                    autocomplete="off"
+                    id="iptCantidad">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Tiempo de entrega:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    readonly="true" 
+                    id="iptTiempoEntrega">
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Observación:</label>
+                <input 
+                    type="text"
+                    class="form-control"
+                    autocomplete="off"
+                    id="iptObservaciones">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <button 
+                type="submit" 
+                class="btn btn-outline-primary btn-block btnAddP">
+                <i class="fas fa-plus"></i> 
+                Agregar producto
+            </button>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table table-bordered table-hover" id="tblAjustesInventario">
+                <thead>
+                    <tr style="text-align: center;">
+                        <th style="width: 20%;">Código producto</th>
+                        <th style="width: 20%;">Descripción</th>
+                        <th style="width: 20%;">Precio unitario</th>
+                        <th style="width: 20%;">Tiempo de entrega</th>
+                        <th style="width: 20%;">Observación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Fecha de vigencia:</label>
+                <input 
+                    type="text"
+                    class="form-control"
+                    autocomplete="off"
+                    id="iptObservaciones">
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Observaciones generales:</label>
+                <input 
+                    type="text"
+                    class="form-control"
+                    autocomplete="off"
+                    id="iptObservaciones">
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-4">
+            <button 
+                type="button" 
+                class="btn btn-outline-primary btn-block"
+                id="btnCrearLista">
+                <i class="fas fa-plus"></i> 
+                Crear lista
+            </button>
+        </div>
+    </div>
+    {% block footer %}
+    {% endblock footer %}
+    {% endblock form %}
+    {% block extrajs %}   
+    <script src="{% static 'js/parametrizacion/crear_lista_precios.js' %}"></script> 
+    {% endblock extrajs %}

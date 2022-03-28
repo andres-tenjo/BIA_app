@@ -1,0 +1,115 @@
+{% extends 'modulo_configuracion/form.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Parametrización | Crear tiempos de entrega {% endblock title %}
+{% block title-header %}
+{% endblock title-header %}
+
+    {% block menu-header %}
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            Ver tiempos de entrega
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+            Ver instructivo
+        </a>
+    </li>
+    {% endblock menu-header %}
+    
+    {% block form %}
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Ciudad destino:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    id="iptCiudadDestino">
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Zona destino:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    id="iptZonaDestino">
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Bodega destino:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    id="iptBodegaDestino">
+            </div>
+        </div>
+    </div>
+    <div class="row" id="filaDescripcionProducto">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Tiempo estimado alistamiento:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    id="iptTiempoAlistamiento">
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Tiempo estimado recorrido:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off"
+                    id="iptTiempoRecorrido">
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>* Tiempo estimado descarga:</label>
+                <input 
+                    type="text"
+                    class="form-control"
+                    autocomplete="off"
+                    id="iptTiempoDescarga">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label>Total tiempo estimado:</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off" 
+                    readonly="true" 
+                    id="iptTotalTiempo">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <button 
+                type="submit" 
+                class="btn btn-outline-primary btn-block">
+                <i class="fas fa-plus"></i> 
+                Guardar
+            </button>
+        </div>
+    </div>
+    {% block footer %}
+    {% endblock footer %}
+    {% endblock form %}
+    {% block extrajs %}   
+    <script src="{% static 'js/parametrizacion/crear_tiempo_entrega.js' %}"></script> 
+    {% endblock extrajs %}
