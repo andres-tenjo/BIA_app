@@ -8,7 +8,7 @@ from pandas import pandas as pd
 from apps.Modelos.Several_func import *
 from apps.Modelos.Update_Balances import *
 from apps.Modelos.Parameters import *
-from apps.Modelos.Information_Inactivation import *
+#from apps.Modelos.Information_Inactivation import *
 
 # Django libraries
 from django.conf import settings

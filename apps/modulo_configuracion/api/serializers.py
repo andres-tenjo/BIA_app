@@ -216,7 +216,7 @@ class clsEntradasAlmacenMdlSerializador(serializers.ModelSerializer):
 class clsTblDetalleEntradaAlmacenSerializador(serializers.ModelSerializer):
     
     class Meta:
-        model = clsTblDetalleEntradaAlmacen
+        model = clsDetalleEntradaAlmacen
         exclude = ('state',)
 
 class clsDevolucionesClienteMdlSerializador(serializers.ModelSerializer):

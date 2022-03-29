@@ -24,9 +24,10 @@ from apps.choices import *
 from apps.models import BaseModel
 from apps.usuario.models import *
 
-
-''' Tablas para carga inicial'''
-# Tabla departamentos
+#################################################################################################
+# 1. CIUDADES Y DEPARTAMENTOS
+#################################################################################################
+''' 1.1 Tabla departamentos'''
 class clsDepartamentosMdl(BaseModel):
     department_name = models.CharField('Departamento', max_length=200, unique=True)
     objects = DataFrameManager()
@@ -43,7 +44,7 @@ class clsDepartamentosMdl(BaseModel):
     def __str__ (self):
         return self.department_name
 
-# Tabla ciudades
+''' 1.2 Tabla ciudades'''
 class clsCiudadesMdl(BaseModel):
     city_name = models.CharField('Ciudad', max_length=200)
     department = models.ForeignKey(clsDepartamentosMdl, on_delete=models.CASCADE)
@@ -62,8 +63,10 @@ class clsCiudadesMdl(BaseModel):
     def __str__ (self):
         return self.city_name
 
-
-''' Tabla perfil empresa'''
+#################################################################################################
+# 2. PERFIL EMPRESARIAL
+#################################################################################################
+''' 2.1 Tabla perfil empresa'''
 class clsPerfilEmpresaMdl(BaseModel):
     person_type = models.CharField('Tipo de persona', max_length=200, choices=PERSON_TYPE)
     id_type = models.CharField('Tipo de identificación', max_length=200, choices=ID_TYPE)
@@ -122,10 +125,10 @@ class clsPerfilEmpresaMdl(BaseModel):
     def __str__ (self):
         return str(self.id_number)
 
-
- 
-''' Tablas catálogo de productos '''
-# Tabla categoría de producto
+#################################################################################################
+# 3. CATÁLOGO DE PRODUCTOS
+#################################################################################################
+''' 3.1 Tabla categoría de producto'''
 class clsCategoriaProductoMdl(BaseModel):
     product_cat = models.CharField('Nombre categoría', max_length=50, unique=True)
     state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
@@ -155,7 +158,7 @@ class clsCategoriaProductoMdl(BaseModel):
     def __str__ (self):
         return self.product_cat
 
-# Tabla subcategoría de producto
+''' 3.2 Tabla subcategoría de producto'''
 class clsSubcategoriaProductoMdl(BaseModel):
     product_subcat = models.CharField('Nombre subcategoría', max_length=50, unique=True)
     product_cat = models.ForeignKey(clsCategoriaProductoMdl, on_delete=models.CASCADE, verbose_name='Categoría de producto')
@@ -187,7 +190,7 @@ class clsSubcategoriaProductoMdl(BaseModel):
     def __str__ (self):
         return self.product_subcat
 
-# Tabla unidad de compra de producto
+''' 3.3 Tabla unidad de compra de producto'''
 class clsUnidadCompraMdl(BaseModel):
     purchase_unit = models.CharField('Unidad de compra', max_length=150, unique=True)
     state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
@@ -217,7 +220,7 @@ class clsUnidadCompraMdl(BaseModel):
     def __str__ (self):
         return self.purchase_unit
 
-# Tabla unidad de venta de un producto
+''' 3.4 Tabla unidad de venta de un producto'''
 class clsUnidadVentaMdl(BaseModel):
     sales_unit = models.CharField('Unidad de venta',max_length=150, unique=True)
     state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
@@ -247,7 +250,7 @@ class clsUnidadVentaMdl(BaseModel):
     def __str__ (self):
         return self.sales_unit
 
-# Tabla catálogo de productos
+''' 3.5 Tabla catálogo de productos'''
 class clsCatalogoProductosMdl(BaseModel):
     qr_code = models.ImageField(upload_to = 'qr_codes/products/%Y/%m/%d', blank=True)
     product_desc = models.CharField('Nombre del producto', max_length=200)
@@ -318,9 +321,10 @@ class clsCatalogoProductosMdl(BaseModel):
     def __str__ (self):
         return self.product_desc
 
-
-''' Tablas catálogo de proveedores '''
-# Tabla de catálogo de proveedores
+#################################################################################################
+# 4. CATÁLOGO DE PROVEEDORES
+#################################################################################################
+''' 4.1 Tabla de catálogo de proveedores'''
 class clsCatalogoProveedoresMdl(BaseModel):
     qr_code = models.ImageField(upload_to = 'qr_codes/suppliers/%Y/%m/%d', blank=True)
     person_type = models.CharField('Tipo de persona', max_length=200, choices=PERSON_TYPE)
@@ -390,7 +394,7 @@ class clsCatalogoProveedoresMdl(BaseModel):
     def __str__(self):
         return self.supplier_name
 
-# Tabla cantidades mínimas de compra por proveedor
+''' 4.2 Tabla cantidades mínimas de compra por proveedor'''
 class clsCondicionMinimaCompraMdl(BaseModel):
     identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
@@ -423,7 +427,7 @@ class clsCondicionMinimaCompraMdl(BaseModel):
     def __str__(self):
         return self.supplier.supplier_name
 
-# Tabla Descuento por proveedor
+''' 4.3 Tabla Descuento por proveedor'''
 class clsCondicionDescuentoProveedorMdl(BaseModel):
     identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
@@ -457,9 +461,10 @@ class clsCondicionDescuentoProveedorMdl(BaseModel):
     def __str__(self):
         return self.supplier.supplier_name
 
-
-''' Tablas catálogo de clientes '''
-# Tabla de categoría de cliente
+#################################################################################################
+# 5. CATÁLOGO DE CLIENTES
+#################################################################################################
+''' 5.1 Tabla de categoría de cliente'''
 class clsCategoriaClienteMdl(BaseModel):
     customer_cat = models.CharField('Nombre de categoría', max_length=200)
     state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
@@ -489,7 +494,7 @@ class clsCategoriaClienteMdl(BaseModel):
     def __str__ (self):
         return self.customer_cat
         
-# Tabla de margén por categoría de cliente
+''' 5.2 Tabla de margén por categoría de cliente'''
 class clsMargenCategoriaClienteMdl(BaseModel):
     customer_cat = models.ForeignKey(clsCategoriaClienteMdl, on_delete=models.CASCADE)
     product_cat = models.ForeignKey(clsCategoriaProductoMdl, on_delete=models.CASCADE)
@@ -526,7 +531,7 @@ class clsMargenCategoriaClienteMdl(BaseModel):
     def __str__ (self):
         return self.customer_cat.customer_cat
 
-# Tabla de zonas de cliente
+''' 5.3 Tabla de zonas de cliente'''
 class clsZonaClienteMdl(BaseModel):
     customer_zone = models.CharField('Zona cliente', max_length=200, unique=True)
     state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
@@ -556,7 +561,7 @@ class clsZonaClienteMdl(BaseModel):
     def __str__ (self):
         return self.customer_zone
 
-# Tabla asesores comerciales
+''' 5.4 Tabla asesores comerciales'''
 class clsAsesorComercialMdl(BaseModel):
     advisor = models.CharField('Asesor comercial', max_length=200)
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='usuario')
@@ -588,7 +593,7 @@ class clsAsesorComercialMdl(BaseModel):
     def __str__ (self):
         return self.advisor
 
-# Tabla de catálogo de clientes
+''' 5.5 Tabla de catálogo de clientes'''
 class clsCatalogoClientesMdl(BaseModel):
     qr_code = models.ImageField(upload_to = 'qr_codes/customers/%Y/%m/%d', blank=True)
     person_type = models.CharField('Tipo de persona', max_length=200, choices=PERSON_TYPE, blank=True, null=True)
@@ -659,10 +664,10 @@ class clsCatalogoClientesMdl(BaseModel):
     def __str__ (self):
         return self.business_name
 
-
-
-''' Tabla catálogo de bodegas '''
-# Tabla de catálogo de bodegas
+#################################################################################################
+# 6. CATÁLOGO DE BODEGAS
+#################################################################################################
+''' 6.1 Tabla de catálogo de bodegas'''
 class clsCatalogoBodegasMdl(BaseModel):
     qr_code = models.ImageField(upload_to = 'qr_codes/bodegas/%Y/%m/%d', blank=True)
     warehouse_name = models.CharField('Nombre bodega', unique=True, max_length=200)
@@ -714,9 +719,10 @@ class clsCatalogoBodegasMdl(BaseModel):
     def __str__(self):
         return self.warehouse_name
 
-
-''' Tablas para cargue de historico de movimientos '''
-# Tabla de historico de pedidos
+#################################################################################################
+# 7. HISTORICO DE MOVIMIENTOS ALTERNO
+#################################################################################################
+''' 7.1 Tabla de historico de pedidos'''
 class clsHistoricoPedidosMdl(models.Model):
     date_creation = models.DateTimeField('Fecha creación')
     doc_number = models.CharField('Nº Documento', max_length=200)
@@ -744,7 +750,7 @@ class clsHistoricoPedidosMdl(models.Model):
     def __str__(self):
         return self.identification.business_name
 
-# Tabla de ordenes de compra
+''' 7.2 Tabla de ordenes de compra'''
 class clsHistoricoOrdenesCompraMdl(models.Model):
     date_creation = models.DateTimeField('Fecha creación')
     doc_number = models.CharField('Nº Documento', max_length=200)
@@ -767,186 +773,7 @@ class clsHistoricoOrdenesCompraMdl(models.Model):
     def __str__(self):
         return self.identification.supplier_name
 
-# Tabla de entradas de almacén
-class clsHistoricoEntradasAlmacenMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unit_price = models.DecimalField('Precio unitario', max_digits=10, decimal_places=2, blank=True, null=True)
-    total_price = models.DecimalField('Total', max_digits=10, decimal_places=2)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    condition = models.CharField('Condición', max_length=200, choices=INCOMECONDITION, blank=True, null=True)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Entrada de almacén'
-        verbose_name_plural = 'Entradas de almacén'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.identification.supplier_name
-
-# Tabla de salidas de almacén
-class clsHistoricoSalidasAlmacenMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unit_price = models.DecimalField('Precio unitario', max_digits=10, decimal_places=2, blank=True, null=True)
-    discount = models.DecimalField('Descuento', max_digits=10, decimal_places=2, blank=True, null=True)
-    total_price = models.DecimalField('Total', max_digits=10, decimal_places=2)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT, blank=True, null=True)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Salida de almacén'
-        verbose_name_plural = 'Salidas de almacén'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.identification.business_name
-
-# Tabla de ajustes de inventario
-class clsHistoricoAjustesInventarioMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    type = models.CharField('Tipo de movimiento', max_length=200, choices=INCOMETYPE)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    total_cost = models.DecimalField('Total costo', max_digits=20, decimal_places=2)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Ajuste inventario'
-        verbose_name_plural = 'Ajustes de inventario'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.doc_number
-
-# Tabla de devoluciones de cliente
-class clsHistoricoDevolucionesClienteMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Devolución cliente'
-        verbose_name_plural = 'Devoluciones clientes'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.identification.business_name
-
-# Tabla de devoluciones a proveedor
-class clsHistoricoDevolucionesProveedorMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Devolución proveedor'
-        verbose_name_plural = 'Devoluciones proveedores'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.identification.supplier_name
-
-# Tabla de obsequios
-class clsHistoricoObsequiosMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Obsequio'
-        verbose_name_plural = 'Obsequios'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.doc_number
-
-# Tabla de traslados entre bodegas
-class clsHistoricoTrasladosBodegasMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    type = models.CharField('Tipo de movimiento', max_length=200, choices=INCOMETYPE)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Traslado bodega'
-        verbose_name_plural = 'Traslados bodegas'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.doc_number
-
-# Tabla de saldo inicial
-class clsHistoricoSaldoInicialMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    balance = models.PositiveSmallIntegerField('Cantidad')
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Saldo inicial'
-        verbose_name_plural = 'Saldos iniciales'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.product_code.product_desc
-
-# Tabla de historico alterno de movimientos
+''' 7.3 Tabla de historico alterno de movimientos'''
 class clsHistoricoMovimientosAlternoMdl(models.Model):
     creation_date = models.CharField('Fecha de creación', max_length=200)
     doc_number = models.CharField('Nº Documento', max_length=200)
@@ -977,8 +804,10 @@ class clsHistoricoMovimientosAlternoMdl(models.Model):
     def __str__(self):
         return self.doc_number
 
-''' Tabla ajustes de inventario'''
-# Tabla de ajustes de inventario
+#################################################################################################
+# 8. AJUSTES DE INVENTARIO
+#################################################################################################
+''' 8.1 Tabla ajustes de inventario'''
 class clsAjusteInventarioMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length=200, blank=True, null=True)
     total_cost = models.DecimalField('Total costo', max_digits=30, decimal_places=2)
@@ -1004,7 +833,7 @@ class clsAjusteInventarioMdl(BaseModel):
     def __str__(self):
         return str(self.id)
 
-# Tabla de ajustes de inventario
+''' 8.2 Tabla detalle ajustes de inventario'''
 class clsDetalleAjusteInventarioMdl(models.Model):
     doc_number = models.ForeignKey(clsAjusteInventarioMdl, on_delete=models.CASCADE)
     store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
@@ -1027,9 +856,10 @@ class clsDetalleAjusteInventarioMdl(models.Model):
     def __str__(self):
         return str(self.id)
 
-
-''' Tablas para historico de movimientos'''
-# Tabla de entradas de almacén
+#################################################################################################
+# 8. ENTRADAS DE ALMACEN
+#################################################################################################
+''' 8.1 Tabla de entradas de almacén'''
 class clsEntradasAlmacenMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length= 200, blank=True, null=True)
     identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
@@ -1058,7 +888,7 @@ class clsEntradasAlmacenMdl(BaseModel):
     def __str__(self):
         return str(self.id)
 
-# Tabla detalle de entradas de almacén
+''' 8.2 Tabla detalle de entradas de almacén'''
 class clsDetalleEntradaAlmacen(models.Model):
     doc_number = models.ForeignKey(clsEntradasAlmacenMdl, on_delete=models.CASCADE)
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
@@ -1079,7 +909,10 @@ class clsDetalleEntradaAlmacen(models.Model):
     def __str__(self):
         return str(self.id)
 
-# Tabla de devoluciones de cliente
+#################################################################################################
+# 9. DEVOLUCIONES CLIENTE
+#################################################################################################
+''' 9.1 Tabla de devoluciones de cliente'''
 class clsDevolucionesClienteMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length=200)
     returnin_type = models.CharField('Tipo de retorno', max_length=200)
@@ -1109,7 +942,7 @@ class clsDevolucionesClienteMdl(BaseModel):
     def __str__(self):
         return str(self.id)
 
-# Tabla detalle de devoluciones de cliente
+''' 9.2 Tabla detalle de devoluciones de cliente'''
 class clsDetalleDevolucionesClienteMdl(models.Model):
     doc_number = models.ForeignKey(clsDevolucionesClienteMdl, on_delete=models.CASCADE)
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
@@ -1130,7 +963,10 @@ class clsDetalleDevolucionesClienteMdl(models.Model):
     def __str__(self):
         return str(self.id)
 
-# Tabla de devoluciones a proveedor
+#################################################################################################
+# 10. DEVOLUCIONES PROVEEDOR
+#################################################################################################
+''' 10.1 Tabla de devoluciones a proveedor'''
 class clsDevolucionesProveedorMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length=200)
     returnin_type = models.CharField('Tipo de retorno', max_length=200)
@@ -1160,7 +996,7 @@ class clsDevolucionesProveedorMdl(BaseModel):
     def __str__(self):
         return str(self.id)
 
-# Tabla detalle de devolución de proveedor
+''' 10.2 Tabla detalle de devolución de proveedor'''
 class clsDetalleDevolucionesProveedorMdl(models.Model):
     doc_number = models.ForeignKey(clsDevolucionesProveedorMdl, on_delete=models.CASCADE)
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
@@ -1181,7 +1017,10 @@ class clsDetalleDevolucionesProveedorMdl(models.Model):
     def __str__(self):
         return str(self.id)
 
-# Tabla de salidas de almacén
+#################################################################################################
+# 11. SALIDAS DE ALMACEN
+#################################################################################################
+''' 11.1 Tabla de salidas de almacén'''
 class clsSalidasAlmacenMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length=200)
     identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
@@ -1216,7 +1055,7 @@ class clsSalidasAlmacenMdl(BaseModel):
     def __str__(self):
         return str(self.id)
 
-# Tabla detalle de devolución de proveedor
+''' 11.2 Tabla detalle de salidas de almacen'''
 class clsDetalleSalidasAlmacenMdl(models.Model):
     doc_number = models.ForeignKey(clsSalidasAlmacenMdl, on_delete=models.CASCADE)
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
@@ -1242,7 +1081,10 @@ class clsDetalleSalidasAlmacenMdl(models.Model):
     def __str__(self):
         return str(self.id)
 
-# Tabla de obsequios
+#################################################################################################
+# 12. OBSEQUIOS
+#################################################################################################
+''' 12.1 Tabla de obsequios'''
 class clsObsequiosMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length=200)
     identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
@@ -1270,7 +1112,7 @@ class clsObsequiosMdl(BaseModel):
     def __str__(self):
         return str(self.id)
 
-# Tabla detalle de obsequios
+''' 12.2 Tabla detalle de obsequios'''
 class clsDetalleObsequiosMdl(models.Model):
     doc_number = models.ForeignKey(clsObsequiosMdl, on_delete=models.CASCADE)
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
@@ -1291,7 +1133,10 @@ class clsDetalleObsequiosMdl(models.Model):
     def __str__(self):
         return str(self.id)
 
-# Tabla de traslados entre bodegas
+#################################################################################################
+# 13. TRASLADOS DE BODEGA
+#################################################################################################
+''' 13.1 Tabla de traslados entre bodegas'''
 class clsTrasladosBodegasMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length=200)
     identification = models.PositiveBigIntegerField('Identificación')
@@ -1318,7 +1163,7 @@ class clsTrasladosBodegasMdl(BaseModel):
     def __str__(self):
         return str(self.id)
 
-# Tabla detalle de obsequios
+''' 13.2 Tabla detalle de traslados entre bodegas'''
 class clsDetalleTrasladosBodegaMdl(models.Model):
     doc_number = models.ForeignKey(clsTrasladosBodegasMdl, on_delete=models.CASCADE)
     type = models.CharField('Tipo de traslado', max_length=200, choices=INCOMETYPE, blank=True, null=True)
@@ -1341,7 +1186,10 @@ class clsDetalleTrasladosBodegaMdl(models.Model):
     def __str__(self):
         return str(self.id)
 
-# Tabla de saldos de inventario
+#################################################################################################
+# 14. SALDOS DE INVENTARIO
+#################################################################################################
+''' 14.1 Tabla de saldos de inventario'''
 class clsSaldosInventarioMdl(models.Model):
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
     batch = models.CharField('Lote', max_length=200)
@@ -1359,7 +1207,10 @@ class clsSaldosInventarioMdl(models.Model):
     def __str__(self):
         return self.product_code.product_desc
 
-# Tabla de historico real de movimientos
+#################################################################################################
+# 15. HISTORICO REAL DE MOVIMIENTOS
+#################################################################################################
+''' 15.1 Tabla de historico real de movimientos'''
 class clsHistoricoMovimientosMdl(models.Model):
     creation_date = models.CharField('Fecha de creación', max_length=200)
     doc_number = models.CharField('Nº Documento', max_length=200)
@@ -1390,7 +1241,10 @@ class clsHistoricoMovimientosMdl(models.Model):
     def __str__(self):
         return self.doc_number
 
-# Tabla de pedidos
+#################################################################################################
+# 16. PEDIDOS
+#################################################################################################
+''' 16.1 Tabla de pedidos'''
 class clsPedidosMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
     identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete= models.CASCADE)
@@ -1423,7 +1277,7 @@ class clsPedidosMdl(BaseModel):
     def __str__(self):
         return str(self.id)
 
-# Tabla detalle de pedidos
+''' 16.2 Tabla detalle de pedidos'''
 class clsDetallePedidosMdl(models.Model):
     doc_number = models.ForeignKey(clsPedidosMdl, on_delete= models.CASCADE)
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE)
@@ -1443,7 +1297,10 @@ class clsDetallePedidosMdl(models.Model):
     def __str__(self):
         return str(self.id)
 
-# Tabla de ordenes de compra
+#################################################################################################
+# 17. ORDENES DE COMPRA
+#################################################################################################
+''' 17.1 Tabla de ordenes de compra'''
 class clsOrdenesCompraMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
     identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete= models.CASCADE)
@@ -1475,7 +1332,7 @@ class clsOrdenesCompraMdl(BaseModel):
     def __str__(self):
         return str(self.id)
 
-# Tabla detalle de ordenes de compra
+''' 17.2 Tabla detalle de ordenes de compra'''
 class clsDetalleOrdenesCompraMdl(models.Model):
     doc_number = models.ForeignKey(clsOrdenesCompraMdl, on_delete= models.CASCADE)
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE)
@@ -1495,7 +1352,10 @@ class clsDetalleOrdenesCompraMdl(models.Model):
     def __str__(self):
         return str(self.id)
 
-# Tabla de Listas de Precios
+#################################################################################################
+# 18. LISTAS DE PRECIOS
+#################################################################################################
+''' 18.1 Tabla de Listas de Precios'''
 class clsListaPreciosMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
     list_name= models.CharField('Nombre Lista', max_length= 200)
@@ -1524,7 +1384,7 @@ class clsListaPreciosMdl(BaseModel):
     def __str__(self):
         return str(self.id)
 
-# Tabla detalle de listas de precios
+''' 18.2 Tabla detalle de listas de precios'''
 class clsDetalleListaPreciosMdl(models.Model):
     doc_number= models.ForeignKey(clsListaPreciosMdl, on_delete= models.CASCADE)
     product_code= models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE)
@@ -1541,7 +1401,10 @@ class clsDetalleListaPreciosMdl(models.Model):
         ordering = ['id']
         default_permissions = []
 
-# Tabla de Cotizaciones
+#################################################################################################
+# 18. COTIZACIONES
+#################################################################################################
+''' 18.1 Tabla de Cotizaciones'''
 class clsCotizacionesMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
     identification= models.ForeignKey(clsCatalogoClientesMdl, on_delete= models.CASCADE)
@@ -1572,7 +1435,7 @@ class clsCotizacionesMdl(BaseModel):
     def __str__(self):
         return str(self.id)
 
-# Tabla detalle de cotizaciones
+''' 18.2 Tabla detalle de cotizaciones'''
 class clsDetalleCotizacionesMdl(models.Model):
     doc_number= models.ForeignKey(clsCotizacionesMdl, on_delete= models.CASCADE)
     product_code= models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE)
@@ -1591,6 +1454,237 @@ class clsDetalleCotizacionesMdl(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+#################################################################################################
+# 19. INDICADORES COMERCIALES
+#################################################################################################
+''' 19.1 Tabla indicadores comerciales'''
+class clsIndicadoresComercialesMdl(models.Model):
+    creation_date =  models.DateTimeField('Fecha creación')
+    measurement_date = models.DateTimeField('Fecha medición', blank=True, null=True)
+    indicator = models.CharField('Indicador', max_length=200)
+    set = models.CharField('Conjunto', max_length=200, blank=True, null=True) 
+    subset= models.CharField('Subconjunto', max_length=200, blank=True, null=True)
+    objetive = models.DecimalField('Objetivo', max_digits=10, decimal_places=2, blank=True, null=True)
+    real = models.DecimalField('Real', max_digits=10, decimal_places=2, blank=True, null=True)
+    fulfillment = models.DecimalField('Cumplimiento', max_digits=10, decimal_places=2, blank=True, null=True)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Indicador comercial'
+        verbose_name_plural = 'Indicadores comerciales'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return self.set
+
+#################################################################################################
+# 20. ACTIVIDADES COMERCIALES
+#################################################################################################
+''' 20.1 Tabla actividades comercial'''
+class clsActividadesComercialMdl(models.Model):
+    task_date =  models.DateTimeField('Fecha actividad')
+    start_hour = models.CharField('Hora inicio', max_length=200)
+    end_hour = models.CharField('Hora fin', max_length=200)
+    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
+    task = models.CharField('Actividad', max_length=200)
+    observation = models.CharField('Actividad', max_length=200)
+    condition = models.CharField('Condición', max_length=200, choices=STATE)    
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Actividad comercial'
+        verbose_name_plural = 'Actividades comerciales'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsActividadesComercialMdl, self).save()
+
+    def __str__(self):
+        return self.task
+
+#################################################################################################
+# 21. ACTIVIDADES COMERCIALES
+#################################################################################################
+''' 21.1 Tabla promociones'''
+class clsPromocionesMdl(models.Model):
+    doc_number = models.CharField('Nº Documento', max_length=200)
+    promo_name = models.CharField('Nombre promoción', max_length=200)
+    deadline_for_sale = models.DateTimeField('Fecha vigencia')
+    promo_quantity = models.SmallIntegerField('Cantidad')
+    promo_price = models.DecimalField('Precio promoción', max_digits=20, decimal_places=2)
+    promo_object = models.CharField('Objeto promoción', max_length=200)
+    auts = models.SmallIntegerField('Unidades autorizadas por cliente')
+    condition = models.CharField('Condición', max_length=200, choices=STATE)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Promoción'
+        verbose_name_plural = 'Promociones'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsPromocionesMdl, self).save()
+
+    def __str__(self):
+        return self.promo_name
+
+''' 21.2 Tabla detalle productos promociones'''
+class clsDetalleProductosPromocionesMdl(models.Model):
+    doc_number = models.ForeignKey(clsPromocionesMdl, on_delete=models.CASCADE)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle producto promoción'
+        verbose_name_plural = 'Detalle productos promociones'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.doc_number)
+
+''' 21.3 Tabla detalle clientes promociones'''
+class clsDetalleClientesPromocionesMdl(models.Model):
+    doc_number = models.ForeignKey(clsPromocionesMdl, on_delete=models.CASCADE)
+    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle cliente promoción'
+        verbose_name_plural = 'Detalle clientes promociones'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.doc_number)
+
+''' 21.4 Tabla detalle filtros'''
+class clsDetalleFiltrosPromocionesMdl(models.Model):
+    doc_number = models.ForeignKey(clsPromocionesMdl, on_delete=models.CASCADE)
+    filter = models.CharField('Filtro', max_length=200)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle filtro promoción'
+        verbose_name_plural = 'Detalle filtros promociones'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.doc_number)
+
+#################################################################################################
+# 22. EVALUACIÓN PROVEEDOR
+#################################################################################################
+''' 22.1 Tabla evaluación proveedor'''
+class clsEvaluacionProveedorMdl(models.Model):
+    order_purchase = models.ForeignKey(clsOrdenesCompraMdl, on_delete= models.CASCADE)
+    incomes = models.ForeignKey(clsEntradasAlmacenMdl, on_delete=models.CASCADE)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Evaluación proveedor'
+        verbose_name_plural = 'Evaluaciones de proveedor'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsEvaluacionProveedorMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 23. INDICADORES COMPRAS
+#################################################################################################
+''' 23.1 Tabla indicadores compras'''
+class clsIndicadoresComprasMdl(models.Model):
+    measurement_date = models.DateTimeField('Fecha medición', blank=True, null=True)
+    indicator = models.CharField('Indicador', max_length=200)
+    objetive = models.DecimalField('Objetivo', max_digits=10, decimal_places=2, blank=True, null=True)
+    real = models.DecimalField('Real', max_digits=10, decimal_places=2, blank=True, null=True)
+    fulfillment = models.DecimalField('Cumplimiento', max_digits=10, decimal_places=2, blank=True, null=True)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Indicador compras'
+        verbose_name_plural = 'Indicadores compras'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsIndicadoresComprasMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 24. INDICADORES ALMACEN
+#################################################################################################
+''' 24.1 Tabla indicadores almacen'''
+class clsIndicadoresAlmacenMdl(models.Model):
+    measurement_date = models.DateTimeField('Fecha medición', blank=True, null=True)
+    indicator = models.CharField('Indicador', max_length=200)
+    objetive = models.DecimalField('Objetivo', max_digits=10, decimal_places=2, blank=True, null=True)
+    real = models.DecimalField('Real', max_digits=10, decimal_places=2, blank=True, null=True)
+    fulfillment = models.DecimalField('Cumplimiento', max_digits=10, decimal_places=2, blank=True, null=True)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Indicador almacen'
+        verbose_name_plural = 'Indicadores almacen'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsIndicadoresAlmacenMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# FUNCIONES PARA BASES DE DATOS
+#################################################################################################
 
 ''' Señales post-save para agregar numero de documento a tablas transaccionales'''
 # Función que genera un nuevo # de documento a la tabla
@@ -1618,7 +1712,7 @@ def fncGenerarNumeroDocumento(sender, instance, **kwargs):
     elif sender== clsListaPreciosMdl:
         clsListaPreciosMdl.objects.filter(pk= instance.pk).update(doc_number= f'LTP-{instance.pk}')
     elif sender== clsCotizacionesMdl:
-        clsCotizacionesMdl.objects.filter(pk= isntace.pk).update(doc_number= f'COT-{instance.pk}')
+        clsCotizacionesMdl.objects.filter(pk= instance.pk).update(doc_number= f'COT-{instance.pk}')
     
 # # Función que genera un nuevo QR-CODE para una instancia de una tabla
 # # sender: Tabla de datos

@@ -5,15 +5,6 @@ from django.contrib import admin
 
 from .models import *
 
-''' Admin pedidos '''
-@admin.register(clsPedidosMdl)
-class PersonAdmin(ImportExportModelAdmin):
-    pass
-
-@admin.register(clsDetallePedidosMdl)
-class PersonAdmin(ImportExportModelAdmin):
-    pass
-
 @admin.register(clsVentasPerdidasMdl)
 class PersonAdmin(ImportExportModelAdmin):
     pass
