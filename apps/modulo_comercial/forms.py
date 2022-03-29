@@ -12,7 +12,7 @@ class OrderForm(ModelForm):
         self.fields['identification'].widget.attrs['autofocus'] = True
 
     class Meta:
-        model = Orders
+        model = clsPedidosMdl
         fields = '__all__'
         exclude = ['user_update', 'user_creation']
         widgets = {
@@ -157,62 +157,6 @@ class QuoteForm(ModelForm):
                 }
             ),
         }
-
-''' Formulario rúta de visitas'''
-class VisitsRouteForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for form in self.visible_fields():
-            form.field.widget.attrs['class'] = 'form-control' 
-        self.fields['customer'].widget.attrs['autofocus'] = True
-    
-    class Meta:
-        model = VisitsRoute
-        fields = '__all__'
-        exclude = ['user_update', 'user_creation']
-        widgets = {
-                'customer': Select(
-                    attrs={
-                        'class': 'form-control select2',
-                        'style': 'width: 100%',
-                        'id': 'customer'
-                    }
-                ),
-                'visit_date': DateInput(
-                    attrs={
-                        'value': datetime.now().strftime('%Y-%m-%d'),
-                        'autocomplete': 'off',
-                        'class': 'form-control datetimepicker-input',
-                        'id': 'visit_date',
-                        'data-target': '#visit_date',
-                        'data-toggle': 'datetimepicker'
-                    }
-                ),
-                'observations': Textarea(
-                    attrs={
-                        'class': 'form-control',
-                        'id': 'observations'
-                    }
-                ),
-                'state': Select(
-                      attrs={
-                        'class': 'form-control',
-                        'id': 'state'
-                    }
-                ),
-            }
-
-    def save(self, commit=True):
-        data = {}
-        form = super()
-        try:
-            if form.is_valid():
-                form.save()
-            else:
-                data['error'] = form.errors
-        except Exception as e:
-            data['error'] = str(e)
-        return data
 
 ''' Formulario pago de clientes'''
 class CustomerPaymentsForm(ModelForm):

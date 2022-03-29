@@ -1,4 +1,4 @@
-{% extends 'modulo_compras/list_view.html' %}
+{% extends 'modulo_compras/plantilla_listar.html' %}
 {% load static %}
 {% block title %}
     BIA | Productos
@@ -18,6 +18,6 @@
     {% endblock columns %}
 
 {% block window-js %}
-    <script src="{% static 'js/compras/entregas_inc.js' %}"></script>
+    <script src="{% static 'js/compras/entregas_incumplidas.js' %}"></script>
     {% endblock window-js %}
 

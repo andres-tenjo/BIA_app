@@ -1,0 +1,29 @@
+{% extends 'modulo_compras/plantilla_crear.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Compras | Crear negociación {% endblock title %}
+{% block title-header %}
+{% endblock title-header %}
+
+    {% block menu-header %}
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            Ver negociaciones
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+            Ver instructivo
+        </a>
+    </li>
+    {% endblock menu-header %}
+
+    {% block form %}
+    
+    <h6 class="text-primary">Los campos marcados con * son obligatorios</h6>
+    {% endblock form %}
+    {% block extrajs %}  
+    <script src="{% static 'js/compras/crear_negociacion.js' %}"></script>
+    {% endblock extrajs %}
+    

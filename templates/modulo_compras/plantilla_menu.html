@@ -1,0 +1,50 @@
+{% extends 'bia/modulo_compras.html' %}
+
+{% load static %}
+{% block title-header %}
+{% endblock title-header %}
+
+{% block content-window %}
+    <div class="container py-5">
+        <br>
+        <hr>    
+        <div class="row py-5">
+            {% block options %}
+            <div class="col text-center center-block">
+                <a href="{{ options_url }}" class="text-secondary">
+                    <span style="color: rgb(1, 52, 105);">
+                        <i class="fas fa-cog fa-5x"></i>
+                    </span>
+                    <hr>
+                    <h4>{{ options_title }}</h4>
+                    <hr>
+                </a>
+            </div>
+            {% endblock options %}
+            <div class="col text-center center-block">
+                <a href="{{ create_url }}" class="text-secondary">
+                    <span style="color: rgb(1, 52, 105);">
+                        <i class="fas fa-plus-square fa-5x"></i>
+                    </span>
+                    <hr>
+                    <h4>{{ create_title }}</h4>
+                    <hr>
+                </a>
+            </div>
+            
+            {% block search %}
+            <div class="col text-center">
+                <a href="{{ search_url }}" class="text-secondary">
+                    <span style="color: rgb(1, 52, 105);">
+                        <i class="fas fa-search fa-5x"></i>
+                    </span>
+                    <hr>
+                    <h4>{{ search_title }}</h4>
+                    <hr>
+                </a>
+            </div>    
+            {% endblock search %}
+        </div>
+        <hr>
+    </div>    
+{% endblock content-window %}

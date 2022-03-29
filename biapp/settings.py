@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'apps.home',
     'apps.modulo_comercial',
     'apps.modulo_compras',
-    'apps.modulo_logistica',
+    'apps.modulo_almacen',
     'apps.modulo_indicadores',
     'apps.modulo_reportes',
     'apps.modulo_configuracion',
@@ -156,4 +156,4 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800000

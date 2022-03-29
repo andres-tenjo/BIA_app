@@ -1,0 +1,442 @@
+{% extends 'bia/modulo_comercial.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title-header %}
+{% endblock title-header %}
+{% block menu-header %}
+    <li class="breadcrumb-item">
+      <a href="{{ create_url }}">
+          Crear cliente
+      </a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="{{ list_url }}">
+          Ver clientes
+      </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+            Ver instructivo
+        </a>
+    </li>
+{% endblock menu-header %}
+
+{% block content-window %}
+<div class="row">
+  <div class="col-12">
+      <div class="card card-primary card-outline">
+          <div class="card-header">
+              <h2 class="card-title">
+                <i class="fas fa-cog"></i>
+                Opciones de catálogo  
+              </h2>
+          </div>
+          <div class="card-body">
+            <div class="accordion" id="accordionExample">
+              <div class="card card-primary card-outline">
+                <div class="card-header" id="headingOne">
+                  <h2 class="mb-0">
+                    <button 
+                      class="btn btn-block text-left" 
+                      type="button" 
+                      data-toggle="collapse" 
+                      data-target="#collapseOne" 
+                      aria-expanded="true" 
+                      aria-controls="collapseOne">
+                      <i class="fas fa-angle-right"></i>
+                      Opciones de cliente
+                    </button>
+                  </h2>
+                </div>
+                <div 
+                  id="collapseOne" 
+                  class="collapse" 
+                  aria-labelledby="headingOne" 
+                  data-parent="#accordionExample">
+                  <div class="card-body">
+                    <div class="col-lg-6">
+                      <div class="accordion" id="accordionOptions">
+                        <div class="card card-primary card-outline">
+                          <div class="card-header" id="headingCategory">
+                            <h2 class="mb-0">
+                              <button 
+                                class="btn btn-block text-left" 
+                                type="button" 
+                                data-toggle="collapse" 
+                                data-target="#collapseCategory" 
+                                aria-expanded="true" 
+                                aria-controls="collapseCategory">
+                                <i class="fas fa-angle-right"></i>
+                                Categoría de cliente
+                              </button>
+                            </h2>
+                          </div>
+                          <div 
+                            id="collapseCategory" 
+                            class="collapse" 
+                            aria-labelledby="headingCategory" 
+                            data-parent="#accordionOptions">
+                            <div class="card-body">
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <div class="row justify-content-between">
+                                    <div class="col-auto">
+                                      <div class="form-group">
+                                        <a href="#" type="button" class="btnAddCat">
+                                          <i class="fas fa-plus-circle"></i>
+                                          Crear categoria
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <table class="table table-bordered table-hover" id="catTable">
+                                    <thead>
+                                    <tr style="text-align: center;">
+                                        <th style="width: 15%;">Nº</th>
+                                        <th style="width: 40%;">Categoria</th>
+                                        <th style="width: 15%;">Estado</th>
+                                        <th style="width: 30%;">Opciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card card-primary card-outline">
+                          <div 
+                            class="card-header" 
+                            id="headingZone">
+                            <h2 class="mb-0">
+                              <button 
+                                class="btn btn-block text-left" 
+                                type="button" 
+                                data-toggle="collapse" 
+                                data-target="#collapseZone" 
+                                aria-expanded="true" 
+                                aria-controls="collapseZone">
+                                <i class="fas fa-angle-right"></i>
+                                Zona de cliente
+                              </button>
+                            </h2>
+                          </div>
+                          <div 
+                            id="collapseZone" 
+                            class="collapse" 
+                            aria-labelledby="headingZone" 
+                            data-parent="#accordionOptions">
+                            <div class="card-body">
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <div class="row justify-content-between">
+                                    <div class="col-auto">
+                                      <div class="form-group">
+                                        <a href="#" type="button" class="btnAddZone">
+                                          <i class="fas fa-plus-circle"></i>
+                                          Crear Zona
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <table class="table table-bordered table-hover" id="zoneTable">
+                                    <thead>
+                                    <tr style="text-align: center;">
+                                      <th style="width: 15%;">Nº</th>
+                                      <th style="width: 40%;">Zona</th>
+                                      <th style="width: 15%;">Estado</th>
+                                      <th style="width: 30%;">Opciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card card-primary card-outline">
+                          <div 
+                            class="card-header" 
+                            id="headingAdvisor">
+                            <h2 class="mb-0">
+                              <button 
+                                class="btn btn-block text-left" 
+                                type="button" 
+                                data-toggle="collapse" 
+                                data-target="#collapseAdvisor" 
+                                aria-expanded="true" 
+                                aria-controls="collapseAdvisor">
+                                <i class="fas fa-angle-right"></i>
+                                Asesor comercial
+                              </button>
+                            </h2>
+                          </div>
+                          <div 
+                            id="collapseAdvisor" 
+                            class="collapse" 
+                            aria-labelledby="headingAdvisor" 
+                            data-parent="#accordionOptions">
+                            <div class="card-body">
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <div class="row justify-content-between">
+                                    <div class="col-auto">
+                                      <div class="form-group">
+                                        <a href="#" type="button" class="btnAddAdv">
+                                          <i class="fas fa-plus-circle"></i>
+                                          Crear asesor comercial
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <table class="table table-bordered table-hover" id="advisorTable">
+                                    <thead>
+                                    <tr style="text-align: center;">
+                                        <th style="width: 15%;">Nº</th>
+                                        <th style="width: 14%;">Asesor comercial</th>
+                                        <th style="width: 15%;">Asesor comercial</th>
+                                        <th style="width: 30%;">Opciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card card-primary card-outline">
+                <div class="card-header" id="headingTwo">
+                  <h2 class="mb-0">
+                    <button 
+                      class="btn btn-block text-left" 
+                      type="button" 
+                      data-toggle="collapse" 
+                      data-target="#collapseTwo" 
+                      aria-expanded="true" 
+                      aria-controls="collapseTwo">
+                      <i class="fas fa-angle-right"></i>
+                      Carga masiva de clientes
+                    </button>
+                  </h2>
+                </div>
+
+                <div 
+                  id="collapseTwo" 
+                  class="collapse" 
+                  aria-labelledby="headingTwo" 
+                  data-parent="#accordionExample">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="list-group">
+                          <button
+                            type="button"
+                            id="exportCat"  
+                            class="list-group-item list-group-item-action" 
+                            aria-current="true">
+                            <i class="fas fa-cloud-download-alt"></i>
+                              Descargar plantilla
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="list-group">
+                          <a 
+                            href="{% url 'configuracion:import_customers' %}" 
+                            class="list-group-item list-group-item-action" 
+                            aria-current="true">
+                            <i class="fas fa-cloud-download-alt"></i>
+                              Importar archivo de clientes
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content-window %}
+{% block js %}
+<script src="{% static 'js/parametrizacion/opciones_catalogo_clientes.js' %}"></script>
+<div 
+  class="modal fade bd-example-modal-lg" 
+  id="myModalCategory" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+    <form 
+      id="frmCatCust" 
+      enctype="multipart/form-data" 
+      method="post">
+        <div class="modal-dialog modal-lg" role="document">     
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 
+                      class="modal-title" 
+                      id="exampleModalLabel">
+                        <b><i class="fas fa-user-plus"></i> 
+                          <span>Crear categoría de cliente</span>
+                        </b>
+                    </h5>
+                    <button 
+                      type="button" 
+                      class="close" 
+                      data-dismiss="modal" 
+                      aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  <input name="action" id="act_cat" type="hidden" value="">
+                  <input name="id" type="hidden" value="">
+                  <div class="card">
+                      <div class="card-body">
+                          <div class="row px-3">
+                              <div class="form-group">
+                                  <label>Nombre categoría cliente:</label>
+                                  <input type="text" id="cat_cust" class="form-control" required="true">
+                              </div>
+                          </div>
+                          <table class="table table-bordered table-hover" id="tblMargin">
+                              <thead>
+                              <tr style="text-align: center;">
+                                  <th style="width: 40%;">Categoría producto</th>
+                                  <th style="width: 30%;">Margén máximo</th>
+                                  <th style="width: 30%;">Margén mínimo</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              </tbody>
+                          </table>    
+                      </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-block btn-flat">
+                        <i class="fas fa-save"></i> Guardar Categoría
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div 
+  class="modal fade" 
+  id="myModalZone" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+    <form 
+      id="frmCatZone" 
+      enctype="multipart/form-data" 
+      method="post">
+        <div 
+          class="modal-dialog" 
+          role="document">
+            <div 
+              class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <b><i class="fas fa-user-plus"></i> 
+                          <span>Crear zona de cliente</span>
+                        </b>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  <input name="action" id="act_zone" type="hidden" value="">
+                  <input name="id" type="hidden" value="">
+                  {% for field in frmZone.visible_fields %}
+                      <div class="form-group">
+                          <label for="email">{{ field.label }}:</label>
+                          {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                      </div>
+                  {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-block btn-flat">
+                        <i class="fas fa-save"></i> Guardar Zona
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div 
+  class="modal fade" 
+  id="myModalAdvisor" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <form id="frmAdvisor" enctype="multipart/form-data" method="post">
+      <div class="modal-dialog" role="document">     
+          <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  <b><i class="fas fa-user-plus"></i> 
+                    <span>Crear asesor comercial</span>
+                  </b>
+                </h5>  
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <input name="action" id="act_advisor" type="hidden" value="">
+                <input name="id" type="hidden" value="">
+                {% for field in frmAdvisor.visible_fields %}
+                      <div class="form-group">
+                          <label for="email">{{ field.label }}:</label>
+                          {{ field|add_class:'form-control'|attr:'autocomplete:off' }}
+                      </div>
+                  {% endfor %}
+              </div>
+              <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary btn-block btn-flat">
+                      <i class="fas fa-save"></i> Guardar Asesor
+                  </button>
+              </div>
+          </div>
+      </div>
+  </form>
+</div>
+{% endblock js %}

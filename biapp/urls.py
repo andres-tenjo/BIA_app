@@ -20,7 +20,7 @@ urlpatterns = [
     path('usuarios/',include(('apps.usuario.urls','usuarios'))),
     path('comercial/',include(('apps.modulo_comercial.urls','comercial'))),
     path('compras/',include(('apps.modulo_compras.urls','compras'))),
-    path('logistica/',include(('apps.modulo_logistica.urls','logistica'))),
+    path('almacen/',include(('apps.modulo_almacen.urls','almacen'))),
     path('indicadores/',include(('apps.modulo_indicadores.urls','indicadores'))),
     path('reportes/',include(('apps.modulo_reportes.urls','reportes'))),
     path('configuracion/',include(('apps.modulo_configuracion.urls','configuracion'))),

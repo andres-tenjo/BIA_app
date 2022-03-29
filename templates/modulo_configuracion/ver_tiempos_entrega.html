@@ -1,0 +1,33 @@
+{% extends 'modulo_configuracion/list_view.html' %}
+{% load static %}
+{% block title %}
+    BIA | Listas de precios
+{% endblock title %}
+    
+    {% block menu %}
+    <li class="breadcrumb-item">
+        <a href="{{ create_url }}">
+            Crear tiempo de entrega
+        </a>
+    </li>
+    {% endblock menu %}
+    {% block input-search %}
+    <div class="form-group">
+        <label>Buscar tiempo de entrega:</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            autocomplete="off" 
+            id="iptBuscarLista">
+    </div> 
+    {% endblock input-search %}
+    {% block columns %}
+    <tr style="text-align: center" class="table-active">
+        <th style="width: 20%;">Bodega</th>
+        <th style="width: 20%;">Destino</th>
+        <th style="width: 20%;">Tiempo estimado de entrega</th>
+    </tr>        
+    {% endblock columns %}
+{% block window-js %}
+    <script src="{% static 'js/parametrizacion/ver_tiempos_entrega.js' %}"></script>
+{% endblock window-js %}

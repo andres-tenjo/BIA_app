@@ -23,7 +23,7 @@ $('#form').on('submit', function (e) {
                 theme: 'supervan',
                 buttons: {
                     Aceptar: function () {
-                        location.href = '/configuracion/catalogo_bodegas/';
+                        location.href = '/planeacion/planeacion_comercial/';
                     }
                 }
             });            

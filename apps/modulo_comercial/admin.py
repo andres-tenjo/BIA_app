@@ -5,16 +5,7 @@ from django.contrib import admin
 
 from .models import *
 
-''' Admin pedidos '''
-@admin.register(Orders)
-class PersonAdmin(ImportExportModelAdmin):
-    pass
-
-@admin.register(OrdersDetail)
-class PersonAdmin(ImportExportModelAdmin):
-    pass
-
-@admin.register(LostSales)
+@admin.register(clsVentasPerdidasMdl)
 class PersonAdmin(ImportExportModelAdmin):
     pass
 
@@ -24,11 +15,6 @@ class PersonAdmin(ImportExportModelAdmin):
     pass
 
 @admin.register(QuotesDetail)
-class PersonAdmin(ImportExportModelAdmin):
-    pass
-
-''' Admin ruta visitas '''
-@admin.register(VisitsRoute)
 class PersonAdmin(ImportExportModelAdmin):
     pass
 
