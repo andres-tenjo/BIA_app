@@ -4,6 +4,8 @@ import datetime as dt
 from collections import defaultdict
 from django.db import connection
 import sqlite3
+from django.db import transaction
+from apps.modulo_configuracion.models import *
 
 # Convierte una columna de un cuadro de datos al tipo objeto fecha (datetime.datetime)
 # dtfDatos: Cuadro de datos en donde se encuentra la columna a modificar el formato (pandas.DataFrame)
@@ -327,3 +329,126 @@ def fncActualizaCostoPU(dtfDatos):
         lstActualiza= fncConsultalst(strActualiza, [float(fltNuevoCosto), val])
     print('Se actualizó el costo por unidad de compra')
     return
+
+
+######### Función para realizar pruebas ########
+def creapedido(intProducto):
+    with transaction.atomic():
+        qrsConsulta = clsPedidosMdl()
+        qrsConsulta.identification= clsCatalogoClientesMdl.objects.get(pk= 3)
+        qrsConsulta.delivery_date= dt.datetime.now()
+        qrsConsulta.subtotal= 100.0
+        qrsConsulta.iva= 19
+        qrsConsulta.discount= 0.0
+        qrsConsulta.total= 119.0
+        qrsConsulta.observations= 'Sin observación'
+        qrsConsulta.store= clsCatalogoBodegasMdl.objects.get(id= 1)
+        qrsConsulta.condition= 'AB'
+        qrsConsulta.save()
+        qrsDetalle = clsDetallePedidosMdl()
+        qrsDetalle.doc_number = clsPedidosMdl.objects.get(id= 5)
+        qrsDetalle.product_code = clsCatalogoProductosMdl.objects.get(id= intProducto)
+        qrsDetalle.quantity = 1
+        qrsDetalle.unit_price= 100
+        qrsDetalle.subtotal= 100
+        qrsDetalle.iva = 19
+        qrsDetalle.total= 119
+        qrsDetalle.save()
+        print('Se creo registro')
+
+def creaordencompra(intProducto):
+    with transaction.atomic():
+        qrsConsulta = clsOrdenesCompraMdl()
+        qrsConsulta.identification= clsCatalogoProveedoresMdl.objects.get(pk= 1)
+        qrsConsulta.delivery_date= dt.datetime.now()
+        qrsConsulta.subtotal= 100.0
+        qrsConsulta.iva= 19
+        qrsConsulta.discount= 0.0
+        qrsConsulta.total= 119.0
+        qrsConsulta.observations= 'Sin observación'
+        qrsConsulta.store= clsCatalogoBodegasMdl.objects.get(id= 1)
+        qrsConsulta.condition= 'AB'
+        qrsConsulta.save()
+        qrsDetalle = clsDetalleOrdenesCompraMdl()
+        qrsDetalle.doc_number = clsOrdenesCompraMdl.objects.get(id= 1)
+        qrsDetalle.product_code = clsCatalogoProductosMdl.objects.get(id= intProducto)
+        qrsDetalle.quantity = 1
+        qrsDetalle.unit_price= 100
+        qrsDetalle.subtotal= 100
+        qrsDetalle.iva = 19
+        qrsDetalle.total= 119
+        qrsDetalle.save()
+        print('Se creo registro')
+
+def creacotizacion(intProducto):
+    with transaction.atomic():
+        qrsConsulta= clsCotizacionesMdl()
+        qrsConsulta.identification= clsCatalogoClientesMdl.objects.get(pk= 3)
+        qrsConsulta.condition= 'AB'
+        qrsConsulta.city= clsCiudadesMdl.objects.get(pk= 1)
+        qrsConsulta.store= clsCatalogoBodegasMdl.objects.get(pk= 1)
+        qrsConsulta.freight= 0.7
+        qrsConsulta.general_obs= 'Sin Observación'
+        qrsConsulta.follow_up_date= dt.datetime(2022, 5, 30)
+        qrsConsulta.save()
+        qrsDetalle= clsDetalleCotizacionesMdl()
+        qrsDetalle.doc_number= clsCotizacionesMdl.objects.get(id= 2)
+        qrsDetalle.product_code= clsCatalogoProductosMdl.objects.get(id= intProducto)
+        qrsDetalle.quantity= 1
+        qrsDetalle.lead_time= 3
+        qrsDetalle.unit_price= 100.0
+        qrsDetalle.due_date= dt.datetime(2023, 1, 1)
+        qrsDetalle.observations= 'sin Observación'
+        qrsDetalle.save()
+
+def crealistaprecios(intProducto):
+    with transaction.atomic():
+        qrsConsulta= clsListaPreciosMdl()
+        qrsConsulta.list_name= 'Fabrifolder'
+        qrsConsulta.crossing_doc= 'prueba'
+        qrsConsulta.store= clsCatalogoBodegasMdl.objects.get(pk= 1)
+        qrsConsulta.freight= 0.6
+        qrsConsulta.state= 'AB'
+        qrsConsulta.save()
+        qrsDetalle= clsDetalleListaPreciosMdl()
+        qrsDetalle.doc_number= clsListaPreciosMdl.objects.get(pk= 1)
+        qrsDetalle.product_code= clsCatalogoProductosMdl.objects.get(id= intProducto)
+        qrsDetalle.quantity= 1
+        qrsDetalle.lead_time= 3
+        qrsDetalle.unit_price= 100.0
+        qrsDetalle.due_date= dt.datetime(2023, 1, 1)
+        qrsDetalle.observations= 'sin Observación'
+        qrsDetalle.save()
+
+def creasalida(intCliente):
+    with transaction.atomic():
+        qrsConsulta= clsSalidasAlmacenMdl()
+        qrsConsulta.identification= clsCatalogoClientesMdl.objects.get(pk= intCliente)
+        qrsConsulta.discount= 0.0
+        qrsConsulta.taxes= 19.0
+        qrsConsulta.total_price= 100
+        qrsConsulta.total_amount= 119
+        qrsConsulta.total_cost= 90
+        qrsConsulta.value_paid= 100
+        qrsConsulta.credit_state= 'NC'
+        qrsConsulta.store= clsCatalogoBodegasMdl.objects.get(pk= 1)
+        qrsConsulta.crossing_doc= 'Prueba'
+        qrsConsulta.condition= 'CE'
+        qrsConsulta.save()
+        qrsDetalle= clsDetalleSalidasAlmacenMdl()
+        qrsDetalle.doc_number= clsSalidasAlmacenMdl.objects.get(pk= 1)
+        qrsDetalle.product_code= clsCatalogoProductosMdl.objects.get(pk= 10801)
+        qrsDetalle.quantity= 1
+        qrsDetalle.unit_price= 100.0
+        qrsDetalle.discount= 0.0
+        qrsDetalle.taxes= 19
+        qrsDetalle.total_price= 119.0
+        qrsDetalle.total_amount= 119.0
+        qrsDetalle.unitary_cost= 90
+        qrsDetalle.total_cost= 90
+        qrsDetalle.batch= 'si'
+        qrsDetalle.expiration_date= dt.datetime(2023, 1, 30)
+        qrsDetalle.state= 'CO'
+        qrsDetalle.save()
+
+################################################

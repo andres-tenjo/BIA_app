@@ -5,10 +5,11 @@ Created on Wed Feb  9 13:50:43 2022
 @author: FULERO
 """
 import pandas as pd
-from apps.Modelos.Several_func import *
+from apps.Modelos.Several_func import fncLlavePrimariaint, fncConsultalst
 import numpy as np
 from apps.modulo_configuracion.models import *
 from django.db import connection
+import sqlite3
 
 # Calcula el nuevo valor del producto en una tabla de datos
 # strCondition: Valor de la columna que indica si la orden está cerrada o abierta (str)

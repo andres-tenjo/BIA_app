@@ -64,7 +64,7 @@ class clsMenuNegociacionProveedoresViw(LoginRequiredMixin, TemplateView):
 ''' 1.2 Vista para crear negociación con proveedor'''
 class clsCrearNegociacionViw(CreateView):
     model = clsPedidosMdl
-    form_class = OrderForm
+    # form_class = OrderForm
     template_name = 'modulo_compras/crear_negociacion.html'
     success_url = reverse_lazy("compras:ver_negociacion")
 
@@ -97,7 +97,7 @@ class clsCrearNegociacionViw(CreateView):
 
 ''' 1.3 Vista para ver negociacones'''
 class clsVerNegociacionesViw(ListView):
-    model = ScheduleCall
+    # model = ScheduleCall
     template_name = 'modulo_compras/ver_negociaciones.html'
 
     def get_queryset(self):
@@ -127,8 +127,8 @@ class clsMenuPromocionesViw(LoginRequiredMixin, TemplateView):
 
 ''' 2.2 Vista para crear promociones'''
 class clsCrearPromocionesView(CreateView):
-    model = ScheduleCall
-    form_class = ScheduleCallForm
+    # model = ScheduleCall
+    # form_class = ScheduleCallForm
     template_name = 'modulo_compras/crear_promocion.html'
     success_url = reverse_lazy('compras:ver_promociones')
     url_redirect = success_url
@@ -158,7 +158,7 @@ class clsCrearPromocionesView(CreateView):
 
 ''' 2.3 Vista para ver promociones'''
 class clsVerPromocionesViw(ListView):
-    model = ScheduleCall
+    # model = ScheduleCall
     template_name = 'modulo_compras/ver_promociones.html'
 
     def get_queryset(self):
@@ -188,8 +188,8 @@ class clsMenuOrdenesCompraViw(LoginRequiredMixin, TemplateView):
 
 ''' 3.2 Vista para crear orden de compra'''
 class clsCrearOrdenCompraViw(CreateView):
-    model = OrderPurchase
-    form_class = OrderPurchaseForm
+    # model = OrderPurchase
+    # form_class = OrderPurchaseForm
     template_name = 'modulo_compras/crear_orden_compra.html'
     success_url = reverse_lazy("home")
 
@@ -320,7 +320,7 @@ class clsCrearOrdenCompraViw(CreateView):
 
 ''' 3.3 Vista para ver ordenes de compra'''
 class clsVerOrdenesCompraViw(ListView):
-    model = ScheduleCall
+    # model = ScheduleCall
     template_name = 'modulo_compras/ver_ordenes_compra.html'
 
     def get_queryset(self):
@@ -353,8 +353,8 @@ class clsMenuCotizacionProveedorViw(LoginRequiredMixin, TemplateView):
 
 ''' 4.2 Vista para la ventana crear cotización'''
 class clsCrearCotizacionViw(CreateView):
-    model = SupplierQuote
-    form_class = SupplierQuoteForm
+    # model = SupplierQuote
+    # form_class = SupplierQuoteForm
     template_name = 'modulo_compras/crear_cotizacion.html'
     success_url = reverse_lazy('compras:ver_cotizacion_proveedor')
 
@@ -454,7 +454,7 @@ class clsCrearCotizacionViw(CreateView):
 
 ''' 4.3 Vista para la ventana ver cotizaciones'''
 class clsVerCotizacionesViw(ListView):
-    model = ScheduleCall
+    # model = ScheduleCall
     template_name = 'modulo_compras/ver_cotizaciones.html'
 
     def get_queryset(self):
@@ -708,7 +708,7 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
                                     split = int(i[6]/i[9]),
                                     iva = float(i[11]),
                                     other_tax = float(i[12]),
-                                    del_time = int(i[13])
+                                    supplier_lead_time = int(i[13])
                                     )
                                 else:
                                     clsCatalogoProductosMdl.objects.create(
@@ -725,7 +725,7 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
                                     split = int(i[6]/i[9]),
                                     iva = float(i[11]),
                                     other_tax = float(i[12]),
-                                    del_time = int(i[13])
+                                    supplier_lead_time = int(i[13])
                                     )
                         jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
                         response = JsonResponse(jsnData, safe=False)
@@ -971,7 +971,7 @@ class clsMenuGestionarOrdenesCompraViw(LoginRequiredMixin, TemplateView):
 
 ''' 6.2 Vista para próximas entregas'''
 class clsProximasEntregasViw(ListView):
-    model = OrderPurchase
+    # model = OrderPurchase
     template_name = 'modulo_compras/proximas_entregas.html'
 
     @method_decorator(csrf_exempt)
@@ -994,7 +994,7 @@ class clsProximasEntregasViw(ListView):
 
 ''' 6.3 Vista para entregas incumplidas'''
 class clsEntregasIncumplidasViw(ListView):
-    model = EntregasIncumplidas
+    # model = EntregasIncumplidas
     template_name = 'modulo_compras/entregas_incumplidas.html'
 
     @method_decorator(csrf_exempt)
@@ -1584,8 +1584,8 @@ class clsMenuEvaluacionProveedorViw(LoginRequiredMixin, TemplateView):
 
 ''' 8.2 Vista para evaluación proveedores'''
 class clsCrearEvaluacionProveedorViw(CreateView):
-    model = EvaluationSuppliers
-    form_class = EvaluationSuppliersForm
+    # model = EvaluationSuppliers
+    # form_class = EvaluationSuppliersForm
     template_name = 'modulo_compras/crear_evaluacion_proveedor.html'
     success_url = reverse_lazy("compras:ver_evaluacion_proveedor")
     url_redirect = success_url
@@ -1615,7 +1615,7 @@ class clsCrearEvaluacionProveedorViw(CreateView):
 
 ''' 8.3 Vista para listado de proveedores'''
 class clsVerEvaluacionProveedorViw(ListView):
-    model = EvaluationSuppliers
+    # model = EvaluationSuppliers
     template_name = 'modulo_compras/ver_evaluaciones_proveedor.html'
 
     @method_decorator(csrf_exempt)
@@ -1647,7 +1647,7 @@ class clsVerEvaluacionProveedorViw(ListView):
 #################################################################################################
 ''' 9.1 Vista para la ventana cartera cliente '''
 class clsCarteraProveedoresViw(ListView):
-    model = SupplierDebt
+    # model = SupplierDebt
     template_name = 'modulo_compras/cartera_proveedores.html'
 
     @method_decorator(csrf_exempt)

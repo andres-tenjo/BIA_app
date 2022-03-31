@@ -99,7 +99,7 @@ class clsMenuEntradasAlmacenViw(LoginRequiredMixin, TemplateView):
 ''' 2.2 Vista crear entrada de almacén'''
 class clsCrearEntradaAlmacenViw(CreateView):
     model = clsPedidosMdl
-    form_class = WarehouseEntryForm
+    # form_class = WarehouseEntryForm
     template_name = 'modulo_almacen/crear_entrada_almacen.html'
     success_url = reverse_lazy("almacen:ver_entradas_almacen")
 
@@ -132,7 +132,7 @@ class clsCrearEntradaAlmacenViw(CreateView):
 
 ''' 2.3 Vista para ver entradas de almacen'''
 class clsVerEntradasAlmacenViw(ListView):
-    model = ScheduleCall
+    # model = ScheduleCall
     template_name = 'modulo_almacen/ver_entrada_almacen.html'
 
     def get_queryset(self):
@@ -162,8 +162,8 @@ class clsMenuSalidasAlmacenViw(LoginRequiredMixin, TemplateView):
 
 ''' 3.2 Vista crear salida de almacén'''
 class clsCrearSalidaAlmacenViw(CreateView):
-    model = WarehouseOutFlows
-    form_class = WarehouseExitForm
+    # model = WarehouseOutFlows
+    # form_class = WarehouseExitForm
     template_name = 'modulo_almacen/crear_salida_almacen.html'
     success_url = reverse_lazy('almacen:ver_salidas_almacen')
 
@@ -262,7 +262,7 @@ class clsCrearSalidaAlmacenViw(CreateView):
 
 ''' 3.3 Vista ver salidas de almacén'''
 class clsVerSalidasAlmacenViw(ListView):
-    model = ScheduleCall
+    # model = ScheduleCall
     template_name = 'modulo_almacen/ver_salida_almacen.html'
 
     def get_queryset(self):
@@ -292,8 +292,8 @@ class clsMenuInventarioViw(LoginRequiredMixin, TemplateView):
 
 ''' 4.2 Vista para crear inventario'''
 class clsCrearInventarioViw(CreateView):
-    model = WarehouseOutFlows
-    form_class = WarehouseExitForm
+    # model = WarehouseOutFlows
+    # form_class = WarehouseExitForm
     template_name = 'modulo_almacen/crear_inventario.html'
     success_url = reverse_lazy('almacen:ver_inventarios')
 
@@ -329,7 +329,7 @@ class clsCrearInventarioViw(CreateView):
 
 ''' 4.3 Vista para ver inventarios'''
 class clsVerInventarioViw(ListView):
-    model = Inventory
+    # model = Inventory
     template_name = 'modulo_almacen/ver_inventario.html'
 
     @method_decorator(csrf_exempt)

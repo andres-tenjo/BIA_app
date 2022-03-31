@@ -1,7 +1,7 @@
 import pandas as pd
 from django.db import connection
-from apps.Modelos.Several_func import *
-from apps.Modelos.Inquiries import *
+from apps.Modelos.Several_func import fncConsultalst, fncFormatoFechadtf
+import numpy as np
 import sqlite3
 
 # Calcula un saldo no acumulado
