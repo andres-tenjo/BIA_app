@@ -4413,6 +4413,7 @@ class clsExportarPlantillaPrueba(APIView):
         dtfSalidasAlmacen = dtfSalidasAlmacen.reindex(columns = lstOrdenColumnas1)
         
         # Obsequios
+        # No requerido
         if 'user_update' in lstDataFrames[8]:
             dtfObsequios = lstDataFrames[8].drop(lstColumnasExcluir, axis=1)
             dtfObsequios = dtfObsequios.merge(lstDataFrames[9], on='id_obsequio', how='outer')

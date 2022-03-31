@@ -61,8 +61,6 @@ def fncActualizaSaldo(strDocumento, dtfDocumento, tplColumnasHistorico= tplColum
             'N.A.' if (strDocumento== 'Ajuste_De_Inventario') | (strDocumento== 'Obsequio') | (strDocumento== 'Traslado')\
                 else str(dtfModificado.iloc[i]['crossing_doc']),
             str(dtfModificado.iloc[i]['condition']),
-            # int(fncActualizaPresaldoint(dtfModificado.iloc[i]['condition'], 
-            #                         dtfModificado.iloc[i]['type'], dtfModificado.iloc[i]['quantity'])),
             int(fncActualizaPresaldoint(dtfModificado.iloc[i]['condition'], 
                                     dtfModificado.iloc[i]['type'], dtfModificado.iloc[i]['quantity'])),
             int(fncActualizaPresaldoint(dtfModificado.iloc[i]['condition'], 
@@ -72,7 +70,6 @@ def fncActualizaSaldo(strDocumento, dtfDocumento, tplColumnasHistorico= tplColum
             int(dtfModificado.iloc[i]['product_code_id']),
             int(dtfModificado.iloc[i]['store_id']),
             int(dtfModificado.iloc[i]['user_id_id']), 
-            # int(dtfModificado.iloc[i]['store_id']),
             int(fncActualizaPresaldoint(dtfModificado.iloc[i]['condition'], 
                                     dtfModificado.iloc[i]['type'], dtfModificado.iloc[i]['quantity']))
             ]
@@ -82,12 +79,9 @@ def fncActualizaSaldo(strDocumento, dtfDocumento, tplColumnasHistorico= tplColum
         product_code_id= %s AND batch= %s'''
         strConsultaSubirSaldo= 'INSERT INTO modulo_configuracion_clssaldosinventariomdl VALUES(%s, %s, %s, %s, %s, %s)'
         dtfDocumentoProducto= dtfModificado.iloc[i: i+ 1, :]
-        # if len(fncConsultalst(strConsultaHistorico, [varParametros[18], varParametros[16], varParametros[6]]))== 0:
         if len(fncConsultalst(strConsultaHistorico, [varParametros[16], varParametros[15], varParametros[6]]))== 0:
             fncConsultalst(strConsultaSubirHistorico, varParametros)
             intLlaveSaldo= fncLlavePrimariaint('modulo_configuracion_clssaldosinventariomdl')
-            # fncConsultalst(strConsultaSubirSaldo, [int(intLlaveSaldo+ i), varParametros[6], int(fncActualizaPresaldoint(dtfModificado.iloc[i]['condition'], 
-            # dtfModificado.iloc[i]['type'], dtfModificado.iloc[i]['quantity'])), varParametros[7], varParametros[16], varParametros[18]])
             fncConsultalst(strConsultaSubirSaldo, [int(intLlaveSaldo+ i), varParametros[6], int(fncActualizaPresaldoint(dtfModificado.iloc[i]['condition'], 
             dtfModificado.iloc[i]['type'], dtfModificado.iloc[i]['quantity'])), varParametros[7], varParametros[15], varParametros[16]])
         else:

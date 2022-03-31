@@ -97,4 +97,4 @@ def fncMovimientosHistoricosProductosdtf(lstDocumentos):
         sqlite3.register_adapter(np.int64, lambda val: int(val))
         sqlite3.register_adapter(np.int32, lambda val: int(val))
         cursor.executemany(strConsultaHistorico, dtfMovimientoHistorico.to_records(index= False))
-        return 
+        return

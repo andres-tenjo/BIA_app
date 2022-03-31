@@ -36,7 +36,6 @@ def fncFiltroOtrodtf(lstFiltros, strNombreCol, dtfDatos):
     if lstFiltros!= None: return pd.concat([dtfDatos.loc[dtfDatos[strNombreCol]== i] for i in lstFiltros])
     else: return dtfDatos
 
-
 # Filtra la tabla de datos de histórico de movimientos según los las opciones de filtrado
 # intCodigoProducto: Código del producto a consultar el movimiento (int)
 # lstBodega: lista que contiene los códigos de la(s) bodega(s) para realizar filtro si aplica, predeterminado None (list(int))

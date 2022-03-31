@@ -1729,7 +1729,6 @@ def fncGenerarNumeroDocumento(sender, instance, **kwargs):
 #     instance.qr_code.save(fname, File(buffer), save=False)
 #     canvas.close()
 
-
 post_save.connect(fncGenerarNumeroDocumento, sender=clsAjusteInventarioMdl)
 post_save.connect(fncGenerarNumeroDocumento, sender=clsEntradasAlmacenMdl)
 post_save.connect(fncGenerarNumeroDocumento, sender=clsDevolucionesClienteMdl)

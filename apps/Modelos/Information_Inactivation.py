@@ -26,8 +26,7 @@ def fncExisteInventariotpl(intVariable, strColumnaFiltro):
         else: 
             dtfSaldoInventario= pd.DataFrame(lstSaldoInventario, columns= ['Código Producto', 'Lote', 'Inventario Disponible', 
             'Bodega'])
-            return (False, dtfSaldoInventario.loc[dtfSaldoInventario['Inventario Disponible']!= 0])    
-
+            return (False, dtfSaldoInventario.loc[dtfSaldoInventario['Inventario Disponible']!= 0])
 
 # Realiza la consulta para confirmar si existen registros abiertos para un documento específico
 # intProducto: Corresponde al código del producto para consultar (int)
