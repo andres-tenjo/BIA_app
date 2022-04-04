@@ -121,7 +121,7 @@ $(function(){
     const fltPrecioVenta = document.getElementById('price_udv');
     const fltIvaProducto = document.getElementById('prod_iva');
     const fltOtrosImpuestos = document.getElementById('prod_other_tax');
-    const intTiempoEntregaProveedor = document.getElementById('prod_del_time');
+    const intTiempoEntregaProveedor = document.getElementById('prod_supplier_lead_time');
 
     // Función para cargar libreria Select2 para los input tipo select
     fncCargarLibreriaSelect2('Seleccione o cree una nueva');

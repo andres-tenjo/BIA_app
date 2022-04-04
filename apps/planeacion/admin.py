@@ -5,7 +5,7 @@ from django.contrib import admin
 
 from .models import *
 
-''' Admin planeación comercial '''
-@admin.register(clsIndicadoresComercialesMdl)
-class PersonAdmin(ImportExportModelAdmin):
-    pass
+# ''' Admin planeación comercial '''
+# @admin.register(clsIndicadoresComercialesMdl)
+# class PersonAdmin(ImportExportModelAdmin):
+#     pass

@@ -242,11 +242,11 @@ class clsCrearProductoFrm(ModelForm):
                     'step': '0.01'
                  }
             ),
-            'del_time': TimeInput(
+            'supplier_lead_time': TimeInput(
                 attrs={
                     'class': 'form-control touchNumber',
                     'placeholder': 'Ej. 3',
-                    'id': 'prod_del_time',
+                    'id': 'prod_supplier_lead_time',
                     'type': 'number',
                     'step': '1',
                     'min': '1'

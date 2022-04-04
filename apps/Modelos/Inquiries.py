@@ -1,10 +1,7 @@
-import numpy as np
 import pandas as pd
 import datetime as dt
 from apps.Modelos.Several_func import *
 import sqlite3
-import time
-
 
 # Filtra la fecha de inicio para una consulta en una tabla de datos con fechas
 # datFecha: Fecha de inicio para el filtro de la consulta (dt.datetime)
@@ -38,7 +35,6 @@ def fncFiltradoFindtf(datFecha, dtfDatos):
 def fncFiltroOtrodtf(lstFiltros, strNombreCol, dtfDatos):
     if lstFiltros!= None: return pd.concat([dtfDatos.loc[dtfDatos[strNombreCol]== i] for i in lstFiltros])
     else: return dtfDatos
-
 
 # Filtra la tabla de datos de histórico de movimientos según los las opciones de filtrado
 # intCodigoProducto: Código del producto a consultar el movimiento (int)

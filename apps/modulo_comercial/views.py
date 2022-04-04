@@ -105,7 +105,7 @@ class clsMenuPedidosViw(LoginRequiredMixin, TemplateView):
 ''' 2.2 Vista para crear pedido'''
 class clsCrearPedidoViw(CreateView):
     model = clsPedidosMdl
-    form_class = OrderForm
+    # form_class = OrderForm
     template_name = 'modulo_comercial/crear_pedido.html'
     success_url = reverse_lazy('comercial:ver_pedidos')
 
@@ -386,13 +386,14 @@ class clsCrearPedidoViw(CreateView):
                 print(len(x))
 
             elif action == 'lost_sales':
-                lost_sale = request.POST
-                lost_sale_bd = clsVentasPerdidasMdl()
-                lost_sale_bd.date = lost_sale['date']
-                lost_sale_bd.customer_id = lost_sale['id_cust']
-                lost_sale_bd.product_id = lost_sale['id_prod']
-                lost_sale_bd.cant = lost_sale['cant']
-                lost_sale_bd.save()
+                return
+                # lost_sale = request.POST
+                # lost_sale_bd = clsVentasPerdidasMdl()
+                # lost_sale_bd.date = lost_sale['date']
+                # lost_sale_bd.customer_id = lost_sale['id_cust']
+                # lost_sale_bd.product_id = lost_sale['id_prod']
+                # lost_sale_bd.cant = lost_sale['cant']
+                # lost_sale_bd.save()
             elif action == 'add':
                 with transaction.atomic():
                     sales = json.loads(request.POST['sales'])
@@ -523,8 +524,8 @@ class clsMenuCotizacionesViw(LoginRequiredMixin, TemplateView):
 
 ''' 3.2 Vista para crear cotización'''
 class clsCrearCotizacionViw(CreateView):
-    model = Quotes
-    form_class = QuoteForm
+    # model = Quotes
+    # form_class = QuoteForm
     template_name = 'modulo_comercial/crear_cotizacion.html'
     success_url = reverse_lazy("home")
 
@@ -598,7 +599,7 @@ class clsCrearCotizacionViw(CreateView):
 
 ''' 3.3 Vista para ver cotizaciones'''
 class clsVerCotizacionesViw(ListView):
-    model = Quotes
+    # model = Quotes
     template_name = 'modulo_comercial/ver_cotizaciones.html'
 
     @method_decorator(csrf_exempt)
@@ -689,8 +690,8 @@ class clsMenuLlamadasViw(LoginRequiredMixin, TemplateView):
 
 ''' 5.2 Vista para crear llamada'''
 class clsCrearLlamadaView(CreateView):
-    model = ScheduleCall
-    form_class = ScheduleCallForm
+    # model = ScheduleCall
+    # form_class = ScheduleCallForm
     template_name = 'modulo_comercial/crear_llamada.html'
     success_url = reverse_lazy('comercial:ver_agenda_llamadas')
     url_redirect = success_url
@@ -720,7 +721,7 @@ class clsCrearLlamadaView(CreateView):
 
 ''' 5.3 Vista para ver llamadas'''
 class clsVerAgendaLlamadasViw(ListView):
-    model = ScheduleCall
+    # model = ScheduleCall
     template_name = 'modulo_comercial/ver_agenda_llamadas.html'
 
     def get_queryset(self):
@@ -1509,7 +1510,7 @@ class clsExportarCatalogoClientesViw(APIView):
 #################################################################################################
 ''' 7.1 Vista para cartera clientes'''
 class clsCarteraClientesViw(ListView):
-    model = CustomerDebt
+    # model = CustomerDebt
     template_name = 'modulo_comercial/ver_cartera_clientes.html'
 
     @method_decorator(csrf_exempt)
@@ -1540,7 +1541,7 @@ class clsCarteraClientesViw(ListView):
 #################################################################################################
 ''' 8.1 Vista para tubería clientes '''
 class clsTuberiaClientesViw(ListView):
-    model = CustomerDebt
+    # model = CustomerDebt
     template_name = 'modulo_comercial/ver_tuberia_clientes.html'
 
     @method_decorator(csrf_exempt)
@@ -1571,7 +1572,7 @@ class clsTuberiaClientesViw(ListView):
 #################################################################################################
 ''' 9.1 Vista para pqr clientes '''
 class clsPqrClientesViw(ListView):
-    model = CustomerDebt
+    # model = CustomerDebt
     template_name = 'modulo_comercial/ver_pqr_clientes.html'
 
     @method_decorator(csrf_exempt)
