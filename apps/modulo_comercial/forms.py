@@ -5,8 +5,11 @@ from django.forms import *
 from apps.modulo_configuracion.models import *
 from .models import *
 
+###############################################
+# 1. PEDIDOS
+###############################################
 ''' Formulario pedidos'''
-class OrderForm(ModelForm):
+class clsPedidosFrm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['identification'].widget.attrs['autofocus'] = True
@@ -94,14 +97,17 @@ class OrderForm(ModelForm):
             ),
         }
 
+###############################################
+# 2. COTIZACIONES
+###############################################
 ''' Formulario cotizaciones'''
-class QuoteForm(ModelForm):
+class clsCotizacionComercialFrm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['identification'].widget.attrs['autofocus'] = True
 
     class Meta:
-        model = Quotes
+        model = clsCotizacionesMdl
         fields = '__all__'
         exclude = ['user_update', 'user_creation']
         widgets = {
@@ -158,111 +164,12 @@ class QuoteForm(ModelForm):
             ),
         }
 
-''' Formulario pago de clientes'''
-class CustomerPaymentsForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for form in self.visible_fields():
-            form.field.widget.attrs['class'] = 'form-control' 
-        self.fields['cartera'].widget.attrs['autofocus'] = True
-    
-    class Meta:
-        model = CustomerPayments
-        fields = '__all__'
-        exclude = ['user_update', 'user_creation']
-        widgets = {
-                'cartera': Select(
-                    attrs={
-                        'class': 'form-control select2',
-                        'style': 'width: 100%',
-                        'id': 'cartera'
-                    }
-                ),
-                'payment': NumberInput(
-                    attrs={
-                        'class': 'form-control',
-                        'id': 'payment'
-                    }
-                ),
-                'obs': Textarea(
-                    attrs={
-                        'class': 'form-control',
-                        'id': 'obs'
-                    }
-                ),
-            }
-
+###############################################
+# 3. AGENDA DE LLAMADAS
+###############################################
 ''' Formulario agendar llamada'''
-class ScheduleCallForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for form in self.visible_fields():
-            form.field.widget.attrs['class'] = 'form-control' 
-        self.fields['customer'].widget.attrs['autofocus'] = True
-    
-    class Meta:
-        model = ScheduleCall
-        fields = '__all__'
-        exclude = ['user_update', 'user_creation']
-        widgets = {
-                'customer': Select(
-                    attrs={
-                        'class': 'form-control select2',
-                        'style': 'width: 100%',
-                        'id': 'customer'
-                    }
-                ),
-                'call_date': DateInput(
-                    attrs={
-                        'value': datetime.now().strftime('%Y-%m-%d'),
-                        'autocomplete': 'off',
-                        'class': 'form-control datetimepicker-input',
-                        'id': 'call_date',
-                        'data-target': '#call_date',
-                        'data-toggle': 'datetimepicker'
-                    }
-                ),
-                'start_call': DateInput(
-                    attrs={
-                        'value': datetime.now().strftime('%Y-%m-%d'),
-                        'autocomplete': 'off',
-                        'class': 'form-control datetimepicker-input',
-                        'id': 'start_call',
-                        'data-target': '#start_call',
-                        'data-toggle': 'datetimepicker'
-                    }
-                ),
-                'end_call': DateInput(
-                    attrs={
-                        'value': datetime.now().strftime('%Y-%m-%d'),
-                        'autocomplete': 'off',
-                        'class': 'form-control datetimepicker-input',
-                        'id': 'end_call',
-                        'data-target': '#end_call',
-                        'data-toggle': 'datetimepicker'
-                    }
-                ),
-                'call_time': DateInput(
-                    attrs={
-                        'value': datetime.now().strftime('%Y-%m-%d'),
-                        'autocomplete': 'off',
-                        'class': 'form-control datetimepicker-input',
-                        'id': 'call_time',
-                        'data-target': '#call_time',
-                        'data-toggle': 'datetimepicker'
-                    }
-                ),
-                'obs': Textarea(
-                    attrs={
-                        'class': 'form-control',
-                        'id': 'obs'
-                    }
-                ),
-                'state': Select(
-                      attrs={
-                        'class': 'form-control',
-                        'style': 'width: 100%',
-                        'id': 'state'
-                    }
-                ),
-            }
+
+###############################################
+# 3. PQR CLIENTES
+###############################################
+''' Formulario PQR clientes'''

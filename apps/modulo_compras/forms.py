@@ -5,14 +5,17 @@ from django.forms import *
 from apps.modulo_configuracion.models import *
 from .models import *
 
+##########################################################
+# 1. ORDEN DE COMPRA
+##########################################################
 ''' Formulario ordenes de compra '''
-class OrderPurchaseForm(ModelForm):
+class clsOrdenCompraFrm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['identification'].widget.attrs['autofocus'] = True
 
     class Meta:
-        model = OrderPurchase
+        model = clsOrdenesCompraMdl
         fields = '__all__'
         exclude = ['user_update', 'user_creation']
         widgets = {
@@ -93,86 +96,29 @@ class OrderPurchaseForm(ModelForm):
             ),
         }
 
-''' Formulario cotizaciones proveedores'''
-class SupplierQuoteForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['identification'].widget.attrs['autofocus'] = True
+##########################################################
+# 2. NEGOCIACIÓN PROVEEDOR
+##########################################################
 
-    class Meta:
-        model = SupplierQuote
-        fields = '__all__'
-        exclude = ['user_update', 'user_creation']
-        widgets = {
-            'identification': Select(attrs={
-                'class': 'form-control select2',
-                'style': 'width: 80%',
-                'id': 'identification'
-                }
-            ),
-            'quote_date': DateInput(
-                attrs={
-                    'value': datetime.now().strftime('%Y-%m-%d'),
-                    'autocomplete': 'off',
-                    'class': 'form-control datetimepicker-input',
-                    'id': 'quote_date',
-                    'data-target': '#quote_date',
-                    'data-toggle': 'datetimepicker'
-                }
-            ),
-            'lead_time': NumberInput(
-                attrs={
-                    'class': 'form-control',
-                    'id': 'lead_time',
-                }
-            ),
-            'subtotal': TextInput(
-                attrs={
-                    'readonly': True,
-                    'class': 'form-control'
-                }
-            ),
-            'iva': TextInput(
-                attrs={
-                    'readonly': True,
-                    'class': 'form-control'
-                }
-            ),
-            'discount': TextInput(
-                attrs={
-                    'readonly': True,
-                    'class': 'form-control'
-                }
-            ),
-            'total': TextInput(
-                attrs={
-                    'readonly': True,
-                    'class': 'form-control'
-                }
-            ),
-            'observations': Textarea(
-                attrs={
-                    'class': 'form-control'
-                }
-            ),
-        }
-
+##########################################################
+# 3. EVALUACIÓN PROVEEDOR
+##########################################################
 ''' Formulario evaluación de proveedores '''
-class EvaluationSuppliersForm(ModelForm):
+class clsEvaluacionProveedorFrm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['supplier'].widget.attrs['autofocus'] = True
+        self.fields['order_purchase'].widget.attrs['autofocus'] = True
     
     class Meta:
-        model = EvaluationSuppliers
+        model = clsEvaluacionProveedorMdl
         fields = '__all__'
         exclude = ['user_update', 'user_creation']
         widgets = {
-                'supplier': Select(
+                'order_purchase': Select(
                     attrs={
                         'class': 'form-control select2',
                         'style': 'width: 100%',
-                        'id': 'supplier'
+                        'id': 'order_purchase'
                     }
                 ),
                 'evaluation_type': Select(
@@ -256,47 +202,3 @@ class EvaluationSuppliersForm(ModelForm):
                     }
                 ),
             }
-
-''' Formulario pago de clientes '''
-class SuppliersPaymentsForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['cartera'].widget.attrs['autofocus'] = True
-    
-    class Meta:
-        model = SuppliersPayments
-        fields = '__all__'
-        exclude = ['user_update', 'user_creation']
-        widgets = {
-                'cartera': Select(
-                    attrs={
-                        'class': 'form-control select2',
-                        'style': 'width: 100%',
-                        'id': 'cartera'
-                    }
-                ),
-                'payment': TextInput(
-                    attrs={
-                        'class': 'form-control',
-                        'id': 'payment'
-                    }
-                ),
-                'obs': Textarea(
-                    attrs={
-                        'class': 'form-control',
-                        'id': 'obs'
-                    }
-                ),
-            }
-    
-    def save(self, commit=True):
-        data = {}
-        form = super()
-        try:
-            if form.is_valid():
-                instance = form.save()
-            else:
-                data['error'] = form.errors
-        except Exception as e:
-            data['error'] = str(e)
-        return data

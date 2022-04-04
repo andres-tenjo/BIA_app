@@ -3,36 +3,38 @@ from import_export.admin import ImportExportModelAdmin
 
 from django.contrib import admin
 
-from .models import *
+from apps.modulo_configuracion.models import *
 
-''' Admin entradas de almacén '''
-@admin.register(WarehouseRevenue)
+################################################
+# ENTRADAS DE ALMACEN
+################################################
+''' Entradas de almacen'''
+@admin.register(clsEntradasAlmacenMdl)
 class PersonAdmin(ImportExportModelAdmin):
     pass
 
-@admin.register(WarehouseRevenueDetail)
+''' Detalle entradas de almacen'''
+@admin.register(clsDetalleEntradaAlmacen)
 class PersonAdmin(ImportExportModelAdmin):
     pass
 
-''' Admin conteo de inventario '''
-@admin.register(InventoryCount)
+################################################
+# SALIDAS DE ALMACEN
+################################################
+''' Salidas de almacén '''
+@admin.register(clsSalidasAlmacenMdl)
 class PersonAdmin(ImportExportModelAdmin):
     pass
 
-@admin.register(InventoryCountDetail)
+''' Detalle salidas de almacén '''
+@admin.register(clsDetalleSalidasAlmacenMdl)
 class PersonAdmin(ImportExportModelAdmin):
     pass
 
-# ''' Admin salidas de almacén '''
-# @admin.register(WarehouseOutFlows)
-# class PersonAdmin(ImportExportModelAdmin):
-#     pass
-
-# @admin.register(WarehouseOutFlowsDetail)
-# class PersonAdmin(ImportExportModelAdmin):
-#     pass
-
-''' Admin inventario '''
-@admin.register(Inventory)
+################################################
+# INVENTARIO
+################################################
+''' Saldos de inventario '''
+@admin.register(clsSaldosInventarioMdl)
 class PersonAdmin(ImportExportModelAdmin):
     pass

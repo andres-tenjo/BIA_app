@@ -105,7 +105,7 @@ class clsMenuPedidosViw(LoginRequiredMixin, TemplateView):
 ''' 2.2 Vista para crear pedido'''
 class clsCrearPedidoViw(CreateView):
     model = clsPedidosMdl
-    form_class = OrderForm
+    form_class = clsPedidosFrm
     template_name = 'modulo_comercial/crear_pedido.html'
     success_url = reverse_lazy('comercial:ver_pedidos')
 
@@ -203,18 +203,13 @@ class clsCrearPedidoViw(CreateView):
                 data = {}
                 catalogo = clsCatalogoProductosMdl.objects.all()
                 catalogo = catalogo.to_dataframe()
-                print(catalogo)
                 pedidos = clsDetallePedidosMdl.objects.filter(state='CU')
                 cust_base = pedidos.filter(customer_id=request.POST['id_cust'])
                 cust_base = cust_base.to_dataframe()
-                print(cust_base)
                 cat_base = pedidos.filter(city=request.POST['city'], category_cust=request.POST['category_cust'])
                 cat_base = cat_base.to_dataframe()
-                print(cat_base)
                 gen_base = pedidos.to_dataframe()
-                print(gen_base)
                 added = json.loads(request.POST['ids'])
-                print(added)
 
                 def unique_order(df):
                     item_count= df.drop(columns= ['Unnamed: 0', 'order', 'Fecha', 'Estado movto.', 'Bodega',
@@ -382,8 +377,6 @@ class clsCrearPedidoViw(CreateView):
                         return helper(rec_added[n: ], filter_recursion, added, cust_base, cat_base, gen_base, memo)
                 
                 x= helper(added, cust_base, added, cust_base, cat_base, gen_base)
-                print(x)
-                print(len(x))
 
             elif action == 'lost_sales':
                 lost_sale = request.POST
@@ -437,8 +430,6 @@ class clsCrearPedidoViw(CreateView):
                         order_prods.total = float(i['total'])
                         order_prods.save()
                     data = {'id': orders.id}
-            else:
-                data['error'] = form.errors
         except Exception as e:
             data['error'] = str(e)
         return JsonResponse(data, safe=False)
