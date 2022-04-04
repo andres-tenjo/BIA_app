@@ -8,7 +8,7 @@ from pandas import pandas as pd
 from apps.Modelos.Several_func import *
 from apps.Modelos.Update_Balances import *
 from apps.Modelos.Parameters import *
-#from apps.Modelos.Information_Inactivation import *
+from apps.Modelos.Information_Inactivation import *
 
 # Django libraries
 from django.conf import settings
@@ -180,8 +180,11 @@ class clsOpcionesCatalogoProductoViw(LoginRequiredMixin, ValidatePermissionRequi
             elif action == 'frmEliminarCategoriaProductojsn':
                 qrsCategoriaProducto = clsCategoriaProductoMdl.objects.get(pk=request.POST['id'])
                 if qrsCategoriaProducto.state == "AC":
-                    qrsCategoriaProducto.state = "IN"
-                    qrsCategoriaProducto.save()
+                    bolEvaluacion= fncInactivaCategoriaProductotpl(qrsCategoriaProducto.id)
+                    if bolEvaluacion[0]== True:                   
+                        qrsCategoriaProducto.state = "IN"
+                        qrsCategoriaProducto.save()
+                    else: print(bolEvaluacion[1])                    
                 else:
                     qrsCategoriaProducto.state = "AC"
                     qrsCategoriaProducto.save()
@@ -219,8 +222,11 @@ class clsOpcionesCatalogoProductoViw(LoginRequiredMixin, ValidatePermissionRequi
             elif action == 'frmEliminarSubcategoriaProductojsn':
                 qrsSubcategoriaProducto = clsSubcategoriaProductoMdl.objects.get(pk=request.POST['id'])
                 if qrsSubcategoriaProducto.state == "AC":
-                    qrsSubcategoriaProducto.state = "IN"
-                    qrsSubcategoriaProducto.save()
+                    bolEvaluacion= fncInactivaAtrProductotpl(qrsSubcategoriaProducto.id, 'product_subcat_id')
+                    if bolEvaluacion[0]== True:                   
+                        qrsSubcategoriaProducto.state = "IN"
+                        qrsSubcategoriaProducto.save()
+                    else: print(bolEvaluacion[1])
                 else:
                     qrsSubcategoriaProducto.state = "AC"
                     qrsSubcategoriaProducto.save()
@@ -241,8 +247,11 @@ class clsOpcionesCatalogoProductoViw(LoginRequiredMixin, ValidatePermissionRequi
             elif action == 'frmEliminarUnidadComprajsn':
                 qrsUnidadCompra = clsUnidadCompraMdl.objects.get(pk=request.POST['id'])
                 if qrsUnidadCompra.state == "AC":
-                    qrsUnidadCompra.state = "IN"
-                    qrsUnidadCompra.save()
+                    bolEvaluacion= fncInactivaAtrProductotpl(qrsUnidadCompra.id, 'purchase_unit_id')
+                    if bolEvaluacion[0]== True:                   
+                        qrsUnidadCompra.state = "IN"
+                        qrsUnidadCompra.save()
+                    else: print(bolEvaluacion[1])
                 else:
                     qrsUnidadCompra.state = "AC"
                     qrsUnidadCompra.save()
@@ -263,8 +272,11 @@ class clsOpcionesCatalogoProductoViw(LoginRequiredMixin, ValidatePermissionRequi
             elif action == 'frmEliminarUnidadVentajsn':
                 qrsUnidadVenta = clsUnidadVentaMdl.objects.get(pk=request.POST['id'])
                 if qrsUnidadVenta.state == "AC":
-                    qrsUnidadVenta.state = "IN"
-                    qrsUnidadVenta.save()
+                    bolEvaluacion= fncInactivaAtrProductotpl(qrsUnidadVenta.id, 'sales_unit_id')
+                    if bolEvaluacion[0]== True:                   
+                        qrsUnidadVenta.state = "IN"
+                        qrsUnidadVenta.save()
+                    else: print(bolEvaluacion[1])
                 else:
                     qrsUnidadVenta.state = "AC"
                     qrsUnidadVenta.save()
@@ -606,7 +618,7 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
             ((False,), (True, 2), (True, 1), (True, clsCategoriaProductoMdl)),
             ((False,), (True, 2), (True, 1), (True, clsSubcategoriaProductoMdl)),
             ((False,), (True, 2), (True, 1), (True, clsUnidadCompraMdl)),
-            ((True, int), (True, 3), (True, 1), (False,)),
+            ((True, int), (True, 4), (True, 1), (False,)),
             ((True, float), (True, 13), (True, 2), (False,)),
             ((False,), (True, 2), (True, 1), (True, clsUnidadVentaMdl)),
             ((True, int), (True, 3), (True, 1), (False,)),
@@ -650,7 +662,7 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
                                     split = int(i[6]/i[9]),
                                     iva = float(i[11]),
                                     other_tax = float(i[12]),
-                                    del_time = int(i[13])
+                                    supplier_lead_time = int(i[13])
                                     )
                                 else:
                                     clsCatalogoProductosMdl.objects.create(
@@ -667,7 +679,7 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
                                     split = int(i[6]/i[9]),
                                     iva = float(i[11]),
                                     other_tax = float(i[12]),
-                                    del_time = int(i[13])
+                                    supplier_lead_time = int(i[13])
                                     )
                         jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
                         response = JsonResponse(jsnData, safe=False)
@@ -796,31 +808,12 @@ class clsListarCatalogoProductosViw(LoginRequiredMixin, ListView):
             elif action == 'frmEliminarProductojsn':
                 qrsCatalogoProductos = clsCatalogoProductosMdl.objects.get(pk=request.POST['id'])
                 if qrsCatalogoProductos.state == "AC":
-                    # with transaction.atomic():
-                    #     qrsAjusteInventario = clsEntradasAlmacenMdl()
-                    #     qrsAjusteInventario.identification= clsCatalogoProveedoresMdl.objects.get(pk= 1)
-                    #     qrsAjusteInventario.total_cost= dtfEntrada['total_cost'].sum()
-                    #     qrsAjusteInventario.store= clsCatalogoBodegasMdl.objects.get(id= 1)
-                    #     qrsAjusteInventario.crossing_doc= 'OC-01'
-                    #     qrsAjusteInventario.condition= 'CA'
-                    #     qrsAjusteInventario.save()
-                    #     for i in dtfEntrada.to_records(index= False):
-                    #         qrsDetalleAjuste = clsDetalleEntradaAlmacen()
-                    #         qrsDetalleAjuste.doc_number = clsEntradasAlmacenMdl.objects.get(id= 4)
-                    #         qrsDetalleAjuste.product_code = clsCatalogoProductosMdl.objects.get(id= i[0])                            
-                    #         qrsDetalleAjuste.quantity = i[2]
-                    #         qrsDetalleAjuste.unitary_cost= i[1]
-                    #         qrsDetalleAjuste.total_cost= i[5]
-                    #         qrsDetalleAjuste.batch = i[3]
-                    #         qrsDetalleAjuste.expiration_date= datetime(2021, 3, 10)
-                    #         qrsDetalleAjuste.state= i[4]
-                    #         qrsDetalleAjuste.save()
                     bolEvaluacion= fncInactivarProductotpl(qrsCatalogoProductos.id)
-                    if bolEvaluacion== True:
+                    if bolEvaluacion[0]== True:
                         qrsCatalogoProductos.state = "IN"
                         qrsCatalogoProductos.save()
                     else:
-                        print(bolEvaluacion)
+                        print(bolEvaluacion[1])
                 else:
                     qrsCatalogoProductos.state = "AC"
                     qrsCatalogoProductos.save()
@@ -943,7 +936,7 @@ class clsExportarCatalogoProductosViw(APIView):
             'full_sale_price': 'Precio de venta',
             'iva': 'Iva',
             'other_tax': 'Otros impuestos',
-            'del_time': 'Tiempo de entrega proveedor',
+            'supplier_lead_time': 'Tiempo de entrega proveedor',
             'state_display': 'Estado'
             })
         lstNombresColumnas = [
@@ -1710,8 +1703,11 @@ class clsListarCatalogoProveedoresViw(LoginRequiredMixin, ValidatePermissionRequ
             elif action == 'btnEliminarProveedorjsn':
                 qrsCatalogoProveedores = clsCatalogoProveedoresMdl.objects.get(pk=request.POST['id'])
                 if qrsCatalogoProveedores.state == "AC":
-                    qrsCatalogoProveedores.state = "IN"
-                    qrsCatalogoProveedores.save()
+                    bolEvaluacion= fncInactivaProveedortpl(qrsCatalogoProveedores.id)
+                    if bolEvaluacion[0]== True:                   
+                        qrsCatalogoProveedores.state = "IN"
+                        qrsCatalogoProveedores.save()
+                    else: print(bolEvaluacion[1])
                 else:
                     qrsCatalogoProveedores.state = "AC"
                     qrsCatalogoProveedores.save()
@@ -1893,8 +1889,11 @@ class clsOpcionesCatalogoClientesViw(LoginRequiredMixin, ValidatePermissionRequi
             elif action == 'btnEliminarCategoriaClientejsn':
                 qrsCategoriaCliente = clsCategoriaClienteMdl.objects.get(pk=request.POST['id'])
                 if qrsCategoriaCliente.state == "AC":
-                    qrsCategoriaCliente.state = "IN"
-                    qrsCategoriaCliente.save()
+                    bolEvaluacion= fncInactivarAtrClientetpl(qrsCategoriaCliente.id, 'customer_cat_id')
+                    if bolEvaluacion[0]== True:                   
+                        qrsCategoriaCliente.state = "IN"
+                        qrsCategoriaCliente.save()
+                    else: print(bolEvaluacion[1])
                 else:
                     qrsCategoriaCliente.state = "AC"
                     qrsCategoriaCliente.save()
@@ -1949,8 +1948,11 @@ class clsOpcionesCatalogoClientesViw(LoginRequiredMixin, ValidatePermissionRequi
             elif action == 'btnEliminarZonaCliente':
                 qrsZonaCliente = clsZonaClienteMdl.objects.get(pk=request.POST['id'])
                 if qrsZonaCliente.state == "AC":
-                    qrsZonaCliente.state = "IN"
-                    qrsZonaCliente.save()
+                    bolEvaluacion= fncInactivarZonatpl(qrsZonaCliente.id)
+                    if bolEvaluacion[0]== True:                   
+                        qrsZonaCliente.state = "IN"
+                        qrsZonaCliente.save()
+                    else: print(bolEvaluacion[1])
                 else:
                     qrsZonaCliente.state = "AC"
                     qrsZonaCliente.save()
@@ -1979,8 +1981,11 @@ class clsOpcionesCatalogoClientesViw(LoginRequiredMixin, ValidatePermissionRequi
             elif action == 'btnEliminarAsesorComercialjsn':
                 qrsAsesorComercial = clsAsesorComercialMdl.objects.get(pk=request.POST['id'])
                 if qrsAsesorComercial.state == "AC":
-                    qrsAsesorComercial.state = "IN"
-                    qrsAsesorComercial.save()
+                    bolEvaluacion= fncInactivarAtrClientetpl(qrsAsesorComercial.id, 'commercial_advisor_id')
+                    if bolEvaluacion[0]== True:                   
+                        qrsAsesorComercial.state = "IN"
+                        qrsAsesorComercial.save()
+                    else: print(bolEvaluacion[1])
                 else:
                     qrsAsesorComercial.state = "AC"
                     qrsAsesorComercial.save()
@@ -2426,8 +2431,11 @@ class clsListarCatalogoClientesViw(LoginRequiredMixin, ValidatePermissionRequire
             elif action == 'btnEliminarClientejsn':
                 qrsCatalogoClientes = clsCatalogoClientesMdl.objects.get(pk=request.POST['id'])
                 if qrsCatalogoClientes.state == "AC":
-                    qrsCatalogoClientes.state = "IN"
-                    qrsCatalogoClientes.save()
+                    bolEvaluacion= fncInactivaClientetpl(qrsCatalogoClientes.id)
+                    if bolEvaluacion[0]== True:                   
+                        qrsCatalogoClientes.state = "IN"
+                        qrsCatalogoClientes.save()
+                    else: print(bolEvaluacion[1])
                 else:
                     qrsCatalogoClientes.state = "AC"
                     qrsCatalogoClientes.save()
@@ -2772,8 +2780,11 @@ class clsListarCatalogoBodegasViw(LoginRequiredMixin, ValidatePermissionRequired
             elif action == 'btnEliminarBodegajsn':
                 qrsCatalogoBodegas = clsCatalogoBodegasMdl.objects.get(pk=request.POST['id'])
                 if qrsCatalogoBodegas.state == "AC":
-                    qrsCatalogoBodegas.state = "IN"
-                    qrsCatalogoBodegas.save()
+                    bolEvaluacion= fncInactivaBodegatpl(qrsCatalogoBodegas.id)
+                    if bolEvaluacion[0]== True:
+                        qrsCatalogoBodegas.state = "IN"
+                        qrsCatalogoBodegas.save()
+                    else: print(bolEvaluacion[1])
                 else:
                     qrsCatalogoBodegas.state = "AC"
                     qrsCatalogoBodegas.save()
@@ -3399,6 +3410,7 @@ class clsExportarPlantillaHistoricoMovimientosViw(APIView):
 class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/historico_movimientos.html'
     
+    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -4401,6 +4413,7 @@ class clsExportarPlantillaPrueba(APIView):
         dtfSalidasAlmacen = dtfSalidasAlmacen.reindex(columns = lstOrdenColumnas1)
         
         # Obsequios
+        # No requerido
         if 'user_update' in lstDataFrames[8]:
             dtfObsequios = lstDataFrames[8].drop(lstColumnasExcluir, axis=1)
             dtfObsequios = dtfObsequios.merge(lstDataFrames[9], on='id_obsequio', how='outer')

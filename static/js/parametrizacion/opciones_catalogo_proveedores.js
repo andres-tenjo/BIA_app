@@ -50,9 +50,9 @@ dctOpcionesCatalogoProveedores = {
             },
             columns: [
                 { "data": "n"},
-                { "data": "supplier.supplier_name"},
-                { "data": "product.product_desc"},
-                { "data": "product.purchase_unit.purchase_unit"},
+                { "data": "identification.supplier_name"},
+                { "data": "product_code.product_desc"},
+                { "data": "product_code.purchase_unit.purchase_unit"},
                 { "data": "min_amount"},
                 { "data": "state.name"},
                 { "data": "id"},
@@ -78,9 +78,9 @@ dctOpcionesCatalogoProveedores = {
             var tr = tblCantidadesMinimas.cell($(this).closest('td, li')).index();
             var data_row = tblCantidadesMinimas.row(tr.row).data();
             $('#id_cantidad').val(data_row.id);
-            $('#proveedor_cantidad').val(data_row.supplier.supplier_name);
-            $('#producto_cantidad').val(data_row.product.product_desc);
-            $('#unidad_compra_cantidad').val(data_row.product.purchase_unit.purchase_unit);
+            $('#proveedor_cantidad').val(data_row.identification.supplier_name);
+            $('#producto_cantidad').val(data_row.product_code.product_desc);
+            $('#unidad_compra_cantidad').val(data_row.product_code.purchase_unit.purchase_unit);
             $('#editar_cantidad_minima').val(data_row.min_amount);
             $('#estado_cantidad').val(data_row.state.id);
             $('#myModalEditarCantidades').modal('show');
@@ -129,10 +129,10 @@ dctOpcionesCatalogoProveedores = {
             },
             columns: [
                 { "data": "n"},
-                { "data": "supplier.supplier_name"},
-                { "data": "product.product_desc"},
-                { "data": "product.purchase_unit.purchase_unit"},
-                { "data": "product.cost_pu"},
+                { "data": "identification.supplier_name"},
+                { "data": "product_code.product_desc"},
+                { "data": "product_code.purchase_unit.purchase_unit"},
+                { "data": "product_code.cost_pu"},
                 { "data": "min_amount"},
                 { "data": "discount"},
                 { "data": "state.name"},
@@ -164,10 +164,10 @@ dctOpcionesCatalogoProveedores = {
             var tr = tblDescuentos.cell($(this).closest('td, li')).index();
             var data_row = tblDescuentos.row(tr.row).data();
             $('#id_descuentos').val(data_row.id);
-            $('#proveedor_descuentos').val(data_row.supplier.supplier_name);
-            $('#producto_descuentos').val(data_row.product.product_desc);
-            $('#unidad_compra_descuento').val(data_row.product.purchase_unit.purchase_unit);
-            $('#precio_compra_descuento').val(data_row.product.cost_pu);
+            $('#proveedor_descuentos').val(data_row.identification.supplier_name);
+            $('#producto_descuentos').val(data_row.product_code.product_desc);
+            $('#unidad_compra_descuento').val(data_row.product_code.purchase_unit.purchase_unit);
+            $('#precio_compra_descuento').val(data_row.product_code.cost_pu);
             $('#editar_cantidad_descuento').val(data_row.min_amount);
             $('#editar_descuento_producto').val(data_row.discount);
             $('#estado_descuento').val(data_row.state.id);
@@ -707,3 +707,4 @@ $(function () {
         });
     });
 });
+// para push

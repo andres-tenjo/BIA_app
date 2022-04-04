@@ -611,7 +611,7 @@ class clsCatalogoClientesMdl(BaseModel):
     commercial_advisor = models.ForeignKey(clsAsesorComercialMdl, on_delete=models.CASCADE)
     pay_method = models.CharField('Metodo de pago', max_length=200, choices=PAYMETHOD)
     credit_days = models.PositiveSmallIntegerField('Días de crédito', blank=True, null=True)
-    credit_value = models.DecimalField('Cupo crédito', max_digits=10, decimal_places=2, default=0, blank=True, null=True)
+    approved_amount = models.DecimalField('Cupo crédito', max_digits=10, decimal_places=2, default=0, blank=True, null=True)
     state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
     objects = DataFrameManager()
     
@@ -1302,6 +1302,7 @@ class clsDetallePedidosMdl(models.Model):
 class clsOrdenesCompraMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
     identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete= models.CASCADE)
+    delivery_date= models.DateTimeField('Fecha de entrega', blank= True, null= True)
     subtotal= models.DecimalField('Subtotal', max_digits= 30, decimal_places= 2)
     iva= models.DecimalField('IVA', max_digits= 10, decimal_places= 2)
     discount= models.DecimalField('Descuento', max_digits= 20, decimal_places= 2)
@@ -1725,7 +1726,6 @@ def fncGenerarNumeroDocumento(sender, instance, **kwargs):
 #     canvas.save(buffer, 'PNG')
 #     instance.qr_code.save(fname, File(buffer), save=False)
 #     canvas.close()
-
 
 post_save.connect(fncGenerarNumeroDocumento, sender=clsAjusteInventarioMdl)
 post_save.connect(fncGenerarNumeroDocumento, sender=clsEntradasAlmacenMdl)
