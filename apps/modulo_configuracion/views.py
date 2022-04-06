@@ -1324,12 +1324,12 @@ class clsOpcionesCatalogoProveedoresViw(LoginRequiredMixin, ValidatePermissionRe
                     jsnData[i]['n'] = i + 1
             elif action == 'btnGuardarCondicionCantidadMinimajsn':
                 with transaction.atomic():
-                    intProveedorId = request.POST['proveedor']
+                    intProveedorId = int(request.POST['proveedor'])
                     jsnProductos = json.loads(request.POST['items'])
                     for i in jsnProductos:
                         clsCondicionMinimaCompraMdl.objects.create(
-                            supplier_id = intProveedorId,
-                            product_id = i['id'],
+                            identification_id = intProveedorId,
+                            product_code_id = i['id'],
                             min_amount = i['cantidad']
                         )
             elif action == 'frmEditarCantidadMinimajsn':
@@ -1349,8 +1349,8 @@ class clsOpcionesCatalogoProveedoresViw(LoginRequiredMixin, ValidatePermissionRe
                     jsnProductos = json.loads(request.POST['items'])
                     for i in jsnProductos:
                         clsCondicionDescuentoProveedorMdl.objects.create(
-                            supplier_id = intProveedorId,
-                            product_id = i['id'],
+                            identification_id = intProveedorId,
+                            product_code_id = i['id'],
                             min_amount = i['cantidad'],
                             discount = i['descuento']
                         )
