@@ -3,7 +3,9 @@ from django.forms import *
 from .models import *
 from apps.choices import *
 
-# Empresa
+##########################################################
+# 1. EMPRESA
+##########################################################
 ''' Formulario empresa '''
 class clsCrearEmpresaFrm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -120,8 +122,9 @@ class clsCrearEmpresaFrm(ModelForm):
             data['error'] = str(e)
         return data
 
-
-# Productos
+##########################################################
+# 2. CATÁLOGO PRODUCTOS
+##########################################################
 ''' Formulario catalogo productos '''
 class clsCrearProductoFrm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -420,9 +423,9 @@ class clsCrearUnidadVentaFrm(ModelForm):
             data['error'] = str(e)
         return data
 
-
-
-# Proveedores
+##########################################################
+# 3. CATÁLOGO PROVEEDORES
+##########################################################
 ''' Formulario catálogo de proveedores '''
 class clsCrearProveedorFrm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -567,8 +570,9 @@ class clsCrearProveedorFrm(ModelForm):
             data['error'] = str(e)
         return data
 
-
-# Clientes
+##########################################################
+# 4. CATÁLOGO CLIENTES
+##########################################################
 ''' Formulario catalogo clientes '''
 class clsCrearClienteFrm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -829,7 +833,9 @@ class clsCrearAsesorComercialFrm(ModelForm):
             data['error'] = str(e)
         return data
 
-# Bodegas
+##########################################################
+# 5. CATÁLOGO BODEGAS
+##########################################################
 ''' Formulario catalogo clientes '''
 class clsCatalogoBodegasFrm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -889,8 +895,9 @@ class clsCatalogoBodegasFrm(ModelForm):
             data['error'] = str(e)
         return data
 
-
-# Ajustes de inventario
+##########################################################
+# 6. AJUSTES INVENTARIO
+##########################################################
 ''' Formulario ajustes inventario '''
 class clsAjustesInventarioFrm(ModelForm):
     def __init__(self, *args, **kwargs):

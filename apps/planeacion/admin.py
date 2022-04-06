@@ -3,9 +3,28 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 
-from .models import *
+from apps.modulo_configuracion.models import *
 
-# ''' Admin planeación comercial '''
-# @admin.register(clsIndicadoresComercialesMdl)
-# class PersonAdmin(ImportExportModelAdmin):
-#     pass
+###########################################################
+# INDICADORES COMERCIALES
+###########################################################
+''' Indicadores comerciales'''
+@admin.register(clsIndicadoresComercialesMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+###########################################################
+# INDICADORES COMPRAS
+###########################################################
+''' Indicadores compras'''
+@admin.register(clsIndicadoresComprasMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+###########################################################
+# INDICADORES ALMACEN
+###########################################################
+''' Indicadores almacen'''
+@admin.register(clsIndicadoresAlmacenMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass

@@ -452,4 +452,3 @@ def creasalida(intCliente):
         qrsDetalle.save()
 
 ################################################
-# Prueba para realizar merge"

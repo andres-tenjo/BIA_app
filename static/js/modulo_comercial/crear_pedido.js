@@ -245,7 +245,7 @@ $(function(){
     });
 
     // Buscar cliente
-    $('#customer').select2({
+    $('#identification').select2({
         theme: "bootstrap4",
         language: 'es',
         allowClear: true,

@@ -3,34 +3,61 @@ from import_export.admin import ImportExportModelAdmin
 
 from django.contrib import admin
 
-from .models import *
+from apps.modulo_configuracion.models import *
 
-# @admin.register(clsVentasPerdidasMdl)
-# class PersonAdmin(ImportExportModelAdmin):
-#     pass
+##########################################################
+# PROMOCIONES
+##########################################################
+''' Promociones comerciales'''
+@admin.register(clsPromocionesMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
 
-# ''' Admin cotizaciones '''
-# @admin.register(Quotes)
-# class PersonAdmin(ImportExportModelAdmin):
-#     pass
+''' Detalle productos promociones comerciales'''
+@admin.register(clsDetalleProductosPromocionesMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
 
-# @admin.register(QuotesDetail)
-# class PersonAdmin(ImportExportModelAdmin):
-#     pass
+''' Detalle clientes promociones comerciales'''
+@admin.register(clsDetalleClientesPromocionesMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
 
-# ''' Admin cartera clientes '''
-# @admin.register(CustomerDebt)
-# class PersonAdmin(ImportExportModelAdmin):
-#     pass
+''' Detalle filtros promociones comerciales'''
+@admin.register(clsDetalleFiltrosPromocionesMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
 
-# ''' Admin pagos clientes '''
-# @admin.register(CustomerPayments)
-# class PersonAdmin(ImportExportModelAdmin):
-#     pass
+##########################################################
+# PEDIDOS
+##########################################################
+''' Pedidos'''
+@admin.register(clsPedidosMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
 
-# ''' Admin agenda llamadas '''
-# @admin.register(ScheduleCall)
-# class PersonAdmin(ImportExportModelAdmin):
-#     pass
+''' Detalle pedidos'''
+@admin.register(clsDetallePedidosMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
 
+##########################################################
+# COTIZACIONES
+##########################################################
+''' Cotizaciones '''
+@admin.register(clsCotizacionesMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
 
+''' Detalle cotizaciones'''
+@admin.register(clsDetalleCotizacionesMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+
+##########################################################
+# ACTIVIDADES COMERCIALES
+##########################################################
+''' Actividades comerciales '''
+@admin.register(clsActividadesComercialMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
