@@ -423,6 +423,135 @@ class clsCrearUnidadVentaFrm(ModelForm):
             data['error'] = str(e)
         return data
 
+
+
+##########################################################
+# 3. LISTA DE PRECIOS
+##########################################################
+''' Formulario lista de precios '''
+class clsCrearListaPreciosFrm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['list_name'].widget.attrs['autofocus'] = True
+
+    class Meta:
+        model = clsListaPreciosMdl
+        exclude = ['user_update', 'user_creation', 'state']
+        widgets = {
+            'list_name': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Ej. Almacenes de cadena',
+                    'id': 'list_name',
+                }
+            ),
+            'store': Select(
+                attrs={
+                    'class': 'form-control select2',
+                    'style': 'width: 100%',
+                    'id': 'store',
+                }
+            ),
+            'freight': TextInput(
+                attrs={
+                    'class': 'form-control touchPerc',
+                    'placeholder': 'Ej. 20',
+                    'id': 'freight',
+                    'type': 'number',
+                    'step': '0.01'
+                }
+            ),
+            'due_date': DateInput(
+                attrs={
+                    'autocomplete': 'off',
+                    'type': 'date',
+                    'class': 'form-control',
+                    'id': 'due_date'
+                },
+                format='%Y-%m-%d'
+            ),
+            'observations': Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'id': 'observations',
+                    'rows':'1'
+                }
+            ),
+        }
+
+    def save(self, commit=True):
+        data = {}
+        form = super()
+        try:
+            if form.is_valid():
+                instance = form.save()
+            else:
+                data['error'] = form.errors
+        except Exception as e:
+            data['error'] = str(e)
+        return data
+
+''' Formulario detalle lista de precios '''
+class clsCrearListaPreciosDetalleFrm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = clsDetalleListaPreciosMdl
+        exclude = ['doc_number']
+        widgets = {
+            'product_code': Select(
+                attrs={
+                    'class': 'form-control select2',
+                    'style': 'width: 100%',
+                    'id': 'product_code',
+                }
+            ),
+            'quantity': NumberInput(
+                attrs={
+                    'class': 'form-control touchNumber',
+                    'placeholder': 'Ej. 20',
+                    'id': 'quantity',
+                    'type': 'number'
+                }
+            ),
+            'lead_time': NumberInput(
+                attrs={
+                    'class': 'form-control touchNumber',
+                    'placeholder': 'Ej. 20',
+                    'id': 'lead_time',
+                    'type': 'number'
+                }
+            ),
+            'unit_price': NumberInput(
+                attrs={
+                    'class': 'form-control touchPrice',
+                    'placeholder': 'Ej. 20',
+                    'id': 'unit_price',
+                    'type': 'number'
+                }
+            ),
+            'observations': Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'id': 'observation',
+                    'rows':'1'
+                }
+            ),
+        }
+
+    def save(self, commit=True):
+        data = {}
+        form = super()
+        try:
+            if form.is_valid():
+                form.save()
+            else:
+                data['error'] = form.errors
+        except Exception as e:
+            data['error'] = str(e)
+        return data
+
 ##########################################################
 # 3. CATÁLOGO PROVEEDORES
 ##########################################################
@@ -956,3 +1085,90 @@ class clsAjustesInventarioFrm(ModelForm):
                 }
             ),
         }
+
+##########################################################
+# 7. TIEMPOS DE ENTREGA
+##########################################################
+''' Formulario ajustes inventario '''
+class clsCrearTiempoEntregaFrm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = clsTiemposEntregaMdl
+        exclude = ['user_update', 'user_creation', 'state']
+        widgets = {
+            'city': Select(
+                attrs={
+                'class': 'form-control',
+                'style': 'width: 100%',
+                'id': 'city'
+                }
+            ),
+            'customer_zone': Select(
+                attrs={
+                'class': 'form-control select2',
+                'style': 'width: 100%',
+                'id': 'customer_zone'
+                }
+            ),
+            'warehouse': Select(
+                attrs={
+                'class': 'form-control select2',
+                'style': 'width: 100%',
+                'id': 'warehouse'
+                }
+            ),
+            'enlistment_time': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Ej. 20',
+                    'id': 'enlistment_time',
+                    'type': 'number',
+                    'step': '0.1',
+                    'value': '0'
+                }
+            ),
+            'travel_time': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Ej. 20',
+                    'id': 'travel_time',
+                    'type': 'number',
+                    'step': '0.1',
+                    'value': '0'
+                }
+            ),
+            'download_time': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Ej. 20',
+                    'id': 'download_time',
+                    'type': 'number',
+                    'step': '0.1',
+                    'value': '0'
+                }
+            ),
+            'total_time': TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'id': 'total_time',
+                    'type': 'text',
+                    'readonly': 'true',
+                    'step': '0.1',
+                    'value': '0'
+                }
+            ),
+        }
+
+    def save(self, commit=True):
+        data = {}
+        form = super()
+        try:
+            if form.is_valid():
+                instance = form.save()
+            else:
+                data['error'] = form.errors
+        except Exception as e:
+            data['error'] = str(e)
+        return data

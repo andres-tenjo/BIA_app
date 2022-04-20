@@ -3,6 +3,8 @@ import json
 from datetime import datetime, date, timedelta
 import time
 from pandas import pandas as pd
+import os
+from weasyprint import HTML, CSS
 
 # Modelos BIA
 from apps.Modelos.Several_func import *
@@ -16,10 +18,11 @@ from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db.models import Q
-from django.views.generic import TemplateView, ListView, UpdateView, CreateView
+from django.views.generic import TemplateView, ListView, UpdateView, CreateView, View
 from django.urls import reverse_lazy
+from django.template.loader import get_template
 
 # Django-rest libraries
 from rest_framework.views import APIView
@@ -445,7 +448,7 @@ class clsExportarPlantillaProductosViw(APIView):
     def get(self, request):
         lstCeldasExcel = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1', 'I1', 'J1', 'K1', 'L1', 'M1', 'N1']
         lstComentariosExcel = [
-            'Ingrersa el nombre y una descripción breve del producto por ejemplo: Coca cola pet x 12',
+            'Ingresa el nombre y una descripción breve del producto',
             'Este espacio solo permite el ingreso de números, digita el código de barras del producto',
             'Ingresa la marca de tu producto',
             'Como ya creaste las categorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "CATEGORIA" donde encontraras las que ya has creado, ahí puedes validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna). Por ejemplo la categoria se llama Bebidas y el numero que aparece al inicio es 1, digitas 1 en este campo',
@@ -537,7 +540,7 @@ class clsExportarPlantillaProductosViw(APIView):
             'PERMITE .', 'PERMITE .', 'NO PERMITE'
             ]
         lstObservaciones = [
-            'Ingrersa el nombre y una descripción breve del producto por ejemplo: Coca cola pet x 12',
+            'Ingresa el nombre y una descripción breve del producto por ejemplo: Coca cola pet x 12',
             'Este espacio solo permite el ingreso de números, digita el código de barras del producto',
             'Ingresa la marca de tu producto',
             'Como ya creaste las categorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "CATEGORIA" donde encontraras las que ya has creado, ahí puedes validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna). Por ejemplo la categoria se llama Bebidas y el numero que aparece al inicio es 1, digitas 1 en este campo',
@@ -554,7 +557,7 @@ class clsExportarPlantillaProductosViw(APIView):
             ]
         lstCampoObligatorio = [
             'SI', 'NO', 'SI',
-            'SI', 'SI', 'SI', 'SI',
+            'SI', 'NO', 'SI', 'SI',
             'SI', 'SI', 'SI', 'SI',
             'NO', 'NO', 'SI'
             ]
@@ -616,7 +619,7 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
             ((True, 'bar_code', clsCatalogoProductosMdl), (True, 20), (True, 1), (False,)),
             ((False,), (True, 60), (True, 1), (False,)),
             ((False,), (True, 2), (True, 1), (True, clsCategoriaProductoMdl)),
-            ((False,), (True, 2), (True, 1), (True, clsSubcategoriaProductoMdl)),
+            ((False,), (True, 2), (False,), (True, clsSubcategoriaProductoMdl)),
             ((False,), (True, 2), (True, 1), (True, clsUnidadCompraMdl)),
             ((True, int), (True, 4), (True, 1), (False,)),
             ((True, float), (True, 13), (True, 2), (False,)),
@@ -647,40 +650,75 @@ class clsImportarCatalogoProductosViw(LoginRequiredMixin, TemplateView):
                         with transaction.atomic():
                             for i in (dtfProductos.values.tolist()):
                                 if int(i[1]) > 0:
-                                    clsCatalogoProductosMdl.objects.create(
-                                    product_desc = i[0],
-                                    bar_code = int(i[1]),
-                                    trademark = i[2],
-                                    product_cat_id = int(i[3]),
-                                    product_subcat_id = int(i[4]),
-                                    purchase_unit_id = int(i[5]),
-                                    quantity_pu = int(i[6]),
-                                    cost_pu = float(i[7]),
-                                    sales_unit_id = int(i[8]),
-                                    quantity_su = int(i[9]),
-                                    full_sale_price = float(i[10]),
-                                    split = int(i[6]/i[9]),
-                                    iva = float(i[11]),
-                                    other_tax = float(i[12]),
-                                    supplier_lead_time = int(i[13])
-                                    )
-                                else:
-                                    clsCatalogoProductosMdl.objects.create(
-                                    product_desc = i[0],
-                                    trademark = i[2],
-                                    product_cat_id = int(i[3]),
-                                    product_subcat_id = int(i[4]),
-                                    purchase_unit_id = int(i[5]),
-                                    quantity_pu = int(i[6]),
-                                    cost_pu = float(i[7]),
-                                    sales_unit_id = int(i[8]),
-                                    quantity_su = int(i[9]),
-                                    full_sale_price = float(i[10]),
-                                    split = int(i[6]/i[9]),
-                                    iva = float(i[11]),
-                                    other_tax = float(i[12]),
-                                    supplier_lead_time = int(i[13])
-                                    )
+                                    if i[4] != 0:
+                                        clsCatalogoProductosMdl.objects.create(
+                                        product_desc = i[0],
+                                        bar_code = int(i[1]),
+                                        trademark = i[2],
+                                        product_cat_id = int(i[3]),
+                                        product_subcat_id = int(i[4]),
+                                        purchase_unit_id = int(i[5]),
+                                        quantity_pu = int(i[6]),
+                                        cost_pu = float(i[7]),
+                                        sales_unit_id = int(i[8]),
+                                        quantity_su = int(i[9]),
+                                        full_sale_price = float(i[10]),
+                                        split = int(i[6]/i[9]),
+                                        iva = float(i[11]),
+                                        other_tax = float(i[12]),
+                                        supplier_lead_time = int(i[13])
+                                        )
+                                    elif i[4] == 0:
+                                        clsCatalogoProductosMdl.objects.create(
+                                        product_desc = i[0],
+                                        bar_code = int(i[1]),
+                                        trademark = i[2],
+                                        product_cat_id = int(i[3]),
+                                        purchase_unit_id = int(i[5]),
+                                        quantity_pu = int(i[6]),
+                                        cost_pu = float(i[7]),
+                                        sales_unit_id = int(i[8]),
+                                        quantity_su = int(i[9]),
+                                        full_sale_price = float(i[10]),
+                                        split = int(i[6]/i[9]),
+                                        iva = float(i[11]),
+                                        other_tax = float(i[12]),
+                                        supplier_lead_time = int(i[13])
+                                        )
+                                elif i[1] == 0:
+                                    if i[4] != 0:
+                                        clsCatalogoProductosMdl.objects.create(
+                                        product_desc = i[0],
+                                        trademark = i[2],
+                                        product_cat_id = int(i[3]),
+                                        product_subcat_id = int(i[4]),
+                                        purchase_unit_id = int(i[5]),
+                                        quantity_pu = int(i[6]),
+                                        cost_pu = float(i[7]),
+                                        sales_unit_id = int(i[8]),
+                                        quantity_su = int(i[9]),
+                                        full_sale_price = float(i[10]),
+                                        split = int(i[6]/i[9]),
+                                        iva = float(i[11]),
+                                        other_tax = float(i[12]),
+                                        supplier_lead_time = int(i[13])
+                                        )
+                                    elif i[4] == 0:
+                                        clsCatalogoProductosMdl.objects.create(
+                                        product_desc = i[0],
+                                        trademark = i[2],
+                                        product_cat_id = int(i[3]),
+                                        purchase_unit_id = int(i[5]),
+                                        quantity_pu = int(i[6]),
+                                        cost_pu = float(i[7]),
+                                        sales_unit_id = int(i[8]),
+                                        quantity_su = int(i[9]),
+                                        full_sale_price = float(i[10]),
+                                        split = int(i[6]/i[9]),
+                                        iva = float(i[11]),
+                                        other_tax = float(i[12]),
+                                        supplier_lead_time = int(i[13])
+                                        )
                         jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
                         response = JsonResponse(jsnData, safe=False)
                 else:
@@ -813,6 +851,8 @@ class clsListarCatalogoProductosViw(LoginRequiredMixin, ListView):
                         qrsCatalogoProductos.state = "IN"
                         qrsCatalogoProductos.save()
                     else:
+                        # lista de documentos asociados al producto que se quiere inactivar
+                        # exportar en excel
                         print(bolEvaluacion[1])
                 else:
                     qrsCatalogoProductos.state = "AC"
@@ -921,8 +961,8 @@ class clsExportarCatalogoProductosViw(APIView):
         dtfCatalogoProductos = pd.DataFrame(srlCatalogoProductos.data)
         dtfCatalogoProductos = dtfCatalogoProductos.rename(columns={
             'id':'Código',
-            'date_creation': 'Fecha de creación',
-            'date_update': 'Fecha de actualización',
+            'creation_date': 'Fecha de creación',
+            'update_date': 'Fecha de actualización',
             'product_desc': 'Descripción producto',
             'bar_code':'Código de barras',
             'trademark': 'Marca',
@@ -967,203 +1007,84 @@ class clsExportarCatalogoProductosViw(APIView):
             fncAgregarAnchoColumna(writer, True, dtfCatalogoProductos, 'CATALOGO_PRODUCTOS')
         return response
 
-''' 3.11 Vista menú listas de precios'''
+#################################################################################################
+# 4. PARAMETRIZACIÓN LISTA DE PRECIOS
+#################################################################################################
+''' 4.1 Vista menú listas de precios'''
 class clsMenuListasPreciosViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/lista_precios.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['options_title'] = 'Opciones'
-        context['options_url'] = reverse_lazy('configuracion:carga_masiva_listas_precios')
+        context['options_url'] = reverse_lazy('configuracion:importar_lista_precios')
         context['create_title'] = 'Crear lista de precios'
         context['create_url'] = reverse_lazy('configuracion:crear_lista_precios')
         context['search_title'] = 'Ver listas de precios'
         context['search_url'] = reverse_lazy('configuracion:ver_lista_precios')
         return context
 
-''' 3.12 Vista para carga masiva de listas de precios'''
-class clsCargaMasivaListasPreciosViw(LoginRequiredMixin, TemplateView):
-    template_name = 'modulo_configuracion/carga_masiva_listas_precios.html'
-    
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        lstNombresColumnas = [
-            'Nombre subcategoría',
-            'Categoría producto'
-            ]
-        tplValidaciones = (
-            ((True, 'product_subcat', clsSubcategoriaProductoMdl), (True, 60), (True, 1), (False,)),
-            ((False,), (True, 3), (True, 1), (True, clsCategoriaProductoMdl))
-            )
-        jsnData = {}
-        try:
-            action = request.POST['action']
-            if action == 'frmCargarArchivojsn':
-                filSubcategoriasProducto = request.FILES['file']
-                if str(filSubcategoriasProducto).endswith('.xlsx'):
-                    dtfSubcategorias = pd.read_excel(filSubcategoriasProducto)
-                    dtfSubcategorias = dtfSubcategorias.fillna(0)
-                    lstValidarImportacion = [ fncValidarImportacionlst(dtfSubcategorias, i, j) for (i, j) in zip(lstNombresColumnas, tplValidaciones) ]
-                    lstValidarImportacion = [ i for n in lstValidarImportacion for i in n ]
-                    if len(lstValidarImportacion):
-                        jsnSubcategoriaProducto = dtfSubcategorias.to_json(orient="split")
-                        jsnData['jsnSubcategoriaProducto'] = jsnSubcategoriaProducto
-                        jsnData['lstValidarImportacion'] = lstValidarImportacion
-                        jsnData['strErrorArchivo'] = 'El archivo presenta errores, desea descargarlos?'
-                        response = JsonResponse(jsnData, safe=False)
-                    else:
-                        with transaction.atomic():
-                            for i in (dtfSubcategorias.values.tolist()):
-                                clsSubcategoriaProductoMdl.objects.create(
-                                product_subcat = i[0],
-                                product_cat_id = int(i[1])
-                                )
-                        jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
-                        response = JsonResponse(jsnData, safe=False)
-                else:
-                    jsnData['error'] = 'Compruebe el formato del archivo'
-                    response = JsonResponse(jsnData, safe=False)
-            elif action == 'btnArchivoErroresjsn':
-                jsnSubcategoriaProducto = request.POST['jsnSubcategoriaProducto']
-                dtfSubcategorias = pd.read_json(jsnSubcategoriaProducto, orient='split')
-                lstValidarImportacion = json.loads(request.POST['lstValidarImportacion'])
-                lstErroresCeldas = list( dict.fromkeys([ i[1] for i in lstValidarImportacion ]) )
-                dtfSubcategorias = fncAgregarErroresDataframedtf(dtfSubcategorias, lstValidarImportacion, lstErroresCeldas)
-                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-                response['Content-Disposition'] = 'attachment; filename="subcategoria_productos.xlsx"'
-                with pd.ExcelWriter(response) as writer:
-                    dtfSubcategorias.to_excel(writer, sheet_name='VALIDAR', index=False)
-                    fncAgregarFormatoColumnasError(writer, lstValidarImportacion, 'VALIDAR', lstNombresColumnas)
-                    fncAgregarAnchoColumna(writer, False, dtfSubcategorias, 'VALIDAR')
-        except Exception as e:
-            jsnData['error'] = str(e)
-            response = JsonResponse(jsnData, safe=False)
-        return response
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-''' 3.13 Vista para exportar plantilla de lista de precios'''
+''' 4.2 Vista para exportar plantilla de lista de precios'''
 class clsExportarPlantillaListaPreciosViw(APIView):
 
     def get(self, request):
-        lstCeldasExcel = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1', 'I1', 'J1', 'K1', 'L1', 'M1', 'N1']
+        lstCeldasExcel = ['A1', 'B1', 'C1']
+        lstCeldasExcelProductos = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1']
+        qrsProductos = clsCatalogoProductosMdl.objects.all()
+        srlProductos = clsCatalogoProductosPlantillajson(qrsProductos, many=True)
+        dtfProductos = pd.DataFrame(srlProductos.data)
+        dtfProductos = dtfProductos.rename(columns={'id':'Código', 'product_desc':'Descripción producto'})
         lstComentariosExcel = [
-            'Ingrersa el nombre y una descripción breve del producto por ejemplo: Coca cola pet x 12',
-            'Este espacio solo permite el ingreso de números, digita el código de barras del producto',
-            'Ingresa la marca de tu producto',
-            'Como ya creaste las categorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "CATEGORIA" donde encontraras las que ya has creado, ahí puedes validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna). Por ejemplo la categoria se llama Bebidas y el numero que aparece al inicio es 1, digitas 1 en este campo',
-            'Como ya creaste las subcategorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "SUBCATEGORIA" allí encontraras las que ya has creado, podrás validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna)',
-            'Las unidades de compra ya las creaste, las encontrarás en la hoja llamada "UNIDAD_COMPRA", digita el número que aparece en la primer columna, por ejemplo: primer columna 1, segunda columna Canasta, si es una canasta digitas el 1',
-            'Cuantas unidades componen tu unidad de compra, si tu compras al proveedor por canasta de 30 unidades, el valor que debes digitar será 30',
-            'Ingresa el valor que pagas a tu proveedor por cada unidad de compra, por ejemplo: si compras por caja de 30 unidades, el valor por cada caja de 30 unidades, si tienes decimales solo ingresa 2 digitos. (Sin el signo $ y sin puntos',
-            'Las unidades de venta ya las creaste, en la hoja de este archivo llamada "UNIDAD_VENTA" las encontrarás, digita el número que aparece en la primer columna, por ejemplo: primer columna 1, segunda columna Canasta, si es una canasta digitas el 1',
-            'Ingresa la unidad en la que vendes a tus clientes este producto, por ejemplo: si compras por caja de 30 pero vendes por unidad, digitas 1',
-            'Aquí digitas el precio de venta que das a tus clientes de acuerdo a tu unidad de venta, si vendes por caja de 30, será este valor, si es por unidad; 1, será el valor de Una unidad. No ingreses el signo pesos ni puntos, si requieres puedes ingresar dos decimales con la coma',
-            'Ingresa en numero, el porcentaje de IVA que tiene este producto para la venta, no incluyas el signo %, por ejemplo si es 19%, solo ingresas 19, si no aplica dejas este campo vacio',
-            'Si para la venta de tu producto debes incluir otro impuesto adicional al IVA, ingresa en numero el porcentaje del impuesto sin incluir el signo %, por ejemplo 4%, solo ingresas 4,  si no aplica dejas este campo vacio',
-            'Ingresa en número de días el tiempo que tu proveedor se toma para entregarte el pedido una vez le envias la solicitud, por ejemplo 5 días, ingresas solo 5'
+            'Ingresa el nombre de la lista de precios por ejemplo: Almacenes de cadena',
+            'Como ya creaste las bdegas antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "CATALOGO_BODEGAS" donde encontraras las que ya has creado, ahí puedes validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna). Por ejemplo la bodega se llama Norte y el numero que aparece al inicio es 1, digitas 1 en este campo',
+            'Ingresa en numero, el porcentaje de FLETE que tiene este producto, no incluyas el signo %, por ejemplo si es 19%, solo ingresas 19'
         ]
-        qrsCategoriaProducto = clsCategoriaProductoMdl.objects.filter(state='AC')
-        srlCategoriaProducto = clsCategoriaProductoMdlSerializer(qrsCategoriaProducto, many=True)
-        dtfCategoriaProducto = pd.DataFrame(srlCategoriaProducto.data)
-        dtfCategoriaProducto = dtfCategoriaProducto.rename(columns={'id':'Código', 'product_cat':'Categoría'})
-        qrsSubcategoriaPorducto = clsSubcategoriaProductoMdl.objects.filter(state='AC')
-        srlSubcategoriaProducto = ProductSubcategorySerializer(qrsSubcategoriaPorducto, many=True)
-        dtfSubcategoria = pd.DataFrame(srlSubcategoriaProducto.data)
-        dtfSubcategoria = dtfSubcategoria.rename(columns={'id':'Código', 'product_subcat':'Subcategoría'})
-        dtfSubcategoria = dtfSubcategoria.drop(['product_cat'], axis=1)
-        qrsUnidadCompra = clsUnidadCompraMdl.objects.filter(state='AC')
-        srlUnidadCompra = clsUnidadCompraMdlSerializer(qrsUnidadCompra, many=True)
-        dtfUnidadCompra = pd.DataFrame(srlUnidadCompra.data)
-        dtfUnidadCompra = dtfUnidadCompra.rename(columns={'id':'Código', 'purchase_unit':'Unidad de compra'})
-        qrsUnidadVenta = clsUnidadVentaMdl.objects.filter(state='AC')
-        srlUnidadVenta = clsUnidadVentaMdlSerializer(qrsUnidadVenta, many=True)
-        dtfUnidadVenta = pd.DataFrame(srlUnidadVenta.data)
-        dtfUnidadVenta = dtfUnidadVenta.rename(columns={'id':'Código', 'sales_unit':'Unidad de venta'})
-        dtfPlantillaProductos = pd.DataFrame(
+        lstComentariosExcelProductos = [
+            'Ingresa el número de la primer columna del producto según la hoja de este archivo llamada "CATALOGO_PRODUCTOS"',
+            'Ingresa la cantidad',
+            'Ingresa el tiempo de entrega',
+            'Ingresa el precio unitario',
+            'Ingresa la vigencia',
+            'Ingresa las observaciones'
+        ]
+        qrsBodegas = clsCatalogoBodegasMdl.objects.all()
+        srlBodegas = clsCatalogoBodegasPlantillajson(qrsBodegas, many=True)
+        dtfBodegas = pd.DataFrame(srlBodegas.data)
+        dtfBodegas = dtfBodegas.rename(columns={'id':'Código', 'warehouse_name':'Nombre bodega', 'contact_name':'Responsable'})
+        dtfPlantillaListaPrecios = pd.DataFrame(
             {
-                'Descripción producto':[],
-                'Código de barras':[],
-                'Marca':[],
-                'Categoría producto':[],
-                'Subcategoría producto':[],
-                'Unidad de compra':[],
-                'Cantidad unidad de compra':[],
-                'Precio de compra':[],
-                'Unidad de venta':[],
-                'Cantidad unidad de venta':[],
-                'Precio de venta':[],
-                'Iva':[],
-                'Otros impuestos':[],
-                'Tiempo de entrega proveedor':[],
+                'Nombre lista':[],
+                'Código bodega':[],
+                'Flete':[],
             }, 
             index = [i for i in range (0, 0)]
             )
-        lstNombresColumnasPlantilla = list(dtfPlantillaProductos.columns.values)
+        lstNombresColumnasPlantilla = list(dtfPlantillaListaPrecios.columns.values)
         lstTotalColumnas = [ i for i in range (1, len(lstNombresColumnasPlantilla) + 1) ]
         lstTipoDato = [
             'Alfabético', 
             'Numérico',  
-            'AlfaNumérico',
-            'Numérico', 
-            'Numérico', 
-            'Numérico', 
-            'Numérico', 
-            'Decimal', 
-            'Numérico', 
-            'Numérico', 
-            'Decimal', 
-            'Decimal', 
-            'Decimal', 
-            'Numérico'
+            'Decimal',
             ]
         lstLongitudMaxima = [
             100,
-            30, 
-            100,
             2, 
-            2, 
-            2, 
-            4,
-            13, 
-            2, 
-            4, 
-            13,
-            2, 
-            2, 
-            2
+            5
             ]
         lstCaracteresEspeciales = [
-            'PERMITE Ñ', 'NO PERMITE', 'PERMITE Ñ',
-            'NO PERMITE', 'NO PERMITE', 'NO PERMITE', 'NO PERMITE',
-            'PERMITE .', 'NO PERMITE', 'NO PERMITE', 'PERMITE .',
-            'PERMITE .', 'PERMITE .', 'NO PERMITE'
+            'PERMITE Ñ',
+            'NO PERMITE',
+            'NO PERMITE',
             ]
         lstObservaciones = [
-            'Ingrersa el nombre y una descripción breve del producto por ejemplo: Coca cola pet x 12',
-            'Este espacio solo permite el ingreso de números, digita el código de barras del producto',
-            'Ingresa la marca de tu producto',
-            'Como ya creaste las categorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "CATEGORIA" donde encontraras las que ya has creado, ahí puedes validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna). Por ejemplo la categoria se llama Bebidas y el numero que aparece al inicio es 1, digitas 1 en este campo',
-            'Como ya creaste las subcategorias antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "SUBCATEGORIA" allí encontraras las que ya has creado, podrás validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna)',
-            'Las unidades de compra ya las creaste, las encontrarás en la hoja llamada "UNIDAD_COMPRA", digita el número que aparece en la primer columna, por ejemplo: primer columna 1, segunda columna Canasta, si es una canasta digitas el 1',
-            'Cuantas unidades componen tu unidad de compra, si tu compras al proveedor por canasta de 30 unidades, el valor que debes digitar será 30',
-            'Ingresa el valor que pagas a tu proveedor por cada unidad de compra, por ejemplo: si compras por caja de 30 unidades, el valor por cada caja de 30 unidades, si tienes decimales solo ingresa 2 digitos. (Sin el signo $ y sin puntos',
-            'Las unidades de venta ya las creaste, en la hoja de este archivo llamada "UNIDAD_VENTA" las encontrarás, digita el número que aparece en la primer columna, por ejemplo: primer columna 1, segunda columna Canasta, si es una canasta digitas el 1',
-            'Ingresa la unidad en la que vendes a tus clientes este producto, por ejemplo: si compras por caja de 30 pero vendes por unidad, digitas 1',
-            'Aquí digitas el precio de venta que das a tus clientes de acuerdo a tu unidad de venta, si vendes por caja de 30, será este valor, si es por unidad; 1, será el valor de Una unidad. No ingreses el signo pesos ni puntos, si requieres puedes ingresar dos decimales con la coma',
-            'Ingresa en numero, el porcentaje de IVA que tiene este producto para la venta, no incluyas el signo %, por ejemplo si es 19%, solo ingresas 19, si no aplica dejas este campo vacio',
-            'Si para la venta de tu producto debes incluir otro impuesto adicional al IVA, ingresa en numero el porcentaje del impuesto sin incluir el signo %, por ejemplo 4%, solo ingresas 4,  si no aplica dejas este campo vacio',
-            'Ingresa en número de días el tiempo que tu proveedor se toma para entregarte el pedido una vez le envias la solicitud, por ejemplo 5 días, ingresas solo 5'
+            'Ingresa el nombre de la lista de precios por ejemplo: Almacenes de cadena',
+            'Como ya creaste las bdegas antes de descargar esta plantilla, en este archivo se encuentra la hoja con el nombre "BODEGAS" donde encontraras las que ya has creado, ahí puedes validar a que número corresponde y solo ingresas ese número (es el numero en la primer columna). Por ejemplo la bodega se llama Norte y el numero que aparece al inicio es 1, digitas 1 en este campo',
+            'Ingresa en numero, el porcentaje de FLETE que tiene este producto, no incluyas el signo %, por ejemplo si es 19%, solo ingresas 19'
             ]
         lstCampoObligatorio = [
-            'SI', 'NO', 'SI',
-            'SI', 'SI', 'SI', 'SI',
-            'SI', 'SI', 'SI', 'SI',
-            'NO', 'NO', 'SI'
+            'SI',
+            'NO',
+            'SI'
             ]
         dtfInstructivoPlantilla = pd.DataFrame(
             {'Nº': lstTotalColumnas, 
@@ -1176,28 +1097,212 @@ class clsExportarPlantillaListaPreciosViw(APIView):
             }, 
             index = [i for i in range (0, len(lstTipoDato))]
             )
+        dtfPlantillaListaPreciosProductos = pd.DataFrame(
+            {
+                'Código producto':[],
+                'Cantidad':[],
+                'Tiempo de entrega':[],
+                'Precio unitario':[],
+                'Fecha de vigencia':[],
+                'Observaciones':[],
+            }, 
+            index = [i for i in range (0, 0)]
+            )
+        lstNombresColumnasPlantillaProductos = list(dtfPlantillaListaPreciosProductos.columns.values)
+        lstTotalColumnasProductos = [ i for i in range (1, len(lstNombresColumnasPlantillaProductos) + 1) ]
+        lstTipoDatoProducto = [
+            'Numérico',
+            'Numérico',
+            'Numérico',
+            'Decimal',
+            'Decimal',
+            'Alfabético', 
+            ]
+        lstLongitudMaximaProducto = [
+            5,
+            6, 
+            6,
+            20,
+            10,
+            100
+            ]
+        lstCaracteresEspecialesProducto = [
+            'NO PERMITE',
+            'NO PERMITE',
+            'NO PERMITE',
+            'NO PERMITE',
+            'NO PERMITE',
+            'PERMITE Ñ',
+            ]
+        lstObservacionesProducto = [
+            'Ingresa el número de la primer columna del producto según la hoja de este archivo llamada "CATALOGO_PRODUCTOS"',
+            'Ingresa la cantidad',
+            'Ingresa el tiempo de entrega',
+            'Ingresa el precio unitario',
+            'Ingresa la vigencia',
+            'Ingresa las observaciones'
+            ]
+        lstCampoObligatorioProducto = [
+            'SI',
+            'SI',
+            'SI',
+            'SI',
+            'SI',
+            'SI'
+            ]
+        dtfInstructivoPlantillaProducto = pd.DataFrame(
+            {'Nº': lstTotalColumnasProductos, 
+            'NOMBRE CAMPO': lstNombresColumnasPlantillaProductos, 
+            'TIPO DE DATO': lstTipoDatoProducto,
+            'LONGITUD MAX': lstLongitudMaximaProducto,
+            'CARACTERES ESPECIALES': lstCaracteresEspecialesProducto,
+            'OBSERVACIONES': lstObservacionesProducto,
+            'OBLIGATORIO': lstCampoObligatorioProducto,
+            }, 
+            index = [i for i in range (0, len(lstTipoDatoProducto))]
+            )
         response = HttpResponse(content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="catalogo_productos.xlsx"'
+        response['Content-Disposition'] = 'attachment; filename="plantilla_lista_precios.xlsx"'
         with pd.ExcelWriter(response) as writer:
-            dtfPlantillaProductos.to_excel(writer, sheet_name='PLANTILLA', index=False)
-            dtfInstructivoPlantilla.to_excel(writer, sheet_name='INSTRUCTIVO', index=False)
-            dtfCategoriaProducto.to_excel(writer, sheet_name='CATEGORIA', index=False)
-            dtfSubcategoria.to_excel(writer, sheet_name='SUBCATEGORIA', index=False)
-            dtfUnidadCompra.to_excel(writer, sheet_name='UNIDAD_COMPRA', index=False)
-            dtfUnidadVenta.to_excel(writer, sheet_name='UNIDAD_VENTA', index=False)
-            fncAgregarAnchoColumna(writer, False, dtfPlantillaProductos, 'PLANTILLA') 
-            fncAgregarAnchoColumna(writer, True, dtfInstructivoPlantilla, 'INSTRUCTIVO')
-            fncAgregarAnchoColumna(writer, True, dtfCategoriaProducto, 'CATEGORIA')
-            fncAgregarAnchoColumna(writer, True, dtfSubcategoria, 'SUBCATEGORIA')
-            fncAgregarAnchoColumna(writer, True, dtfUnidadCompra, 'UNIDAD_COMPRA')
-            fncAgregarAnchoColumna(writer, True, dtfUnidadVenta, 'UNIDAD_VENTA')
-            fncAgregarComentarioCeldas(writer, 'PLANTILLA', lstCeldasExcel, lstComentariosExcel)
+            dtfPlantillaListaPrecios.to_excel(writer, sheet_name='PLANTILLA_LISTA', index=False)
+            dtfPlantillaListaPreciosProductos.to_excel(writer, sheet_name='PLANTILLA_PRODUCTOS_LISTA', index=False)
+            dtfInstructivoPlantilla.to_excel(writer, sheet_name='INSTRUCTIVO_LISTA', index=False)
+            dtfInstructivoPlantillaProducto.to_excel(writer, sheet_name='INSTRUCTIVO_PRODUCTOS_LISTA', index=False)
+            dtfBodegas.to_excel(writer, sheet_name='CATALOGO_BODEGAS', index=False)
+            dtfProductos.to_excel(writer, sheet_name='CATALOGO_PRODUCTOS', index=False)
+            fncAgregarAnchoColumna(writer, False, dtfPlantillaListaPrecios, 'PLANTILLA_LISTA')
+            fncAgregarAnchoColumna(writer, False, dtfPlantillaListaPreciosProductos, 'PLANTILLA_PRODUCTOS_LISTA')
+            fncAgregarAnchoColumna(writer, True, dtfInstructivoPlantilla, 'INSTRUCTIVO_LISTA')
+            fncAgregarAnchoColumna(writer, True, dtfInstructivoPlantillaProducto, 'INSTRUCTIVO_PRODUCTOS_LISTA')
+            fncAgregarAnchoColumna(writer, True, dtfBodegas, 'CATALOGO_BODEGAS')
+            fncAgregarAnchoColumna(writer, True, dtfProductos, 'CATALOGO_PRODUCTOS')
+            fncAgregarComentarioCeldas(writer, 'PLANTILLA_LISTA', lstCeldasExcel, lstComentariosExcel)
+            fncAgregarComentarioCeldas(writer, 'PLANTILLA_PRODUCTOS_LISTA', lstCeldasExcelProductos, lstComentariosExcelProductos)
         return response
 
-''' 3.14 Vista para crear lista de precios'''
+''' 4.3 Vista para importar listas de precios'''
+class clsImportarListasPreciosViw(LoginRequiredMixin, TemplateView):
+    template_name = 'modulo_configuracion/importar_listas_precios.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        lstListaPrecios = [
+            'Nombre lista',
+            'Código bodega',
+            'Flete'
+            ]
+        tplListaPrecios = (
+            ((False,), (True, 100), (True, 1), (False,)),
+            ((False,), (True, 10), (True, 1), (True, clsCatalogoBodegasMdl)),
+            ((True, float), (True, 30), (True, 1), (False,))
+            )
+        lstListaPreciosDetalle = [
+            'Código producto',
+            'Cantidad',
+            'Tiempo de entrega',
+            'Precio unitario',
+            'Fecha de vigencia',
+            'Observaciones'
+            ]
+        tplListaPreciosDetalle = (
+            ((False,), (True, 10), (True, 1), (True, clsCatalogoProductosMdl)),
+            ((True, int), (True, 5), (False, ), (False,)),
+            ((True, Timestamp), (True, 20), (True, 1), (False,)),
+            ((True, float), (True, 30), (True, 1), (False,))
+            ((True, Timestamp), (True, 20), (True, 1), (False,)),
+            ((False,), (True, 100), (True, 1), (False,))
+            )
+        jsnData = {}
+        try:
+            action = request.POST['action']
+            if action == 'frmCargarArchivojsn':
+                filListaPrecios = request.FILES['file']
+                if str(filListaPrecios).endswith('.xlsx'):
+                    dtfListaPrecios = pd.read_excel(filListaPrecios, 0)
+                    dtfListaPrecios = dtfListaPrecios.fillna(0)
+                    dtfListaPreciosDetalle = pd.read_excel(filListaPrecios, 1)
+                    dtfListaPreciosDetalle = dtfListaPrecios.fillna(0)
+                    lstValidarListaPrecios = [ fncValidarImportacionlst(dtfListaPrecios, i, j) for (i, j) in zip(lstListaPrecios, tplListaPrecios) ]
+                    lstValidarListaPrecios = [ i for n in lstValidarListaPrecios for i in n ]
+                    lstValidarListaPreciosDetalle = [ fncValidarImportacionlst(dtfListaPreciosDetalle, i, j) for (i, j) in zip(lstListaPreciosDetalle, tplListaPreciosDetalle) ]
+                    lstValidarListaPreciosDetalle = [ i for n in lstValidarListaPreciosDetalle for i in n ]
+                    dctValidaciones = {}
+                    if len(lstValidarListaPrecios):
+                        dctValidaciones['dtfListaPreciosError'] = dtfListaPrecios.to_json(orient="split")
+                        dctValidaciones['lstValidarListaPrecios'] = lstValidarListaPrecios
+                    if len(lstValidarListaPreciosDetalle):
+                        dtfListaPreciosDetalle.loc[:,'Fecha de vigencia'] = dtfListaPreciosDetalle['Fecha de vigencia'].astype(str)
+                        dctValidaciones['dtfListaPreciosDetalleError'] = dtfListaPreciosDetalle.to_json(orient="split")
+                        dctValidaciones['lstValidarListaPreciosDetalle'] = lstValidarListaPreciosDetalle
+                    if len(dctValidaciones):
+                        jsnData['dctValidaciones'] = dctValidaciones
+                        jsnData['strError'] = 'El archivo presenta errores, ¿desea descargarlos?'
+                        response = JsonResponse(jsnData, safe=False)
+                    else:
+                        with transaction.atomic():
+                            for i in (dtfListaPrecios.values.tolist()):
+                                qrsListaPrecios = clsListaPreciosMdl.objects.create(
+                                list_name = i[0],
+                                store_id = int(i[1]),
+                                freight = float(i[2])
+                                )
+                            for i in (lstValidarListaPreciosDetalle.values.tolist()):
+                                clsDetalleListaPreciosMdl.objects.create(
+                                doc_number_id = qrsListaPrecios.id,
+                                product_code_id = int(i[0]),
+                                quantity = int(i[1]),
+                                lead_time = int(i[2]),
+                                unit_price = float(i[3]),
+                                due_date = i[4],
+                                observations = i[5]
+                                )
+                        jsnData['success'] = '¡Se ha generado su lista de precios de manera exitosa!'
+                        response = JsonResponse(jsnData, safe=False)
+                else:
+                    jsnData['error'] = 'Compruebe el formato del archivo'
+                    response = JsonResponse(jsnData, safe=False)
+            elif action == 'btnArchivoErroresjsn':
+                dtflistaPreciosError = None
+                dtflistaPreciosDetalleError = None
+                dctValidaciones = json.loads(request.POST['dctValidaciones'])
+                if 'dtflistaPreciosError' in dctValidaciones:
+                    dtflistaPreciosError = pd.read_json(dctValidaciones['dtfListaPreciosError'], orient='split')
+                    lstValidarListaPrecios = dctValidaciones['lstValidarListaPrecios']
+                    lstListaPreciosError = list( dict.fromkeys([ i[1] for i in lstValidarListaPrecios ]) )
+                    dtflistaPreciosError = fncAgregarErroresDataframedtf(dtflistaPreciosError, lstValidarListaPrecios, lstListaPreciosError)
+                if 'dtfListaPreciosDetalleError' in dctValidaciones:
+                    dtfListaPreciosDetalleError = pd.read_json(dctValidaciones['dtfListaPreciosDetalleError'], orient='split')
+                    lstValidarListaPreciosDetalle = dctValidaciones['lstValidarListaPreciosDetalle']
+                    lstFilasListaPreciosDetalleError = list( dict.fromkeys([ i[1] for i in lstValidarListaPreciosDetalle ]) )
+                    dtfListaPreciosDetalleError = fncAgregarErroresDataframedtf(dtfListaPreciosDetalleError, lstValidarListaPreciosDetalle, lstFilasListaPreciosDetalleError)
+                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = 'attachment; filename="lista_precios_errores.xlsx"'
+                with pd.ExcelWriter(response) as writer:
+                    if dtflistaPreciosError is not None:
+                        dtflistaPreciosError.to_excel(writer, sheet_name='LISTA_PRECIOS_ERROR', index=False)
+                        fncAgregarFormatoColumnasError(writer, lstValidarListaPrecios, 'LISTA_PRECIOS_ERROR', lstListaPrecios)
+                        fncAgregarAnchoColumna(writer, False, dtflistaPreciosError, 'LISTA_PRECIOS_ERROR')
+                    if dtfListaPreciosDetalleError is not None:
+                        dtfListaPreciosDetalleError.to_excel(writer, sheet_name='LISTA_PRECIOS_DETALLE_ERROR', index=False)
+                        fncAgregarFormatoColumnasError(writer, lstValidarListaPreciosDetalle, 'LISTA_PRECIOS_DETALLE_ERROR', lstListaPreciosDetalle)
+                        fncAgregarAnchoColumna(writer, False, dtfListaPreciosDetalleError, 'LISTA_PRECIOS_DETALLE_ERROR')
+        except Exception as e:
+            jsnData['error'] = str(e)
+            response = JsonResponse(jsnData, safe=False)
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['create_url'] = reverse_lazy('configuracion:crear_lista_precios')
+        context['list_url'] = reverse_lazy("configuracion:ver_lista_precios")
+        return context
+
+''' 4.4 Vista para crear lista de precios'''
 class clsCrearListaPreciosViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
-    model = clsCatalogoProductosMdl
-    form_class = clsCrearProductoFrm
+    model = clsListaPreciosMdl
+    form_class = clsCrearListaPreciosFrm
     template_name = 'modulo_configuracion/crear_lista_precios.html'
     success_url = reverse_lazy("configuracion:ver_lista_precios")
     url_redirect = success_url
@@ -1209,26 +1314,58 @@ class clsCrearListaPreciosViw(LoginRequiredMixin, ValidatePermissionRequiredMixi
         jsnData = {}
         try:
             action = request.POST['action']
-            if action == 'frmCrearProductojsn':
-                frmCrearProducto = clsCrearProductoFrm(request.POST)
-                jsnData = frmCrearProducto.save()
+            if action == 'slcBuscarProductojsn':
+                jsnData = []
+                strProducto = request.POST['term'].strip()
+                if len(strProducto):
+                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(
+                        Q(product_desc__icontains=strProducto) | 
+                        Q(id__icontains=strProducto))[0:10]
+                for i in qrsCatalogoProductos:
+                    dctJsn = i.toJSON()
+                    dctJsn['text'] = i.product_desc
+                    jsnData.append(dctJsn)
+                response = JsonResponse(jsnData, safe=False)
+            elif action == 'btnGuardarListaPreciosjsn':
+                with transaction.atomic():
+                    qrsListaPrecios = clsListaPreciosMdl()
+                    qrsListaPrecios.list_name = request.POST['list_name']
+                    qrsListaPrecios.store_id = int(request.POST['store'])
+                    qrsListaPrecios.freight = float(request.POST['freight'])
+                    qrsListaPrecios.due_date = request.POST['due_date']
+                    qrsListaPrecios.observations = request.POST['observations']
+                    qrsListaPrecios.save()
+                    for i in json.loads(request.POST['lstDetalleListaPrecios']):
+                        clsDetalleListaPreciosMdl.objects.create(
+                            doc_number_id = qrsListaPrecios.id,
+                            product_code_id = int(i['product_code']),
+                            quantity = int(i['quantity']),
+                            lead_time = int(i['lead_time']),
+                            unit_price = float(i['unit_price']),
+                            observations = i['observations']
+                        )
+                    jsnData['id'] = qrsListaPrecios.id
+                    response = JsonResponse(jsnData, safe=False)
             else:
                 jsnData['error'] = 'No ha ingresado a ninguna opción'
+                response = JsonResponse(jsnData, safe=False)
         except Exception as e:
             jsnData['error'] = str(e)
-        return JsonResponse(jsnData, safe=False)
+            response = JsonResponse(jsnData, safe=False)
+        return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Crear lista de precios'
-        context['action'] = 'frmCrearListaPreciosjsn'
+        context['action'] = 'add'
+        context['frmDetalleLista'] = clsCrearListaPreciosDetalleFrm()
         context['list_url'] = self.success_url
-        context['menu_url'] = reverse_lazy("configuracion:carga_masiva_listas_precios")
+        context['menu_url'] = reverse_lazy("configuracion:importar_lista_precios")
         return context
 
-''' 3.15 Vista para ver lista de precios'''
+''' 4.5 Vista para ver lista de precios'''
 class clsVerListaPreciosViw(LoginRequiredMixin, ListView):
-    model = clsCatalogoProductosMdl
+    model = clsListaPreciosMdl
     template_name = 'modulo_configuracion/ver_lista_precios.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -1238,24 +1375,32 @@ class clsVerListaPreciosViw(LoginRequiredMixin, ListView):
         jsnData = {}
         try:
             action = request.POST['action']
-            if action == 'slcBuscarProductosjsn':
+            if action == 'tblListaPreciosjsn':
                 jsnData = []
-                strBuscarProducto = request.POST['term'].strip()
-                if len(strBuscarProducto):
-                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=strBuscarProducto) | Q(id__icontains=strBuscarProducto))[0:10]
-                for i in qrsCatalogoProductos:
-                    dctJsn = i.toJSON()
-                    dctJsn['value'] = i.product_desc
-                    jsnData.append(dctJsn)
-            elif action == 'frmEliminarProductojsn':
-                qrsCatalogoProductos = clsCatalogoProductosMdl.objects.get(pk=request.POST['id'])
-                if qrsCatalogoProductos.state == "AC":
-                    qrsCatalogoProductos.state = "IN"
-                    qrsCatalogoProductos.save()
+                qrsListaPrecios = clsListaPreciosMdl.objects.all()
+                if qrsListaPrecios:
+                    for i in qrsListaPrecios:
+                        jsnData.append(i.toJSON())
+            elif action == 'tblListaPreciosjsn':
+                jsnData = []
+                qrsListaPrecios = clsListaPreciosMdl.objects.all()
+                if qrsListaPrecios:
+                    for i in qrsListaPrecios:
+                        jsnData.append(i.toJSON())
+            elif action == 'tblListaPreciosDetallejsn':
+                jsnData = []
+                qrsListaPreciosDetalle = clsDetalleListaPreciosMdl.objects.filter(doc_number_id=request.POST['id'])
+                if qrsListaPreciosDetalle:
+                    for i in qrsListaPreciosDetalle:
+                        jsnData.append(i.toJSON())
+            elif action == 'frmCambiarEstadoListajsn':
+                qrsListaPrecios = clsListaPreciosMdl.objects.get(pk=request.POST['id'])
+                if qrsListaPrecios.state == "AC":
+                    qrsListaPrecios.state = "IN"
+                    qrsListaPrecios.save()
                 else:
-                    qrsCatalogoProductos.state = "AC"
-                    qrsCatalogoProductos.save()
-                jsnData = qrsCatalogoProductos.toJSON()
+                    qrsListaPrecios.state = "AC"
+                    qrsListaPrecios.save()
             else:
                 jsnData['error'] = 'Ha ocurrido un error'
         except Exception as e:
@@ -1264,16 +1409,172 @@ class clsVerListaPreciosViw(LoginRequiredMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title_table'] = 'Búsqueda de Productos'
-        context['create_url'] = reverse_lazy('configuracion:crear_producto')
-        context['list_url'] = reverse_lazy("configuracion:listar_productos")
-        context['options_url'] = reverse_lazy('configuracion:opciones_producto')
+        context['title_table'] = 'Listas de precios'
+        context['create_url'] = reverse_lazy('configuracion:crear_lista_precios')
+        context['list_url'] = reverse_lazy("configuracion:ver_lista_precios")
+        context['options_url'] = reverse_lazy('configuracion:importar_lista_precios')
         return context
 
+''' 4.6 Vista para editar lista de precios'''
+class clsEditarListaPreciosViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, UpdateView):
+    model = clsListaPreciosMdl
+    form_class = clsCrearListaPreciosFrm
+    template_name = 'modulo_configuracion/crear_lista_precios.html'
+    success_url = reverse_lazy("configuracion:ver_lista_precios")
+    url_redirect = success_url
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        jsnData = {}
+        try:
+            action = request.POST['action']
+            if action == 'slcBuscarProductojsn':
+                jsnData = []
+                strProducto = request.POST['term'].strip()
+                if len(strProducto):
+                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(
+                        Q(product_desc__icontains=strProducto) | 
+                        Q(id__icontains=strProducto))[0:10]
+                for i in qrsCatalogoProductos:
+                    dctJsn = i.toJSON()
+                    dctJsn['text'] = i.product_desc
+                    jsnData.append(dctJsn)
+                response = JsonResponse(jsnData, safe=False)
+            elif action == 'btnGuardarListaPreciosjsn':
+                with transaction.atomic():
+                    qrsListaPrecios = self.get_object()
+                    qrsListaPrecios.list_name = request.POST['list_name']
+                    qrsListaPrecios.store_id = int(request.POST['store'])
+                    qrsListaPrecios.freight = float(request.POST['freight'])
+                    qrsListaPrecios.due_date = request.POST['due_date']
+                    qrsListaPrecios.observations = request.POST['observations']
+                    qrsListaPrecios.save()
+                    qrsListaPrecios.clsdetallelistapreciosmdl_set.all().delete()
+                    for i in json.loads(request.POST['lstDetalleListaPrecios']):
+                        clsDetalleListaPreciosMdl.objects.create(
+                            doc_number_id = qrsListaPrecios.id,
+                            product_code_id = int(i['product_code']),
+                            quantity = int(i['quantity']),
+                            lead_time = int(i['lead_time']),
+                            unit_price = float(i['unit_price']),
+                            observations = i['observations']
+                        )
+                    jsnData['id'] = qrsListaPrecios.id
+                    response = JsonResponse(jsnData, safe=False)
+            else:
+                jsnData['error'] = 'No ha ingresado a ninguna opción'
+                response = JsonResponse(jsnData, safe=False)
+        except Exception as e:
+            jsnData['error'] = str(e)
+            response = JsonResponse(jsnData, safe=False)
+        return response
+
+    def fncObtenerDetalleListajsn(self):
+        lstDetalle = []
+        try:
+            for i in clsDetalleListaPreciosMdl.objects.filter(doc_number_id=self.get_object().id):
+                item = i.fncDetalleListajsn()
+                lstDetalle.append(item)
+        except:
+            pass
+        return lstDetalle
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Editar lista de precios'
+        context['action'] = 'edit'
+        context['frmDetalleLista'] = clsCrearListaPreciosDetalleFrm()
+        context['list_url'] = self.success_url
+        context['menu_url'] = reverse_lazy("configuracion:importar_lista_precios")
+        context['detalle_lista'] = self.fncObtenerDetalleListajsn()
+        return context
+
+''' 4.7 Vista para exportar lista de precios formato excel'''
+class clsExportarListaPreciosExcelViw(APIView):
+
+    def get(self, request, *args, **kwargs):
+        qrsListaPrecios = clsListaPreciosMdl.objects.get(pk=self.kwargs['pk']),
+        srlListaPrecios = clsListaPreciosSerializador(qrsListaPrecios, many=True)
+        dtfListaPrecios = pd.DataFrame(srlListaPrecios.data)
+        dtfListaPrecios = dtfListaPrecios.rename(columns={
+            'id':'Código',
+            'doc_number':'Documento Nº',
+            'creation_date': 'Fecha de creación',
+            'update_date': 'Fecha de actualización',
+            'list_name': 'Nombre lista',
+            'crossing_doc': 'Documento cruce',
+            'store': 'Bodega',
+            'freight': 'Flete',
+            'due_date': 'Fecha de vigencia',
+            'observations': 'Observaciones',
+            'state_display': 'Estado'
+            })
+        lstListaPrecios = [
+            'Código',
+            'Documento Nº',
+            'Fecha de creación',
+            'Fecha de actualización',
+            'Nombre lista',
+            'Documento cruce',
+            'Bodega',
+            'Flete',
+            'Fecha de vigencia',
+            'Observaciones',
+            'Estado'
+            ]
+        dtfListaPrecios =dtfListaPrecios.reindex(columns=lstListaPrecios)
+        qrsListaPreciosDetalle = clsDetalleListaPreciosMdl.objects.filter(doc_number_id=self.kwargs['pk'])
+        srlListaPreciosDetalle = clsListaPreciosDetalleSerializador(qrsListaPreciosDetalle, many=True)
+        dtfListaPreciosDetalle = pd.DataFrame(srlListaPreciosDetalle.data)
+        dtfListaPreciosDetalle = dtfListaPreciosDetalle.rename(columns={
+            'product_code': 'Producto',
+            'unit_price': 'Precio unitario',
+            'lead_time': 'Tiempo de entrega',
+            'quantity': 'Cantidad',
+            'observations': 'Observación'
+            })
+        lstListaPreciosDetalle = [
+            'Producto',
+            'Precio unitario',
+            'Tiempo de entrega',
+            'Cantidad',
+            'Observación'
+            ]
+        dtfListaPreciosDetalle =dtfListaPreciosDetalle.reindex(columns=lstListaPreciosDetalle)
+        response = HttpResponse(content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="lista_precios.xlsx"'
+        with pd.ExcelWriter(response) as writer:
+            dtfListaPrecios.to_excel(writer, sheet_name='LISTA_PRECIOS', index=False)
+            dtfListaPreciosDetalle.to_excel(writer, sheet_name='PRODUCTOS_LISTA_PRECIOS', index=False)
+            fncAgregarAnchoColumna(writer, True, dtfListaPrecios, 'LISTA_PRECIOS')
+            fncAgregarAnchoColumna(writer, True, dtfListaPreciosDetalle, 'PRODUCTOS_LISTA_PRECIOS')
+        return response
+
+''' 2.4 Vista para exportar lista de precios formato pdf'''
+class clsExportarListaPreciosPdfViw(View):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            template = get_template('modulo_configuracion/exportar_lista_precios_pdf.html')
+            lstQuerysetPerfilEmpresa = [ i.fncRetornarConsultaDocumentosjsn() for i in clsPerfilEmpresaMdl.objects.all() ]
+            context = {
+                'qrsListaPrecios': clsListaPreciosMdl.objects.get(pk=self.kwargs['pk']),
+                'qrsPerfilEmpresa': lstQuerysetPerfilEmpresa[0]
+            }
+            html = template.render(context)
+            css_url = os.path.join(settings.BASE_DIR, 'static/lib/bootstrap-4.5.3-dist/css/bootstrap.min.css')
+            pdf = HTML(string=html, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(css_url)])
+            return HttpResponse(pdf, content_type='application/pdf')
+        except:
+            pass
+        return HttpResponseRedirect(reverse_lazy('configuracion:ver_lista_precios'))
+
 #################################################################################################
-# 4. PARAMETRIZACIÓN CATÁLOGO DE PROVEEDORES (MENÚ, OPCIONES CATALOGO, CRUD, IMPORTAR Y EXPORTAR)
+# 5. PARAMETRIZACIÓN CATÁLOGO DE PROVEEDORES (MENÚ, OPCIONES CATALOGO, CRUD, IMPORTAR Y EXPORTAR)
 #################################################################################################
-''' 4.1 Vista menú catálogo de proveedores'''
+''' 5.1 Vista menú catálogo de proveedores'''
 class clsMenuCatalogoProveedoresViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/catalogo_proveedores.html'
 
@@ -1287,7 +1588,7 @@ class clsMenuCatalogoProveedoresViw(LoginRequiredMixin, TemplateView):
         context['search_url'] = reverse_lazy('configuracion:listar_proveedores')
         return context
 
-''' 4.2 Vista opciones proveedores'''
+''' 5.2 Vista opciones proveedores'''
 class clsOpcionesCatalogoProveedoresViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/opciones_catalogo_proveedores.html'
 
@@ -1324,12 +1625,13 @@ class clsOpcionesCatalogoProveedoresViw(LoginRequiredMixin, ValidatePermissionRe
                     jsnData[i]['n'] = i + 1
             elif action == 'btnGuardarCondicionCantidadMinimajsn':
                 with transaction.atomic():
-                    intProveedorId = request.POST['proveedor']
+                    intProveedorId = int(request.POST['proveedor'])
+                    print(type(intProveedorId))
                     jsnProductos = json.loads(request.POST['items'])
                     for i in jsnProductos:
                         clsCondicionMinimaCompraMdl.objects.create(
-                            supplier_id = intProveedorId,
-                            product_id = i['id'],
+                            identification_id = intProveedorId,
+                            product_code_id = i['id'],
                             min_amount = i['cantidad']
                         )
             elif action == 'frmEditarCantidadMinimajsn':
@@ -1349,8 +1651,8 @@ class clsOpcionesCatalogoProveedoresViw(LoginRequiredMixin, ValidatePermissionRe
                     jsnProductos = json.loads(request.POST['items'])
                     for i in jsnProductos:
                         clsCondicionDescuentoProveedorMdl.objects.create(
-                            supplier_id = intProveedorId,
-                            product_id = i['id'],
+                            identification_id = intProveedorId,
+                            product_code_id = i['id'],
                             min_amount = i['cantidad'],
                             discount = i['descuento']
                         )
@@ -1368,9 +1670,11 @@ class clsOpcionesCatalogoProveedoresViw(LoginRequiredMixin, ValidatePermissionRe
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['create_url'] = reverse_lazy('configuracion:crear_proveedor')
+        context['list_url'] = reverse_lazy("configuracion:listar_proveedores")
         return context
 
-''' 4.3 Vista para exportar plantilla de proveedores'''
+''' 5.3 Vista para exportar plantilla de proveedores'''
 class clsExportarPlantillaProveedoresViw(APIView):
 
     def get(self, request):
@@ -1534,7 +1838,7 @@ class clsExportarPlantillaProveedoresViw(APIView):
             fncAgregarComentarioCeldas(writer, 'PLANTILLA', lstCeldasExcel, lstComentariosExcel)
         return response
 
-''' 4.4 Vista para importar archivo proveedores'''
+''' 5.4 Vista para importar archivo proveedores'''
 class clsImportarCatalogoProveedoresViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/importar_catalogo_proveedores.html'
     
@@ -1643,7 +1947,7 @@ class clsImportarCatalogoProveedoresViw(LoginRequiredMixin, TemplateView):
             response = JsonResponse(jsnData, safe=False)
         return response
 
-''' 4.5 Vista para crear proveedor'''
+''' 5.5 Vista para crear proveedor'''
 class clsCrearProveedorViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
     model = clsCatalogoProveedoresMdl
     form_class = clsCrearProveedorFrm
@@ -1675,10 +1979,11 @@ class clsCrearProveedorViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, 
         context = super().get_context_data(**kwargs)
         context['title'] = 'Crear Proveedor'
         context['list_url'] = self.success_url
+        context['options_url'] = reverse_lazy("configuracion:opciones_proveedor")
         context['action'] = 'frmCrearProveedorjsn'
         return context
 
-''' 4.6 Vista para listar e inactivar proveedores'''
+''' 5.6 Vista para listar e inactivar proveedores'''
 class clsListarCatalogoProveedoresViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListView):
     model = clsCatalogoProveedoresMdl
     template_name = 'modulo_configuracion/listar_proveedores.html'
@@ -1726,7 +2031,7 @@ class clsListarCatalogoProveedoresViw(LoginRequiredMixin, ValidatePermissionRequ
         context['options_url'] = reverse_lazy('configuracion:opciones_proveedor')
         return context
 
-''' 4.7 Vista para editar proveedor'''
+''' 5.7 Vista para editar proveedor'''
 class clsEditarProveedorViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, UpdateView):
     model = clsCatalogoProveedoresMdl
     form_class = clsCrearProveedorFrm
@@ -1762,7 +2067,7 @@ class clsEditarProveedorViw(LoginRequiredMixin, ValidatePermissionRequiredMixin,
         context['action'] = 'frmEditarProveedorjsn'
         return context
 
-''' 4.8 Vista para exportar catálogo de proveedores'''
+''' 5.8 Vista para exportar catálogo de proveedores'''
 class clsExportarCatalogoProveedoresViw(APIView):
 
     def get(self, request):
@@ -1771,8 +2076,8 @@ class clsExportarCatalogoProveedoresViw(APIView):
         dtfProveedores = pd.DataFrame(srlCatalogoProveedores.data)
         dtfProveedores = dtfProveedores.rename(columns={
             'id':'Código',
-            'date_creation': 'Fecha de creación',
-            'date_update': 'Fecha de actualización',
+            'creation_date': 'Fecha de creación',
+            'update_date': 'Fecha de actualización',
             'person_type_display':'Tipo de persona',
             'id_type_display': 'Tipo de identificación',
             'identification': 'Número de identificación',
@@ -1826,9 +2131,9 @@ class clsExportarCatalogoProveedoresViw(APIView):
         return response
 
 #################################################################################################
-# 5. PARAMETRIZACIÓN CATÁLOGO DE CLIENTES (MENÚ, OPCIONES CATALOGO, CRUD, IMPORTAR Y EXPORTAR)
+# 6. PARAMETRIZACIÓN CATÁLOGO DE CLIENTES (MENÚ, OPCIONES CATALOGO, CRUD, IMPORTAR Y EXPORTAR)
 #################################################################################################
-''' 5.1 Vista menú catálogo de clientes'''
+''' 6.1 Vista menú catálogo de clientes'''
 class clsMenuCatalogoClientesViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/catalogo_clientes.html'
 
@@ -1842,7 +2147,7 @@ class clsMenuCatalogoClientesViw(LoginRequiredMixin, TemplateView):
         context['search_url'] = reverse_lazy('configuracion:listar_clientes')
         return context
 
-''' 5.2 Vista para opciones cliente'''
+''' 6.2 Vista para opciones cliente'''
 class clsOpcionesCatalogoClientesViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/opciones_catalogo_clientes.html'
 
@@ -2016,7 +2321,7 @@ class clsOpcionesCatalogoClientesViw(LoginRequiredMixin, ValidatePermissionRequi
         context['frmAdvisor'] = clsCrearAsesorComercialFrm()
         return context
 
-''' 5.3 Vista para exportar plantilla clientes'''
+''' 6.3 Vista para exportar plantilla clientes'''
 class clsExportarPlantillaClientesViw(APIView):
 
     def get(self, request):
@@ -2198,7 +2503,7 @@ class clsExportarPlantillaClientesViw(APIView):
             fncAgregarComentarioCeldas(writer, 'PLANTILLA', lstCeldasExcel, lstComentariosExcel)
         return response
 
-''' 5.4 Vista para importar archivo clientes'''
+''' 6.4 Vista para importar archivo clientes'''
 class clsImportarCatalogoClientesViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/importar_catalogo_clientes.html'
     
@@ -2308,7 +2613,7 @@ class clsImportarCatalogoClientesViw(LoginRequiredMixin, TemplateView):
             response = JsonResponse(jsnData, safe=False)
         return response
 
-''' 5.5 Vista para crear cliente'''
+''' 6.5 Vista para crear cliente'''
 class clsCrearClienteViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
     model = clsCatalogoClientesMdl
     form_class = clsCrearClienteFrm
@@ -2398,6 +2703,7 @@ class clsCrearClienteViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, Cr
         context = super().get_context_data(**kwargs)
         context['title'] = 'Crear Cliente'
         context['create_url'] = reverse_lazy('configuracion:crear_cliente')
+        context['options_url'] = reverse_lazy('configuracion:opciones_cliente')
         context['list_url'] = self.success_url
         context['action'] = 'frmCrearClientejsn'
         context['days_list'] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
@@ -2407,7 +2713,7 @@ class clsCrearClienteViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, Cr
         context['frmAdvisor'] = clsCrearAsesorComercialFrm()
         return context
 
-''' 5.6 Vista para listar e inactivar clientes'''
+''' 6.6 Vista para listar e inactivar clientes'''
 class clsListarCatalogoClientesViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListView):
     model = clsCatalogoClientesMdl
     template_name = 'modulo_configuracion/listar_clientes.html'
@@ -2454,7 +2760,7 @@ class clsListarCatalogoClientesViw(LoginRequiredMixin, ValidatePermissionRequire
         context['options_url'] = reverse_lazy('configuracion:opciones_cliente')
         return context
 
-''' 5.7 Vista para editar cliente'''
+''' 6.7 Vista para editar cliente'''
 class clsEditarClienteViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, UpdateView):
     model = clsCatalogoClientesMdl
     form_class = clsCrearClienteFrm
@@ -2553,7 +2859,7 @@ class clsEditarClienteViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, U
         context['frmAdvisor'] = clsCrearAsesorComercialFrm()
         return context
 
-''' 5.8 Vista para exportar catálogo de clientes'''
+''' 6.8 Vista para exportar catálogo de clientes'''
 class clsExportarCatalogoClientesViw(APIView):
 
     def get(self, request):
@@ -2562,8 +2868,8 @@ class clsExportarCatalogoClientesViw(APIView):
         dtfCatalogoClientes = pd.DataFrame(srlCatalogoClientes.data)
         dtfCatalogoClientes = dtfCatalogoClientes.rename(columns={
             'id':'Código',
-            'date_creation': 'Fecha de creación',
-            'date_update': 'Fecha de actualización',
+            'creation_date': 'Fecha de creación',
+            'update_date': 'Fecha de actualización',
             'person_type_display':'Tipo de persona',
             'id_type_display': 'Tipo de identificación',
             'identification': 'Número de identificación',
@@ -2616,7 +2922,10 @@ class clsExportarCatalogoClientesViw(APIView):
             fncAgregarAnchoColumna(writer, True, dtfCatalogoClientes, 'CATALOGO_CLIENTES')
         return response
 
-''' 5.9 Vista menú tiempos de entrega'''
+#################################################################################################
+# 7. PARAMETRIZACIÓN TIEMPOS DE ENTREGA
+#################################################################################################
+''' 7.1 Vista menú tiempos de entrega'''
 class clsMenuTiemposEntregaViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/tiempos_entrega.html'
 
@@ -2628,12 +2937,12 @@ class clsMenuTiemposEntregaViw(LoginRequiredMixin, TemplateView):
         context['search_url'] = reverse_lazy('configuracion:ver_tiempos_entrega')
         return context
 
-''' 5.10 Vista para asignar tiempos de entrega'''
+''' 7.2 Vista para asignar tiempos de entrega'''
 class clsCrearTiempoEntregaViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
-    model = clsCatalogoProductosMdl
-    form_class = clsCrearProductoFrm
+    model = clsTiemposEntregaMdl
+    form_class = clsCrearTiempoEntregaFrm
     template_name = 'modulo_configuracion/crear_tiempo_entrega.html'
-    success_url = reverse_lazy("configuracion:ver_tiempo_entrega")
+    success_url = reverse_lazy("configuracion:ver_tiempos_entrega")
     url_redirect = success_url
 
     def dispatch(self, request, *args, **kwargs):
@@ -2643,25 +2952,42 @@ class clsCrearTiempoEntregaViw(LoginRequiredMixin, ValidatePermissionRequiredMix
         jsnData = {}
         try:
             action = request.POST['action']
-            if action == 'frmCrearProductojsn':
-                frmCrearProducto = clsCrearProductoFrm(request.POST)
-                jsnData = frmCrearProducto.save()
+            if action == 'frmCrearTiempoEntregajsn':
+                with transaction.atomic():
+                    frmCrearTiempoEntrega = clsCrearTiempoEntregaFrm(request.POST)
+                    jsnData = frmCrearTiempoEntrega.save()
+            elif action == 'slcBuscarCiudadesjsn':
+                lstCiudades = []
+                strConsultaCatalogoClientes = 'SELECT city_id FROM modulo_configuracion_clscatalogoclientesmdl'
+                lstConsultaCatalogoClientes = fncConsultalst(strConsultaCatalogoClientes, [])
+                dtfCiudades = pd.DataFrame(lstConsultaCatalogoClientes, columns=['city'])
+                dtfCiudades = dtfCiudades['city'].unique()
+                lstCodigosCiudades = [ int(i) for i in dtfCiudades]
+                if len(lstCodigosCiudades):
+                    for i in lstCodigosCiudades:
+                        qrsCiudad = clsCiudadesMdl.objects.filter(id=i)
+                        for i in qrsCiudad:
+                            lstCiudades.append(i.fncConsultaCiudades())
+                    jsnData['lstCiudades'] = lstCiudades
+                else:
+                    jsnData['strError'] = 'Debe realizar la parametrización del catálogo de clientes'
             else:
-                jsnData['error'] = 'No ha ingresado a ninguna opción'
+                jsnData['strError'] = 'No ha ingresado a ninguna opción'
         except Exception as e:
-            jsnData['error'] = str(e)
+            jsnData['strError'] = str(e)
         return JsonResponse(jsnData, safe=False)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Crear lista de precios'
-        context['action'] = 'frmCrearListaPreciosjsn'
-        
+        context['title'] = 'Crear tiempo de entrega'
+        context['create_url'] = reverse_lazy('configuracion:crear_tiempos_entrega')
+        context['list_url'] = self.success_url
+        context['action'] = 'frmCrearTiempoEntregajsn'
         return context
 
-''' 5.11 Vista para ver tiempos de entrega'''
+''' 7.3 Vista para ver tiempos de entrega'''
 class clsVerTiempoEntregaViw(LoginRequiredMixin, ListView):
-    model = clsCatalogoProductosMdl
+    model = clsTiemposEntregaMdl
     template_name = 'modulo_configuracion/ver_tiempos_entrega.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -2671,24 +2997,21 @@ class clsVerTiempoEntregaViw(LoginRequiredMixin, ListView):
         jsnData = {}
         try:
             action = request.POST['action']
-            if action == 'slcBuscarProductosjsn':
+            if action == 'tblTiemposEntregajsn':
                 jsnData = []
-                strBuscarProducto = request.POST['term'].strip()
-                if len(strBuscarProducto):
-                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=strBuscarProducto) | Q(id__icontains=strBuscarProducto))[0:10]
-                for i in qrsCatalogoProductos:
-                    dctJsn = i.toJSON()
-                    dctJsn['value'] = i.product_desc
-                    jsnData.append(dctJsn)
-            elif action == 'frmEliminarProductojsn':
-                qrsCatalogoProductos = clsCatalogoProductosMdl.objects.get(pk=request.POST['id'])
-                if qrsCatalogoProductos.state == "AC":
-                    qrsCatalogoProductos.state = "IN"
-                    qrsCatalogoProductos.save()
+                qrsTiemposEntrega = clsTiemposEntregaMdl.objects.all()
+                if qrsTiemposEntrega:
+                    for i in qrsTiemposEntrega:
+                        jsnData.append(i.toJSON())
+            elif action == 'frmCambiarEstadoTiempoEntregajsn':
+                qrsTiempoEntrega = clsTiemposEntregaMdl.objects.get(pk=request.POST['id'])
+                if qrsTiempoEntrega.state == "AC":
+                    qrsTiempoEntrega.state = "IN"
+                    qrsTiempoEntrega.save()
                 else:
-                    qrsCatalogoProductos.state = "AC"
-                    qrsCatalogoProductos.save()
-                jsnData = qrsCatalogoProductos.toJSON()
+                    qrsTiempoEntrega.state = "AC"
+                    qrsTiempoEntrega.save()
+                jsnData = qrsTiempoEntrega.toJSON()
             else:
                 jsnData['error'] = 'Ha ocurrido un error'
         except Exception as e:
@@ -2697,16 +3020,60 @@ class clsVerTiempoEntregaViw(LoginRequiredMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title_table'] = 'Búsqueda de Productos'
-        context['create_url'] = reverse_lazy('configuracion:crear_producto')
-        context['list_url'] = reverse_lazy("configuracion:listar_productos")
-        context['options_url'] = reverse_lazy('configuracion:opciones_producto')
+        context['title_table'] = 'Tiempos de entrega'
+        context['create_url'] = reverse_lazy('configuracion:crear_tiempos_entrega')
+        return context
+
+''' 7.4 Vista para editar tiempos de entrega'''
+class clsEditarTiempoEntregaViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, UpdateView):
+    model = clsTiemposEntregaMdl
+    form_class = clsCrearTiempoEntregaFrm
+    template_name = 'modulo_configuracion/crear_tiempo_entrega.html'
+    success_url = reverse_lazy("configuracion:ver_tiempos_entrega")
+    url_redirect = success_url
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        jsnData = {}
+        try:
+            action = request.POST['action']
+            if action == 'frmEditarTiempoEntregajsn':
+                frmEditarTiempoEntrega = self.get_form()
+                jsnData = frmEditarTiempoEntrega.save()
+            elif action == 'slcBuscarCiudadesjsn':
+                lstCiudades = []
+                strConsultaCatalogoClientes = 'SELECT city_id FROM modulo_configuracion_clscatalogoclientesmdl'
+                lstConsultaCatalogoClientes = fncConsultalst(strConsultaCatalogoClientes, [])
+                dtfCiudades = pd.DataFrame(lstConsultaCatalogoClientes, columns=['city'])
+                dtfCiudades = dtfCiudades['city'].unique()
+                lstCodigosCiudades = [ int(i) for i in dtfCiudades]
+                if len(lstCodigosCiudades):
+                    for i in lstCodigosCiudades:
+                        qrsCiudad = clsCiudadesMdl.objects.filter(id=i)
+                        for i in qrsCiudad:
+                            lstCiudades.append(i.fncConsultaCiudades())
+                    jsnData['lstCiudades'] = lstCiudades
+                else:
+                    jsnData['strError'] = 'Debe realizar la parametrización del catálogo de clientes'
+        except Exception as e:
+            jsnData['error'] = str(e)
+        return JsonResponse(jsnData, safe=False)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Editar tiempo de entrega'
+        context['create_url'] = reverse_lazy('configuracion:crear_tiempos_entrega')
+        context['list_url'] = self.success_url
+        context['action'] = 'frmEditarTiempoEntregajsn'
         return context
 
 #################################################################################################
-# 6. PARAMETRIZACIÓN CATÁLOGO DE BODEGAS (MENÚ, OPCIONES CATALOGO, CRUD Y EXPORTAR)
+# 8. PARAMETRIZACIÓN CATÁLOGO DE BODEGAS (MENÚ, OPCIONES CATALOGO, CRUD Y EXPORTAR)
 #################################################################################################
-''' 6.1 Vista para la ventana catálogo de bodegas'''
+''' 8.1 Vista para la ventana catálogo de bodegas'''
 class clsMenuCatalogoBodegasViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/catalogo_bodegas.html'
 
@@ -2718,7 +3085,7 @@ class clsMenuCatalogoBodegasViw(LoginRequiredMixin, TemplateView):
         context['search_url'] = reverse_lazy('configuracion:listar_bodegas')
         return context
 
-''' 6.2 Vista para crear bodega'''
+''' 8.2 Vista para crear bodega'''
 class clsCrearBodegaViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, CreateView):
     model = clsCatalogoBodegasMdl
     form_class = clsCatalogoBodegasFrm
@@ -2734,9 +3101,8 @@ class clsCrearBodegaViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, Cre
         try:
             action = request.POST['action']
             if action == 'frmCrearBodegajsn':
-                with transaction.atomic():
-                    frmCrearBodega = clsCatalogoBodegasFrm(request.POST)
-                    jsnData = frmCrearBodega.save()
+                frmCrearBodega = clsCatalogoBodegasFrm(request.POST)
+                jsnData = frmCrearBodega.save()
             elif action == 'slcFiltrarCiudadesjsn':
                 jsnData = [{'id': '', 'text': '------------'}]
                 for i in clsCiudadesMdl.objects.filter(department_id=request.POST['intId']):
@@ -2755,7 +3121,7 @@ class clsCrearBodegaViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, Cre
         context['action'] = 'frmCrearBodegajsn'
         return context
 
-''' 6.3 Vista para listar e inactivar bodegas'''
+''' 8.3 Vista para listar e inactivar bodegas'''
 class clsListarCatalogoBodegasViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, ListView):
     model = clsCatalogoBodegasMdl
     template_name = 'modulo_configuracion/listar_bodegas.html'
@@ -2772,7 +3138,10 @@ class clsListarCatalogoBodegasViw(LoginRequiredMixin, ValidatePermissionRequired
                 jsnData = []
                 strBodega = request.POST['term'].strip()
                 if len(strBodega):
-                    qrsCatalogoBodegas = clsCatalogoBodegasMdl.objects.filter(Q(warehouse_name__icontains=strBodega) | Q(contact_name__icontains=strBodega))[0:10]
+                    qrsCatalogoBodegas = clsCatalogoBodegasMdl.objects.filter(
+                        Q(warehouse_name__icontains=strBodega) | 
+                        Q(contact_name__icontains=strBodega) | 
+                        Q(id__icontains=strBodega))[0:10]
                 for i in qrsCatalogoBodegas:
                     dctJsn = i.toJSON()
                     dctJsn['value'] = i.warehouse_name
@@ -2802,7 +3171,7 @@ class clsListarCatalogoBodegasViw(LoginRequiredMixin, ValidatePermissionRequired
         context['list_url'] = reverse_lazy('configuracion:listar_bodegas')
         return context
 
-''' 6.4 Vista para editar bodega'''
+''' 8.4 Vista para editar bodega'''
 class clsEditarBodegaViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, UpdateView):
     model = clsCatalogoBodegasMdl
     form_class = clsCatalogoBodegasFrm
@@ -2810,7 +3179,6 @@ class clsEditarBodegaViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, Up
     success_url = reverse_lazy("configuracion:listar_bodegas")
     url_redirect = success_url
 
-    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super().dispatch(request, *args, **kwargs)
@@ -2840,7 +3208,7 @@ class clsEditarBodegaViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, Up
         context['action'] = 'frmEditarBodegajsn'
         return context
 
-''' 6.5 Vista para exportar catálogo de bodegas'''
+''' 8.5 Vista para exportar catálogo de bodegas'''
 class clsExportarCatalogoBodegasViw(APIView):
 
     def get(self, request):
@@ -2849,8 +3217,8 @@ class clsExportarCatalogoBodegasViw(APIView):
         dtfCatalogoBodegas = pd.DataFrame(srlCatalogoBodegas.data)
         dtfCatalogoBodegas = dtfCatalogoBodegas.rename(columns={
             'id':'Nº',
-            'date_creation': 'Fecha de creación',
-            'date_update': 'Fecha de actualización',
+            'creation_date': 'Fecha de creación',
+            'update_date': 'Fecha de actualización',
             'warehouse_name':'Nombre bodega',
             'department': 'Departamento',
             'city': 'Ciudad',
@@ -2878,9 +3246,9 @@ class clsExportarCatalogoBodegasViw(APIView):
         return response
 
 #################################################################################################
-# 7. PARAMETRIZACIÓN HISTORICO DE MOVIMIENTOS (IMPORTAR Y EXPORTAR)
+# 9. PARAMETRIZACIÓN HISTORICO DE MOVIMIENTOS (IMPORTAR Y EXPORTAR)
 #################################################################################################
-''' 7.1 Vista para exportar plantilla historico de movimientos'''
+''' 9.1 Vista para exportar plantilla historico de movimientos'''
 class clsExportarPlantillaHistoricoMovimientosViw(APIView):
 
     def get(self, request):
@@ -3406,7 +3774,7 @@ class clsExportarPlantillaHistoricoMovimientosViw(APIView):
 
         return response
 
-''' 7.2 Vista para importar historico de movimientos'''
+''' 9.2 Vista para importar historico de movimientos'''
 class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/historico_movimientos.html'
     
@@ -3965,9 +4333,9 @@ class clsImportarHistoricoMovimientosViw(LoginRequiredMixin, TemplateView):
         return response
 
 #################################################################################################
-# 8. PARAMETRIZACIÓN AJUSTES DE INVENTARIO (MENÚ, IMPORTAR, EXPORTAR Y CREAR AJUSTE)
+# 10. PARAMETRIZACIÓN AJUSTES DE INVENTARIO (MENÚ, IMPORTAR, EXPORTAR Y CREAR AJUSTE)
 #################################################################################################
-''' 8.1 Vista menú ajustes de inventario'''
+''' 10.1 Vista menú ajustes de inventario'''
 class clsAjustesInventarioViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/ajustes_inventario.html'
 
@@ -3979,7 +4347,7 @@ class clsAjustesInventarioViw(LoginRequiredMixin, TemplateView):
         context['create_url'] = reverse_lazy('configuracion:crear_ajuste_inventario')
         return context
 
-''' 8.2 Vista para exportar plantilla de ajustes de inventario'''
+''' 10.2 Vista para exportar plantilla de ajustes de inventario'''
 class clsExportarPlantillaAjustesInventarioViw(APIView):
 
     def get(self, request):
@@ -4064,7 +4432,7 @@ class clsExportarPlantillaAjustesInventarioViw(APIView):
             'SI', 
             'SI',
             'SI', 
-            'SI', 
+            'NO', 
             'NO'
             ]
         dtfInstructivo = pd.DataFrame(
@@ -4092,7 +4460,7 @@ class clsExportarPlantillaAjustesInventarioViw(APIView):
             fncAgregarComentarioCeldas(writer, 'PLANTILLA_AJUSTES_INVENTARIO', lstCeldaAjustesInventario, lstComentariosAjustesInventarios)
         return response
 
-''' 8.3 Vista para importar ajustes de inventario'''
+''' 10.3 Vista para importar ajustes de inventario'''
 class clsImportarAjustesInventarioViw(LoginRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/importar_ajustes_inventario.html'
     
@@ -4207,7 +4575,12 @@ class clsImportarAjustesInventarioViw(LoginRequiredMixin, TemplateView):
             response = JsonResponse(jsnData, safe=False)
         return response
 
-''' 8.4 Vista para crear ajuste de inventario'''
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['create_url'] = reverse_lazy('configuracion:crear_ajuste_inventario')
+        return context
+
+''' 10.4 Vista para crear ajuste de inventario'''
 class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequiredMixin, TemplateView):
     template_name = 'modulo_configuracion/crear_ajuste_inventario.html'
 
@@ -4246,11 +4619,11 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
                 else:
                     srlSaldosInventario = clsSaldosInventarioMdlSerializador(qrsSaldosInventario, many=True)
                     dtfsaldosInventario = pd.DataFrame(srlSaldosInventario.data)
+                print(dctVariables['strLote'])
                 bolAjuste = fncValidaAjustebol(
                     dctVariables['intIdProducto'],
                     dctVariables['intIdBodega'],
-                    # dctVariables['strLote'],
-                    '0',
+                    dctVariables['strLote'],
                     int(dctVariables['intCantidad']),
                     bolTipoAjuste = True if dctVariables['strTipoAjusteId'] == 'EN' else False
                     )
@@ -4293,7 +4666,8 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
                         qrsDetalleAjuste.type = i['strTipoAjusteId']
                         qrsDetalleAjuste.product_code_id = i['intIdProducto']                        
                         qrsDetalleAjuste.batch = i['strLote']
-                        qrsDetalleAjuste.expiration_date = datetime.strptime(i['datFechaVencimiento'],"%d/%m/%Y")
+                        if i['datFechaVencimiento'] != '':
+                            qrsDetalleAjuste.expiration_date = datetime.strptime(i['datFechaVencimiento'],"%d/%m/%Y")
                         qrsDetalleAjuste.quantity = int(i['intCantidad'])
                         qrsDetalleAjuste.unitary_cost = float(i['fltCostoUnitario'])
                         qrsDetalleAjuste.total_cost = float(i['fltCostoTotalUnitario'])
@@ -4327,6 +4701,7 @@ class clsCrearAjusteInventarioViw(LoginRequiredMixin, ValidatePermissionRequired
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Crear ajuste de inventario'
+        context['options_url'] = reverse_lazy('configuracion:importar_ajustes_inventario')
         context['form'] = clsAjustesInventarioFrm()
         context['action'] = 'add'
         return context

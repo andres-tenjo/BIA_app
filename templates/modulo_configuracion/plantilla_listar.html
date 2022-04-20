@@ -1,0 +1,87 @@
+{% extends 'bia/modulo_configuracion.html' %}
+
+{% load static %}
+{% block extra_css %}
+    
+{% endblock extra_css %}
+
+{% block title-header %}
+{% endblock title-header %}
+
+<!-- Menú header -->
+{% block menu-header %}
+    {% block menu %}
+    {% endblock menu %}
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+            Ver instructivo
+        </a>
+    </li>
+{% endblock menu-header %}
+<!-- /.Menú header -->
+
+<!-- Window content -->
+{% block content-window %}
+    <div class="row">
+        <div class="col-lg-12">
+        <!-- card -->
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-table"></i>
+                    {{ title_table }}
+                </h2>
+            </div>
+            
+            <!-- card body -->
+            <div class="card-body">
+                {% block buttons_list %}
+                {% endblock buttons_list %}
+                <div class="row justify-content-center">
+                    {% block grid %}
+                    <div class="col-lg-12">
+                    {% endblock grid %}        
+                        {% block table %}
+                        <table id="data" class='table table-hover'>
+                            <thead>
+                                {% block columns %}
+                                {% endblock columns %}
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        {% endblock table %}
+                        {% block body %}
+                        {% endblock body %}
+                    </div>
+                </div>            
+            </div>
+            <!-- /.card body -->
+            
+            {% block body_extra %}
+                
+            {% endblock body_extra %}
+                
+            <!-- card-footer -->
+            <div class="card-footer">
+                {% block footer %}
+                {% endblock footer %}
+            </div>
+            <!-- /.card footer -->
+        </div>
+        <!-- /.card -->
+    </div>
+{% endblock content-window %}
+<!-- /.Window content -->
+
+<!-- extra js -->
+{% block extrajs %}  
+
+<!-- window extra js -->
+{% block window-js %}
+{% endblock window-js %}
+<!-- /.window extra js -->
+
+{% endblock extrajs %}
+<!-- /.extra js -->

@@ -10,6 +10,9 @@ exclude_tuple = (
     'state'
     )
 
+####################################################################################
+# 1. CATÁLOGO PRODUCTOS
+####################################################################################
 class clsDepartamentosMdlSerializer(serializers.ModelSerializer):
     class Meta:
         model = clsDepartamentosMdl
@@ -51,6 +54,50 @@ class ProductSerializer(serializers.ModelSerializer):
         model = clsCatalogoProductosMdl
         exclude = exclude_tuple
 
+####################################################################################
+# 2. LISTA PRECIOS
+####################################################################################
+class clsListaPreciosSerializador(serializers.ModelSerializer):
+    store = serializers.StringRelatedField()
+    creation_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    update_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    due_date = serializers.DateField(format="%Y-%m-%d")
+    freight = serializers.SerializerMethodField('fncFormatoNumero')
+    state_display = serializers.CharField(
+        source='get_state_display'
+    )
+    class Meta:
+        model = clsListaPreciosMdl
+        exclude = ('user_creation', 'user_update', 'state')
+
+    def fncFormatoNumero(self, obj):
+        return number_format(obj.freight)
+
+class clsListaPreciosDetalleSerializador(serializers.ModelSerializer):
+    product_code = serializers.StringRelatedField()
+    unit_price = serializers.SerializerMethodField('fncFormatoNumero')
+    
+    class Meta:
+        model = clsDetalleListaPreciosMdl
+        exclude = ('id', 'doc_number')
+
+    def fncFormatoNumero(self, obj):
+        return number_format(obj.unit_price)
+
+class clsListaPreciosDetalleSrl(serializers.ModelSerializer):
+    product_code = clsListaPreciosSerializador(many=True)
+    unit_price = serializers.SerializerMethodField('fncFormatoNumero')
+    
+    class Meta:
+        model = clsDetalleListaPreciosMdl
+        exclude = ('id', 'doc_number')
+
+    def fncFormatoNumero(self, obj):
+        return number_format(obj.unit_price)
+
+####################################################################################
+# 3. CATÁLOGO CLIENTES
+####################################################################################
 class clsCategoriaClienteMdlSerializer(serializers.ModelSerializer):
     class Meta:
         model = clsCategoriaClienteMdl

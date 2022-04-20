@@ -211,3 +211,11 @@ class PersonAdmin(ImportExportModelAdmin):
 @admin.register(clsDetalleTrasladosBodegaMdl)
 class PersonAdmin(ImportExportModelAdmin):
     pass
+
+###########################################################
+# TIEMPOS DE ENTREGA
+###########################################################
+''' Tiempos de entrega'''
+@admin.register(clsTiemposEntregaMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass

@@ -1,4 +1,4 @@
-{% extends 'modulo_configuracion/list_view.html' %}
+{% extends 'modulo_configuracion/plantilla_listar.html' %}
 {% load static %}
 {% block title %}
     BIA | Listas de precios
@@ -6,30 +6,92 @@
     
     {% block menu %}
     <li class="breadcrumb-item">
+        <a href="{{ options_url }}">
+            Opciones lista de precios
+        </a>
+    </li>
+    <li class="breadcrumb-item">
         <a href="{{ create_url }}">
             Crear lista de precios
         </a>
     </li>
     {% endblock menu %}
-    {% block input-search %}
-    <div class="form-group">
-        <label>Buscar lista:</label>
-        <input 
-            type="text" 
-            class="form-control" 
-            autocomplete="off" 
-            id="iptBuscarLista">
-    </div> 
-    {% endblock input-search %}
     {% block columns %}
     <tr style="text-align: center" class="table-active">
-        <th style="width: 20%;">Código lista</th>
-        <th style="width: 20%;">Nombre lista</th>
-        <th style="width: 20%;">Vigencia</th>
-        <th style="width: 20%;">Estado</th>
+        <th style="width: 15%;">Código</th>
+        <th style="width: 15%;">Documento Nº</th>
+        <th style="width: 20%;">Nombre</th>
+        <th style="width: 15%;">Vigencia</th>
+        <th style="width: 15%;">Estado</th>
         <th style="width: 20%;">Opciones</th>
     </tr>        
     {% endblock columns %}
 {% block window-js %}
     <script src="{% static 'js/parametrizacion/ver_lista_precios.js' %}"></script>
+    <div class="modal fade" id="mdlDetalleListaPrecios" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><b><i class="fas fa-plus"></i> 
+                        Detalle lista de precios</b></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Código:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptCodigoLista">
+                            </div>  
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Nombre:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptNombreLista">
+                            </div>  
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Vigencia:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptVigenciaLista">
+                            </div>  
+                        </div>
+                    </div>
+                    <hr>
+                    <table id="tblListaPreciosDetalle" class='table table-hover'>
+                        <thead>
+                            <tr style="text-align: center" class="table-active">
+                                <th style="width: 10%;">Código producto</th>
+                                <th style="width: 20%;">Descripción producto</th>
+                                <th style="width: 15%;">Cantidad</th>
+                                <th style="width: 15%;">Tiempo de entrega</th>
+                                <th style="width: 20%;">Precio unitario</th>
+                                <th style="width: 20%;">Observaciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock window-js %}

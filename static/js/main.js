@@ -191,6 +191,48 @@ function fncMensajeConfirmacionmns(strTituloMensaje, strContenidoMensaje, fncRet
     })
 }
 
+// Función que muestra un mensaje de confirmación y se ejecuta una acción de acuerdo a la decisión
+// strTituloMensaje: Titulo del mensaje para la confirmación del envío del formulario
+// strContenidoMensaje: Contenido del mensaje para la confirmación del envío del formulario
+// fncRetornoSi: Función que se ejecutara si selecciona SI
+// fncRetornoNo: Función que se ejecutara si selecciona NO
+function fncMensajeConfirmacionDocumentomns(strTituloMensaje, strContenidoMensaje, fncExportarPdf, fncExportarExcel) {
+    $.confirm({
+        theme: 'material',
+        title: strTituloMensaje,
+        icon: 'fa fa-info',
+        content: strContenidoMensaje,
+        columnClass: 'medium',
+        typeAnimated: true,
+        cancelButtonClass: 'btn-primary',
+        draggable: true,
+        dragWindowBorder: false,
+        buttons: {
+            confirm: {
+                text: "Exportar a Pdf",
+                btnClass: 'btn-red',
+                action: function () {
+                    fncExportarPdf();
+                }
+            },
+            export: {
+                text: "Exportar a Excel",
+                btnClass: 'btn-success',
+                action: function () {
+                    fncExportarExcel();
+                }
+            },
+            cancel: {
+                text: "Cancelar",
+                btnClass: 'btn-dark',
+                action: function () {
+                    fncExportarExcel();
+                }
+            },
+        }
+    })
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// FUNCIONES PARA FORMULARIOS //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -415,6 +457,7 @@ function fncBuscarBodegaRepo(repo) {
         '<div class="row">' +
         '<div class="col-lg-12 text-left shadow-sm">' +
         '<p style="margin-bottom: 0;">' +
+        '<b>Código:</b> ' + repo.id + '<br>' +
         '<b>Bodega:</b> ' + repo.warehouse_name + '<br>' +
         '<b>Responsable: </b>' + repo.contact_name + '<br>' +
         '</p>' +

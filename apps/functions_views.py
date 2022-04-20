@@ -145,6 +145,8 @@ def fncValidarImportacionlst(df, colname, val):
         for i in range(0, len(values)):
             if values[i] in d:
                 pass
+            elif values[i] == 0:
+                pass
             else:
                 l.append((colname, i, error, values[i]))
     if len(val) > 4:

@@ -188,61 +188,7 @@ var sales = {
     },
 };
 
-// Cargar repo de cliente
-function fncBuscarClienteRepo(repo) {
-    if (repo.loading) {
-        return repo.text;
-    }
-
-    var option = $(
-        '<div class="wrapper container">'+
-        '<div class="row">' +
-        '<div class="col-lg-12 text-left shadow-sm">' +
-        //'<br>' +
-        '<p style="margin-bottom: 0;">' +
-        '<b>Nombre:</b> ' + repo.business_name + '<br>' +
-        '<b>Id:</b> ' + repo.identification + '<br>' +
-        '<b>Categoría:</b> ' + repo.customer_cat.customer_cat + '<br>' +
-        '<b>Celular:</b> ' + repo.cel_number + '<br>' +
-        '</p>' +
-        '</div>' +
-        '</div>' +
-        '</div>');
-
-    return option;
-}
-
-// Cargar repo de productos
-function fncBuscarProductoRepo(repo) {
-    if (repo.loading) {
-        return repo.text;
-    }
-
-    var option = $(
-        '<div class="wrapper container">'+
-        '<div class="row">' +
-        '<div class="col-lg-12 text-left shadow-sm">' +
-        //'<br>' +
-        '<p style="margin-bottom: 0;">' +
-        '<b>Nombre:</b> ' + repo.product_desc + '<br>' +
-        '<b>Código:</b> ' + repo.id + '<br>' +
-        '<b>Presentación:</b> ' + repo.presentation + '<br>' +
-        '<b>Precio:</b> <span class="badge badge-warning">$'+repo.cost_pu+'</span>'+
-        '</p>' +
-        '</div>' +
-        '</div>' +
-        '</div>');
-
-    return option;
-}
-
 $(function(){
-
-    // Cargar select2
-    $('.select2').select2({                                                                                                                                                                                                                                                                                                                                         
-        theme: "bootstrap4",
-        language: 'es'
-    });
 
     // Buscar cliente
     $('#identification').select2({
@@ -266,7 +212,6 @@ $(function(){
                 };
             },
         },
-        placeholder: 'Ingrese el nombre del cliente o número de documento de salida',
         minimumInputLength: 1,
         templateResult: fncBuscarClienteRepo,
 

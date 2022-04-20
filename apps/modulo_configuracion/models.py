@@ -53,6 +53,11 @@ class clsCiudadesMdl(BaseModel):
         verbose_name_plural= 'Ciudades'
         ordering = ['id']
     
+    def fncConsultaCiudades(self):
+        item = model_to_dict(self, exclude=['department', 'user_creation', 'user_update', 'city_name'])
+        item['text'] = self.city_name
+        return item
+
     def toJSON(self):
         item = model_to_dict(self)
         item['department'] = self.department.toJSON()
@@ -105,6 +110,12 @@ class clsPerfilEmpresaMdl(BaseModel):
                 self.user_update = user
         super(clsPerfilEmpresaMdl, self).save()
             
+    def fncRetornarConsultaDocumentosjsn(self):
+        item = model_to_dict(self, fields=['company_name', 'logo', 'id_type', 'id_number', 'address', 'cel_number', 'email'])
+        item['id_type'] = {'id': self.id_type, 'name': self.get_id_type_display()}
+        item['logo'] = self.get_logo()
+        return item
+    
     def toJSON(self):
         item = model_to_dict(self)
         item['person_type'] = {'id': self.person_type, 'name': self.get_person_type_display()}
@@ -250,7 +261,7 @@ class clsUnidadVentaMdl(BaseModel):
 
 ''' 3.5 Tabla catálogo de productos'''
 class clsCatalogoProductosMdl(BaseModel):
-    qr_code = models.ImageField(upload_to = 'qr_codes/products/%Y/%m/%d', blank=True)
+    qr_code = models.ImageField(upload_to = '', blank=True)
     product_desc = models.CharField('Nombre del producto', max_length=200)
     bar_code = models.PositiveBigIntegerField('Código de barras', unique=True, blank=True, null=True)
     trademark = models.CharField('Marca del producto', max_length=200)
@@ -289,21 +300,13 @@ class clsCatalogoProductosMdl(BaseModel):
                 self.user_creation = user
             else:
                 self.user_update = user
-        qrcode_img = qrcode.make(self.id)
-        canvas = Image.new('RGB', (290, 290), 'white')
-        draw = ImageDraw.Draw(canvas)
-        canvas.paste(qrcode_img)
-        fname = f'qr_code-{self.id}'+'.png'
-        buffer = BytesIO()
-        canvas.save(buffer, 'PNG')
-        self.qr_code.save(fname, File(buffer), save=False)
-        canvas.close()
         super(clsCatalogoProductosMdl, self).save(*args, **kwargs)
 
     def toJSON(self, lst_fields=None):
         item = model_to_dict(self, fields=lst_fields)
         item['product_cat'] = self.product_cat.toJSON()
-        item['product_subcat'] = self.product_subcat.toJSON()
+        if self.product_subcat:
+            item['product_subcat'] = self.product_subcat.toJSON()
         item['purchase_unit'] = self.purchase_unit.toJSON()
         item['sales_unit'] = self.sales_unit.toJSON()
         item['cost_pu'] = format(self.cost_pu, '.2f')
@@ -417,13 +420,13 @@ class clsCondicionMinimaCompraMdl(BaseModel):
 
     def toJSON(self):
         item = model_to_dict(self)
-        item['supplier'] = self.supplier.toJSON()
-        item['product'] = self.product.toJSON()
+        item['identification'] = self.identification.toJSON()
+        item['product_code'] = self.product_code.toJSON()
         item['state'] = {'id': self.state, 'name': self.get_state_display()}
         return item
 
     def __str__(self):
-        return self.supplier.supplier_name
+        return self.identification.supplier_name
 
 ''' 4.3 Tabla Descuento por proveedor'''
 class clsCondicionDescuentoProveedorMdl(BaseModel):
@@ -451,13 +454,13 @@ class clsCondicionDescuentoProveedorMdl(BaseModel):
 
     def toJSON(self):
         item = model_to_dict(self)
-        item['supplier'] = self.supplier.toJSON()
-        item['product'] = self.product.toJSON()
+        item['identification'] = self.identification.toJSON()
+        item['product_code'] = self.product_code.toJSON()
         item['state'] = {'id': self.state, 'name': self.get_state_display()}
         return item
 
     def __str__(self):
-        return self.supplier.supplier_name
+        return self.identification.supplier_name
 
 #################################################################################################
 # 5. CATÁLOGO DE CLIENTES
@@ -666,8 +669,8 @@ class clsCatalogoClientesMdl(BaseModel):
 # 6. CATÁLOGO DE BODEGAS
 #################################################################################################
 ''' 6.1 Tabla de catálogo de bodegas'''
-class clsCatalogoBodegasMdl(BaseModel):
-    qr_code = models.ImageField(upload_to = 'qr_codes/bodegas/%Y/%m/%d', blank=True)
+class clsCatalogoBodegasMdl(BaseModel): 
+    qr_code = models.ImageField(upload_to = '', blank=True)
     warehouse_name = models.CharField('Nombre bodega', unique=True, max_length=200)
     department = models.ForeignKey(clsDepartamentosMdl, on_delete=models.CASCADE)
     city = models.ForeignKey(clsCiudadesMdl, on_delete=models.CASCADE)
@@ -680,7 +683,7 @@ class clsCatalogoBodegasMdl(BaseModel):
         verbose_name = 'Bodega'
         verbose_name_plural = 'Catálogo de bodegas'
         ordering = ['state']
-        default_permissions = []
+        permissions = (('bia_adm_warehouse_catalogue', 'Cátalogo bodegas'),)
         
     def get_qr_code(self):
         if self.qr_code:
@@ -695,15 +698,6 @@ class clsCatalogoBodegasMdl(BaseModel):
                 self.user_creation = user
             else:
                 self.user_update = user
-        qrcode_img = qrcode.make(self.id)
-        canvas = Image.new('RGB', (290, 290), 'white')
-        draw = ImageDraw.Draw(canvas)
-        canvas.paste(qrcode_img)
-        fname = f'qr_code-{self.id}'+'.png'
-        buffer = BytesIO()
-        canvas.save(buffer, 'PNG')
-        self.qr_code.save(fname, File(buffer), save=False)
-        canvas.close()
         super(clsCatalogoBodegasMdl, self).save()
 
     def toJSON(self):
@@ -797,7 +791,7 @@ class clsHistoricoMovimientosAlternoMdl(models.Model):
         verbose_name = 'Historico de movimiento Alterno'
         verbose_name_plural = 'Historico de movimientos Alterno'
         ordering = ['id']
-        default_permissions = []
+        permissions = (('bia_adm_historico_movimientos_alterno', 'Histórico de movimientos alterno'),)
 
     def __str__(self):
         return self.doc_number
@@ -816,7 +810,7 @@ class clsAjusteInventarioMdl(BaseModel):
         verbose_name = 'Ajuste inventario'
         verbose_name_plural = 'Ajustes de inventario'
         ordering = ['id']
-        default_permissions = []
+        permissions = (('bia_adm_ajustes_inventario', 'Ajustes de inventario'),)
 
     def save(self, force_insert=False, force_update=False, using=None, 
             update_fields=None):
@@ -837,8 +831,8 @@ class clsDetalleAjusteInventarioMdl(models.Model):
     store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
     type = models.CharField('Tipo de ajuste', max_length=200, choices=INCOMETYPE)
     product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateField('Fecha vencimiento')
+    batch = models.CharField('Lote', max_length=200, blank=True, null=True)
+    expiration_date = models.DateField('Fecha vencimiento', blank=True, null=True)
     quantity = models.PositiveSmallIntegerField('Cantidad')
     unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2, blank=True, null=True)
     total_cost = models.DecimalField('Total costo', max_digits=20, decimal_places=2)
@@ -871,7 +865,7 @@ class clsEntradasAlmacenMdl(BaseModel):
         verbose_name = 'Entrada de almacén'
         verbose_name_plural = 'Entradas de almacén'
         ordering = ['id']
-        default_permissions = []
+        permissions = (('bia_log_entradas_almacen', 'Entradas de almacén'),)
 
     def save(self, force_insert=False, force_update=False, using=None, 
             update_fields=None):
@@ -1038,7 +1032,7 @@ class clsSalidasAlmacenMdl(BaseModel):
         verbose_name = 'Salida de almacén'
         verbose_name_plural = 'Salidas de almacén'
         ordering = ['id']
-        default_permissions = []
+        permissions = (('bia_log_salidas_almacen', 'Salidas de almacén'),)
 
     def save(self, force_insert=False, force_update=False, using=None, 
             update_fields=None):
@@ -1200,7 +1194,7 @@ class clsSaldosInventarioMdl(models.Model):
         verbose_name = 'Saldo inventario'
         verbose_name_plural = 'Saldos inventarios'
         ordering = ['id']
-        default_permissions = []
+        permissions = (('bia_log_saldos_inventario', 'Saldos de inventario'),)
 
     def __str__(self):
         return self.product_code.product_desc
@@ -1260,7 +1254,7 @@ class clsPedidosMdl(BaseModel):
         verbose_name = 'Pedidos'
         verbose_name_plural = 'Pedidos'
         ordering = ['id']
-        default_permissions = []
+        permissions = (('bia_com_pedidos', 'Pedidos'),)
 
     def save(self, force_insert=False, force_update=False, using=None, 
             update_fields=None):
@@ -1316,7 +1310,7 @@ class clsOrdenesCompraMdl(BaseModel):
         verbose_name = 'Pedidos'
         verbose_name_plural = 'Pedidos'
         ordering = ['id']
-        default_permissions = []
+        permissions = (('bia_pur_ordenes_compra', 'Ordenes de compra'),)
 
     def save(self, force_insert=False, force_update=False, using=None, 
             update_fields=None):
@@ -1360,15 +1354,17 @@ class clsListaPreciosMdl(BaseModel):
     list_name= models.CharField('Nombre Lista', max_length= 200)
     crossing_doc= models.CharField('Documento Cruce', max_length= 200, blank= True, null= True)
     store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete= models.CASCADE)
-    freight= models.DecimalField('Flete', max_digits= 30, decimal_places= 2)
-    state = models.CharField('Condición', max_length=200, choices= STATE)
+    freight= models.DecimalField('Flete', max_digits= 30, decimal_places= 2, blank= True, null= True)
+    due_date= models.DateField('Vigencia', blank=True, null=True)
+    observations= models.CharField('Observaciones', max_length= 200, blank= True, null= True)
+    state = models.CharField('Condición', max_length=200, choices= STATE, default='AC')
     objects = DataFrameManager()
 
     class Meta:
         verbose_name = 'Listas de precios'
         verbose_name_plural = 'Lista de precios'
         ordering = ['id']
-        default_permissions = []
+        permissions = (('bia_adm_listas_precios', 'Listas de precios'),)
 
     def save(self, force_insert=False, force_update=False, using=None, 
             update_fields=None):
@@ -1380,6 +1376,14 @@ class clsListaPreciosMdl(BaseModel):
                 self.user_update = user
         super(clsListaPreciosMdl, self).save()
 
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['store'] = self.store.toJSON()
+        item['freight'] = format(self.freight, '.2f')
+        item['due_date'] = self.due_date.strftime('%Y-%m-%d')
+        item['state'] = {'id': self.state, 'name': self.get_state_display()}
+        return item
+
     def __str__(self):
         return str(self.id)
 
@@ -1390,16 +1394,31 @@ class clsDetalleListaPreciosMdl(models.Model):
     quantity= models.PositiveSmallIntegerField('Cantidad')
     lead_time= models.SmallIntegerField('Tiempo de entrega')
     unit_price= models.DecimalField('Precio Unitario', max_digits= 30, decimal_places= 2)
-    due_date= models.DateTimeField('Vigencia')
     observations= models.CharField('Observaciones', max_length= 200, blank= True, null= True)
     objects = DataFrameManager()
 
+    def toJSON(self):
+        item = model_to_dict(self, exclude=[self.doc_number])
+        item['product_code'] = self.product_code.toJSON()
+        item['unit_price'] = format(self.unit_price, '.2f')
+        return item
+
+    def fncDetalleListajsn(self):
+        item = model_to_dict(self, exclude=[self.doc_number])
+        item['product_code'] = self.product_code.id
+        item['product_desc'] = self.product_code.product_desc
+        item['unit_price'] = format(self.unit_price, '.2f')
+        return item
+        
     class Meta:
         verbose_name = 'Detalle listas de precios'
         verbose_name_plural = 'Detalle listas de precios'
         ordering = ['id']
         default_permissions = []
 
+    def __str__(self):
+        return str(self.id)
+        
 #################################################################################################
 # 20. COTIZACIONES
 #################################################################################################
@@ -1419,7 +1438,7 @@ class clsCotizacionesMdl(BaseModel):
         verbose_name = 'Cotizaciones'
         verbose_name_plural = 'Cotizaciones'
         ordering = ['id']
-        default_permissions = []
+        permissions = (('bia_com_cotizacion_cliente', 'Cotización cliente'),)
 
     def save(self, force_insert=False, force_update=False, using=None, 
             update_fields=None):
@@ -1530,7 +1549,7 @@ class clsPromocionesMdl(models.Model):
         verbose_name = 'Promoción'
         verbose_name_plural = 'Promociones'
         ordering = ['id']
-        default_permissions = []
+        permissions = (('bia_pur_promociones', 'Promociones'),)
 
     def save(self, force_insert=False, force_update=False, using=None, 
             update_fields=None):
@@ -1604,7 +1623,7 @@ class clsEvaluacionProveedorMdl(models.Model):
         verbose_name = 'Evaluación proveedor'
         verbose_name_plural = 'Evaluaciones de proveedor'
         ordering = ['id']
-        default_permissions = []
+        permissions = (('bia_pur_evaluacion_proveedor', 'Evaluación proveedor'),)
 
     def save(self, force_insert=False, force_update=False, using=None, 
             update_fields=None):
@@ -1682,10 +1701,55 @@ class clsIndicadoresAlmacenMdl(models.Model):
         return str(self.id)
 
 #################################################################################################
-# FUNCIONES PARA BASES DE DATOS
+# 27. TIEMPOS DE ENTREGA
+#################################################################################################
+''' 27.1 Tabla de tiempos de entrega'''
+class clsTiemposEntregaMdl(BaseModel):
+    city = models.ForeignKey(clsCiudadesMdl, on_delete=models.CASCADE)
+    customer_zone = models.ForeignKey(clsZonaClienteMdl, on_delete=models.CASCADE)
+    warehouse = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    enlistment_time= models.DecimalField('Tiempo estimado de alistamiento', max_digits= 30, decimal_places= 2)
+    travel_time= models.DecimalField('Tiempo estimado de recorrido', max_digits= 30, decimal_places= 2)
+    download_time= models.DecimalField('Tiempo estimado de descarga', max_digits= 30, decimal_places= 2)
+    total_time= models.DecimalField('Tiempo total estimado', max_digits= 30, decimal_places= 2)
+    state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Tiempo de entrega'
+        verbose_name_plural = 'Tiempos de entrega'
+        ordering = ['state']
+        permissions = (('bia_adm_tiempos_entrega', 'Tiempos de entrega'),)
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.id:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsTiemposEntregaMdl, self).save()
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['city'] = self.city.toJSON()
+        item['customer_zone'] = self.customer_zone.toJSON()
+        item['warehouse'] = self.warehouse.toJSON()
+        item['enlistment_time'] = format(self.enlistment_time, '.2f')
+        item['travel_time'] = format(self.travel_time, '.2f')
+        item['download_time'] = format(self.download_time, '.2f')
+        item['total_time'] = format(self.total_time, '.2f')
+        item['state'] = {'id': self.state, 'name': self.get_state_display()}
+        return item
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# FUNCIONES POSTSAVE PARA BASES DE DATOS
 #################################################################################################
 
-''' Señales post-save para agregar numero de documento a tablas transaccionales'''
 # Función que genera un nuevo # de documento a la tabla
 # sender: Tabla de datos
 # instance: Instancia del modelo
@@ -1713,19 +1777,26 @@ def fncGenerarNumeroDocumento(sender, instance, **kwargs):
     elif sender== clsCotizacionesMdl:
         clsCotizacionesMdl.objects.filter(pk= instance.pk).update(doc_number= f'COT-{instance.pk}')
     
-# # Función que genera un nuevo QR-CODE para una instancia de una tabla
-# # sender: Tabla de datos
-# # instance: Instancia del modelo
-# def fncGenerarNumeroDocumento(sender, instance, **kwargs):
-#     qrcode_img = qrcode.make(instance.id)
-#     canvas = Image.new('RGB', (290, 290), 'white')
-#     draw = ImageDraw.Draw(canvas)
-#     canvas.paste(qrcode_img)
-#     fname = f'qr_code-{instance.id}'+'.png'
-#     buffer = BytesIO()
-#     canvas.save(buffer, 'PNG')
-#     instance.qr_code.save(fname, File(buffer), save=False)
-#     canvas.close()
+# Función que genera un nuevo QR-CODE para una instancia de una tabla
+# sender: Tabla de datos
+# instance: Instancia del modelo
+def fncGenerarQrCode(sender, instance, **kwargs):
+    if not instance.qr_code:
+        qrcode_img = qrcode.make(instance.id)
+        canvas = Image.new('RGB', (290, 290), 'white')
+        draw = ImageDraw.Draw(canvas)
+        canvas.paste(qrcode_img)
+        fname = f'qr_codes/bodegas/qr_code-{instance.id}'+'.png'
+        buffer = BytesIO()
+        canvas.save(buffer, 'PNG')
+        instance.qr_code.save(fname, File(buffer), save=False)
+        canvas.close()
+        if sender == clsCatalogoBodegasMdl:
+            clsCatalogoBodegasMdl.objects.filter(pk=instance.pk).update(qr_code=fname)
+        else:
+            clsCatalogoProductosMdl.objects.filter(pk=instance.pk).update(qr_code=fname)
+    else:
+        pass
 
 post_save.connect(fncGenerarNumeroDocumento, sender=clsAjusteInventarioMdl)
 post_save.connect(fncGenerarNumeroDocumento, sender=clsEntradasAlmacenMdl)
@@ -1738,3 +1809,5 @@ post_save.connect(fncGenerarNumeroDocumento, sender= clsPedidosMdl)
 post_save.connect(fncGenerarNumeroDocumento, sender= clsOrdenesCompraMdl)
 post_save.connect(fncGenerarNumeroDocumento, sender= clsListaPreciosMdl)
 post_save.connect(fncGenerarNumeroDocumento, sender= clsCotizacionesMdl)
+post_save.connect(fncGenerarQrCode, sender= clsCatalogoProductosMdl)
+post_save.connect(fncGenerarQrCode, sender= clsCatalogoBodegasMdl)

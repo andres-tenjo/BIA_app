@@ -95,7 +95,7 @@
             e.preventDefault();
             var parameters = new FormData(this);
             fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
-                location.href = '{{ list_url }}';
+                location.href = '{{ create_url }}';
             });
         });
     </script>

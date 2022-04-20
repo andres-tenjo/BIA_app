@@ -366,6 +366,38 @@ $(function () {
         dctOpcionesCatalogoProveedores.dctVariables.strProveedorId = data.id;
     });
     
+    $('#buscar_proveedor_descuento').select2({
+        theme: "bootstrap4",
+        language: 'es',
+        allowClear: true,
+        ajax: {
+            delay: 250,
+            type: 'POST',
+            url: window.location.pathname,
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            data: function (params) {
+                var queryParameters = {
+                    term: params.term,
+                    action: 'slcBuscarProveedorjsn',
+                }
+                return queryParameters;
+            },
+            processResults: function (data) {
+                return {
+                    results: data
+                };
+            },
+        },
+        placeholder: 'Ingrese el proveedor, identificación o nombre de contacto',
+        minimumInputLength: 1,
+        templateResult: fncBuscarProveedorRepo,
+    }).on('select2:select', function (e) {
+        var data = e.params.data;
+        dctOpcionesCatalogoProveedores.dctVariables.strProveedorId = data.id;
+    });
+    
     // Buscar producto formulario cantidades
     $('#buscar_producto').select2({
         theme: "bootstrap4",
@@ -523,14 +555,14 @@ $(function () {
 
     // Focus formulario cantidades mínimas
     $('#myModalCantidades').on('shown.bs.modal', function (e) {
-        $('#buscar_proveedor').val('').trigger("change");
-        $('#buscar_proveedor').select2('open');
+        $('.buscar_proveedor').select2('open');
     });
 
     // Borrar lo digitado en el formulario cantidades mínimas
     $('#myModalCantidades').on('hidden.bs.modal', function (e) {
         dctOpcionesCatalogoProveedores.dctVariables.strProveedorId = '';
         dctOpcionesCatalogoProveedores.dctVariables.lstCantidadProductoCondicion = [];
+        $('.buscar_proveedor').val('').trigger("change");
         $('#frmCantidades').trigger('reset');
     });
 
@@ -618,7 +650,6 @@ $(function () {
 
     // Focus formulario categoría
     $('#myModalDescuentos').on('shown.bs.modal', function (e) {
-        $('#buscar_proveedor_descuento').val('').trigger("change");
         $('#buscar_proveedor_descuento').select2('open');
     });
 
@@ -626,6 +657,7 @@ $(function () {
     $('#myModalDescuentos').on('hidden.bs.modal', function (e) {
         dctOpcionesCatalogoProveedores.dctVariables.strProveedorId = '';
         dctOpcionesCatalogoProveedores.dctVariables.lstDescuentoProductoCondicion = [];
+        $('#buscar_proveedor_descuento').val('').trigger("change");
         $('#frmDescuentos').trigger('reset');
     });
 

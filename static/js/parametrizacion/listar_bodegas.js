@@ -35,17 +35,15 @@ dctListarBodegas = {
             },
             data: this.dctVariables.lstBodegas,
             columns: [
+                { "data": "id"},
                 { "data": "warehouse_name"},
-                { "data": "department.department_name"},
                 { "data": "city.city_name"},
-                { "data": "warehouse_address"},
-                { "data": "contact_name"},
                 { "data": "state.name"},
                 { "data": "id"},
             ],
             columnDefs: [
                 {
-                    targets: [-2, -3, -4, -5, -6, -7],
+                    targets: [-2, -3, -4, -5],
                     class: 'text-center',
                     render: function (data, type, row) {
                         return data;
@@ -56,7 +54,8 @@ dctListarBodegas = {
                     class: 'text-center',
                     orderable: false,
                     render: function (data, type, row) {
-                        var buttons = '<a href="/configuracion/editar_bodega/' + row.id + '/" class="btn btn-success btn-xs btn-flat" title="Editar bodega"><i class="fas fa-edit"></i></a> ';
+                        var buttons = '<a rel="details" class="btn btn-info btn-xs btn-flat" title="Detalle producto"><i class="fas fa-search"></i></a> ';
+                        buttons += '<a href="/configuracion/editar_bodega/' + row.id + '/" class="btn btn-success btn-xs btn-flat" title="Editar bodega"><i class="fas fa-edit"></i></a> ';
                         buttons += '<a href="#" rel="delete" class="btn btn-danger btn-xs btn-flat" title="Cambiar estado"><i class="fas fa-undo-alt"></i></a> ';
                         return buttons;
                     }
@@ -66,6 +65,17 @@ dctListarBodegas = {
             }
         });
         $('#data tbody')
+            .on('click', 'a[rel="details"]', function () {
+                var tr = tblBodegas.cell($(this).closest('td, li')).index();
+                var data = tblBodegas.row(tr.row).data();
+                $('#qrCode').attr('src', data.qr_code);
+                $('input[name="iptNombreBodega"]').val(data.warehouse_name);
+                $('input[name="iptDepartamentoBodega"]').val(data.department.department_name);
+                $('input[name="iptCiudadBodega"]').val(data.city.city_name);
+                $('input[name="iptDireccionBodega"]').val(data.warehouse_address);
+                $('input[name="iptResponsableBodega"]').val(data.contact_name);
+                $('#myModalDet').modal('show');
+            })
             .on('click', 'a[rel="delete"]', function () {
                 var tr = tblBodegas.cell($(this).closest('td, li')).index();
                 var data = tblBodegas.row(tr.row).data();
@@ -108,7 +118,7 @@ $(function () {
                 };
             },
         },
-        placeholder: 'Ingrese el nombre de la bodega o responsable',
+        placeholder: 'Ingrese el código, nombre o responsable de la bodega',
         minimumInputLength: 1,
         templateResult: fncBuscarBodegaRepo,
     }).on('select2:select', function (e) {

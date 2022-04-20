@@ -84,7 +84,7 @@ $(function () {
         }else if (str_metodo_pago.value === 'CO'){
             var parameters = new FormData(this);
             fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
-            location.href = '/configuracion/listar_proveedores/';
+            location.href = '/configuracion/crear_proveedor/';
         });
         }
     });

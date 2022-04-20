@@ -137,9 +137,11 @@ dctListarProductos = {
             parameters.append('action', 'frmEliminarProductojsn');
             parameters.append('id', data.id);
             fncModificarEstadoItem(window.location.pathname, parameters, function (response) {
+                
                 dctListarProductos.dctVariables.lstProductos = [];
                 dctListarProductos.dctVariables.lstProductos.push(response);
                 $('#data').DataTable().clear().rows.add(dctListarProductos.dctVariables.lstProductos).draw();
+                
             });
         });
     },

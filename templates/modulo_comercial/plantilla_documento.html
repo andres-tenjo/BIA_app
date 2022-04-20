@@ -7,7 +7,7 @@
 {% load widget_tweaks %}
 
     {% block content-window %}    
-    <form id="frmOrder" method="post">
+    <form id="frmDocumento" method="post">
         <div class="row">
             <div class="col-lg-12">
                 <div class="card card-primary card-outline">
@@ -15,22 +15,17 @@
                         <h2 class="card-title">
                             <i class="fas fa-plus"></i>
                             {% block document-title %}
-                            
                             {% endblock document-title %}
                         </h2>
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-lg-6">
+                            <div class="col-lg-5">
                                 <div class="form-group">
                                     <label>Cliente:</label>
-                                    <select
-                                        class="form-control select2" 
-                                        style="width: 80%;"
-                                        required="true"
-                                        id="slcCliente">
-                                    </select>
                                     <div class="input-group">
+                                        {% block identification %}
+                                        {% endblock identification %}
                                         <div class="input-group-append">
                                             <button 
                                                 class="btn btn-success btn-flat addCust" 
@@ -43,7 +38,7 @@
                             </div>
                         </div>
                         <hr>
-                        <div hidden="true" class="row" id="dataCustomer">
+                        <div hidden="true" class="row" id="rowInformacionCliente">
                             <div class="col-lg-3">
                                 <div class="form-group">
                                     <label>Identificación Nº:</label>
@@ -52,7 +47,7 @@
                                         class="form-control" 
                                         autocomplete="off" 
                                         readonly="true" 
-                                        name="iptNumeroIdentificacion">
+                                        name="iptIdentificacionCliente">
                                 </div>
                             </div>
                             <div class="col-lg-3">
@@ -63,7 +58,7 @@
                                         class="form-control" 
                                         autocomplete="off" 
                                         readonly="true" 
-                                        name="iptNumeroCelular">
+                                        name="iptCelularCliente">
                                 </div>
                             </div>
                             <div class="col-lg-3">
@@ -74,7 +69,7 @@
                                         class="form-control" 
                                         autocomplete="off" 
                                         readonly="true" 
-                                        name="ipt">
+                                        name="iptCorreoCliente">
                                 </div>
                             </div>
                             <div class="col-lg-3">
@@ -85,11 +80,12 @@
                                         class="form-control" 
                                         autocomplete="off" 
                                         readonly="true" 
-                                        name="cust_cat">
+                                        name="iptCategoriaCliente">
                                 </div>
                             </div>
                         </div>
-                        <div hidden="true" class="row" id="dataCustCartera">
+                        {% block carteraCliente %}
+                        <div hidden="true" class="row" id="rowCarteraCliente">
                             <div class="col-lg-3">
                                 <div class="form-group">
                                     <label 
@@ -101,7 +97,7 @@
                                         class="form-control" 
                                         autocomplete="off" 
                                         readonly="true" 
-                                        id="stateCart">
+                                        id="iptEstadoCartera">
                                 </div>
                             </div>
                             <div class="col-lg-3">
@@ -115,7 +111,7 @@
                                         class="form-control" 
                                         autocomplete="off" 
                                         readonly="true" 
-                                        id="creditValue">
+                                        id="iptCupoDisponible">
                                 </div>
                             </div>
                             <div class="col-lg-3">
@@ -129,7 +125,7 @@
                                         class="form-control" 
                                         autocomplete="off" 
                                         readonly="true" 
-                                        id="minPay">
+                                        id="iptPagoMinimo">
                                 </div>
                             </div>
                             <div class="col-lg-3">
@@ -143,13 +139,14 @@
                                         class="form-control" 
                                         autocomplete="off" 
                                         readonly="true" 
-                                        id="totalPay">
+                                        id="iptPagoTotal">
                                 </div>
                             </div>
                         </div>
+                        {% endblock carteraCliente %}
                         <hr>
                         <div class="row">
-                            <div class="col-lg-3">
+                            <div class="col-lg-4">
                                 <div class="form-group">
                                     <button 
                                         class="btn btn-outline-primary btn-block btnAddProd" 
@@ -162,7 +159,8 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="col-lg-3">
+                            {% block btn-cartera %}
+                            <div class="col-lg-4">
                                 <div class="form-group">
                                     <button 
                                         class="btn btn-outline-primary btn-block btnCartera" 
@@ -175,12 +173,14 @@
                                         Solicitar autorización cartera
                                     </button>
                                 </div>
-                            </div>
+                            </div>    
+                            {% endblock btn-cartera %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    {% block agregar_productos %}
         <div class="row">
             <div class="col-lg-12">
                 <div class="collapse" id="addProds">
@@ -201,17 +201,18 @@
                                             <select 
                                                 class="form-control select2" 
                                                 style="width: 100%;" 
-                                                name="search">
+                                                name="slcBuscarProducto">
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <hr>
+                        {% block informacionProducto %}
                             <div class="row">
-                                <div class="col-lg-6">
+                                <div class="col-lg-12">
                                     <div class="row">
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label>Código:</label>
                                                 <input 
@@ -219,10 +220,10 @@
                                                     class="form-control" 
                                                     autocomplete="off" 
                                                     readonly="true" 
-                                                    name="cod">
+                                                    name="iptCodigoProducto">
                                             </div>
                                         </div>
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label>Nombre producto:</label>
                                                 <input 
@@ -230,12 +231,10 @@
                                                     class="form-control" 
                                                     autocomplete="off" 
                                                     readonly="true" 
-                                                    name="nameProd">
+                                                    name="iptNombreProducto">
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label>Presentación:</label>
                                                 <input 
@@ -243,10 +242,10 @@
                                                     class="form-control" 
                                                     autocomplete="off" 
                                                     readonly="true" 
-                                                    name="pres">
+                                                    name="iptPresentacionProducto">
                                             </div>
                                         </div>
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label>Unidad de venta:</label>
                                                 <input 
@@ -254,12 +253,12 @@
                                                     class="form-control" 
                                                     autocomplete="off" 
                                                     readonly="true" 
-                                                    name="udv">
+                                                    name="iptUnidadVentaProducto">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label>Precio unitario:</label>
                                                 <input 
@@ -267,10 +266,10 @@
                                                     class="form-control" 
                                                     autocomplete="off" 
                                                     readonly="true" 
-                                                    name="uniPrice">
+                                                    name="iptPrecioUnitario">
                                             </div>
                                         </div>
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label>Iva:</label>
                                                 <input 
@@ -278,12 +277,10 @@
                                                     class="form-control" 
                                                     autocomplete="off" 
                                                     readonly="true" 
-                                                    name="ivaProd">
+                                                    name="iptIvaProducto">
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label>Descuento producto:</label>
                                                 <input 
@@ -291,10 +288,10 @@
                                                     class="form-control" 
                                                     autocomplete="off" 
                                                     readonly="true" 
-                                                    name="descProd">
+                                                    name="iptDescuentoProducto">
                                             </div>
                                         </div>
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label>Cantidad disponible:</label>
                                                 <input 
@@ -302,46 +299,19 @@
                                                     class="form-control" 
                                                     autocomplete="off" 
                                                     readonly="true" 
-                                                    name="cantDisp">
+                                                    name="iptCantidadDisponible">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label>Cantidad solicitada:</label>
                                                 <input 
                                                     type="text" 
                                                     class="form-control" 
                                                     autocomplete="off" 
-                                                    name="cantSol">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="card card-primary card-outline">
-                                        <div class="card-header">
-                                            <h2 class="card-title">
-                                                <i class="fas fa-shopping-cart"></i> 
-                                                Asistente de ventas
-                                            </h2>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    <table class="table table-hover" id="tblHelp">
-                                                        <thead>
-                                                            <tr style="text-align: center">
-                                                                <th>Código</th>
-                                                                <th>Producto</th>
-                                                                <th>Precio unitario</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                    name="iptCantidadSolicitada">
                                             </div>
                                         </div>
                                     </div>
@@ -351,7 +321,7 @@
                             <div class="row">
                                 <div class="col-lg-3">
                                     <div class="form-group">
-                                        <label>Subtotal:</label>
+                                        <label>Subtotal:</label>  
                                         {{ form.subtotal }}
                                     </div>
                                 </div>
@@ -417,6 +387,9 @@
                                 </div>
                             </div>
                             <hr>
+                        {% endblock informacionProducto %}
+                            
+                        {% block tablaProducto %}
                             <div class="row">
                                 <div class="col-lg-12">
                                     <table class="table table-bordered table-hover" id="tblProducts">
@@ -438,137 +411,41 @@
                                     </table>
                                 </div>
                             </div>
+                        {% endblock tablaProducto %}
+                            
+                        {% block generarDocumento %}
                             <div class="row">
                                 <div class="col-lg-4">
                                     <button 
-                                        class="btn btn-outline-primary btn-block genOrder" 
+                                        class="btn btn-outline-primary btn-block btnGenerarDocumento" 
                                         type="button" 
                                         data-toggle="collapse" 
-                                        data-target="#resumeOrder" 
+                                        data-target="#cllResumenDocumento" 
                                         aria-expanded="false" 
-                                        aria-controls="resumeOrder">
+                                        aria-controls="cllResumenDocumento">
                                         <i class="fas fa-plus"></i> 
-                                        Generar pedido
+                                        {% block titulo-generar-documento %}
+                                        {% endblock titulo-generar-documento %}
                                     </button>
                                 </div>
                             </div>
+                        {% endblock generarDocumento %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="collapse" id="resumeOrder">
-                    <div class="card card-primary card-outline">
-                        <div class="card-header">
-                            <h2 class="card-title">
-                                <i class="fas fa-shopping-cart"></i> 
-                                Resúmen de pedido
-                            </h2>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label>Ciudad:</label>
-                                        <input 
-                                            type="text" 
-                                            class="form-control" 
-                                            autocomplete="off" 
-                                            readonly="true" 
-                                            name="city">
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label>Zona:</label>
-                                        <input 
-                                            type="text" 
-                                            class="form-control" 
-                                            autocomplete="off" 
-                                            readonly="true" 
-                                            name="zone">
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label>Dirección de entrega:</label>
-                                        {{ form.delivery_address }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label>Fecha de pedido:</label>
-                                        {{ form.order_date }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label>Fecha de entrega:</label>
-                                        {{ form.deliver_date }}
-                                    </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="form-group">
-                                        <label>Metodo de pago:</label>
-                                        {{ form.payment_method }}
-                                    </div>
-                                </div>
-                                
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="form-group">
-                                        <label>Observaciones:</label>
-                                        {{ form.observations }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <button 
-                                        class="btn btn-outline-primary btn-block btnSubmit" 
-                                        type="submit">
-                                        <i class="fas fa-plus"></i> 
-                                        Guardar e imprimir pedido
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
+    {% endblock agregar_productos %}
     
+    {% block resumenDocumento %}
+        
+    {% endblock resumenDocumento %}
+    </form>
     {% endblock content-window %}
 
     {% block extrajs %}  
-        <script src="{% static 'js/modulo_comercial/crear_pedido.js' %}"></script>
-        <script src="{% static 'js/main.js' %}"></script>
+        <script src="{% static 'js/modulo_comercial/plantilla_documento.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
-        <script>
-            {% if form.errors %}
-                var errors = '';
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        errors += '{{ error }}\n';
-                    {% endfor %}
-                {% endfor %}
-                {% for error in form.non_field_errors %}
-                    errors += '{{ error }}\n';
-                {% endfor %}
-                Swal.fire({
-                    title: 'Error!',
-                    text: errors,
-                    icon: 'error'
-                });
-            {% endif %}
-        </script>
         <div 
             class="modal fade" 
             id="modalCustomer" 

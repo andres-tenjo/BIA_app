@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet" href="{% static 'static/lib/bootstrap-4.5.3-dist/css/bootstrap.min.css' %}">
+    <style>
+        * {
+            color: black;
+        }
+
+        body {
+            font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+            padding: 0;
+            margin: 0;
+            color: black;
+        }
+
+        .name-company {
+            font-size: 30px;
+            padding: 0;
+            margin: 0;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        table thead tr th {
+            border: 1px solid black !important;
+            padding: 3px;
+        }
+
+        table tbody tr td {
+            border: 1px solid black;
+            padding: 3px;
+        }
+
+        .img-logo {
+            margin-top: 10px;
+            width: 75px;
+            height: 75px;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-2">
+            <img src="{{ qrsPerfilEmpresa.logo }}" class="img-fluid d-block mx-auto img-logo">
+        </div>
+        <div class="col-lg-4">
+            <h3 class="name-company">{{ qrsPerfilEmpresa.company_name }}</h3>
+            <p class="text-center">
+                {{ qrsPerfilEmpresa.id_type.name }}
+                {{ qrsPerfilEmpresa.id_number }}<br>
+                {{ qrsPerfilEmpresa.address }}<br>
+                {{ qrsPerfilEmpresa.email }}<br>
+            </p>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col">
+            <b>Nombre lista: </b> {{ qrsListaPrecios.list_name }}<br>
+            <b>Fecha de emisión: </b>{{ qrsListaPrecios.creation_date|date:'d M Y' }}<br>
+            <b>Lista de precios Nº: </b> {{ qrsListaPrecios.doc_number }}<br>
+        </div>
+        <div class="col">
+            <b>Fecha de vigencia: </b> {{ qrsListaPrecios.due_date|date:'d M Y' }}<br>
+            <b>Flete: </b> {{ qrsListaPrecios.freight }} %<br>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <table class="table" style="width: 100%;">
+            <thead>
+            <tr style="border: 1px solid black; text-align: center;">
+                <th style="width: 15%;">Código Producto</th>
+                <th style="width: 20%;">Descripción producto</th>
+                <th style="width: 20%;">Cantidad</th>
+                <th style="width: 15%;">Tiempo de entrega</th>
+                <th style="width: 15%;">Precio unitario</th>
+                <th style="width: 15%;">Observaciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in qrsListaPrecios.clsdetallelistapreciosmdl_set.all %}
+                <tr>
+                    <td class="text-center">{{ i.product_code.id }}</td>
+                    <td class="text-center">{{ i.product_code.product_desc }}</td>
+                    <td class="text-center">{{ i.quantity }}</td>
+                    <td class="text-center">{{ i.lead_time }}</td>
+                    <td class="text-center">{{ i.unit_price|floatformat:2 }}</td>
+                    <td class="text-center">{{ i.observations }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="col">
+            <b>Observaciones generales: </b> {{ qrsListaPrecios.observations }}<br>
+        </div>
+    </div>
+</div>
+</body>
+</html>

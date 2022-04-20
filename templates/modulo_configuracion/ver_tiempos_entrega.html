@@ -1,7 +1,7 @@
-{% extends 'modulo_configuracion/list_view.html' %}
+{% extends 'modulo_configuracion/plantilla_listar.html' %}
 {% load static %}
 {% block title %}
-    BIA | Listas de precios
+    BIA | Tiempos de entrega
 {% endblock title %}
     
     {% block menu %}
@@ -11,21 +11,18 @@
         </a>
     </li>
     {% endblock menu %}
-    {% block input-search %}
-    <div class="form-group">
-        <label>Buscar tiempo de entrega:</label>
-        <input 
-            type="text" 
-            class="form-control" 
-            autocomplete="off" 
-            id="iptBuscarLista">
-    </div> 
-    {% endblock input-search %}
     {% block columns %}
     <tr style="text-align: center" class="table-active">
-        <th style="width: 20%;">Bodega</th>
-        <th style="width: 20%;">Destino</th>
-        <th style="width: 20%;">Tiempo estimado de entrega</th>
+        <th style="width: 10%;">Código</th>
+        <th style="width: 10%;">Ciudad</th>
+        <th style="width: 10%;">Zona</th>
+        <th style="width: 10%;">Bodega</th>
+        <th style="width: 10%;">Tiempo de alistamiento</th>
+        <th style="width: 10%;">Tiempo de recorrido</th>
+        <th style="width: 10%;">Tiempo de descarga</th>
+        <th style="width: 10%;">Tiempo total estimado</th>
+        <th style="width: 10%;">Estado</th>
+        <th style="width: 10%;">Opciones</th>
     </tr>        
     {% endblock columns %}
 {% block window-js %}

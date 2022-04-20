@@ -24,31 +24,19 @@
         <div class="col-lg-4">
             <div class="form-group">
                 <label>* Ciudad destino:</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    autocomplete="off" 
-                    id="iptCiudadDestino">
+                {{ form.city }}
             </div>
         </div>
         <div class="col-lg-4">
             <div class="form-group">
                 <label>* Zona destino:</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    autocomplete="off" 
-                    id="iptZonaDestino">
+                {{ form.customer_zone }}
             </div>
         </div>
         <div class="col-lg-4">
             <div class="form-group">
                 <label>* Bodega destino:</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    autocomplete="off" 
-                    id="iptBodegaDestino">
+                {{ form.warehouse }}
             </div>
         </div>
     </div>
@@ -56,31 +44,19 @@
         <div class="col-lg-4">
             <div class="form-group">
                 <label>* Tiempo estimado alistamiento:</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    autocomplete="off" 
-                    id="iptTiempoAlistamiento">
+                {{ form.enlistment_time }}
             </div>
         </div>
         <div class="col-lg-4">
             <div class="form-group">
                 <label>Tiempo estimado recorrido:</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    autocomplete="off"
-                    id="iptTiempoRecorrido">
+                {{ form.travel_time }}
             </div>
         </div>
         <div class="col-lg-4">
             <div class="form-group">
                 <label>* Tiempo estimado descarga:</label>
-                <input 
-                    type="text"
-                    class="form-control"
-                    autocomplete="off"
-                    id="iptTiempoDescarga">
+                {{ form.download_time }}
             </div>
         </div>
     </div>
@@ -88,12 +64,7 @@
         <div class="col-lg-4">
             <div class="form-group">
                 <label>Total tiempo estimado:</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    autocomplete="off" 
-                    readonly="true" 
-                    id="iptTotalTiempo">
+                {{ form.total_time }}
             </div>
         </div>
     </div>
