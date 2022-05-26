@@ -233,6 +233,39 @@ function fncMensajeConfirmacionDocumentomns(strTituloMensaje, strContenidoMensaj
     })
 }
 
+// Función que muestra un mensaje de confirmación y se ejecuta una acción de acuerdo a la decisión
+// strTituloMensaje: Titulo del mensaje para la confirmación del envío del formulario
+// strContenidoMensaje: Contenido del mensaje para la confirmación del envío del formulario
+function fncMensajeConfirmacionDocumentomns(strTituloMensaje, strContenidoMensaje, fncExportarPdf, fncCancelar) {
+    $.confirm({
+        theme: 'material',
+        title: strTituloMensaje,
+        icon: 'fa fa-info',
+        content: strContenidoMensaje,
+        columnClass: 'medium',
+        typeAnimated: true,
+        cancelButtonClass: 'btn-primary',
+        draggable: true,
+        dragWindowBorder: false,
+        buttons: {
+            confirm: {
+                text: "Exportar a Pdf",
+                btnClass: 'btn-red',
+                action: function () {
+                    fncExportarPdf();
+                }
+            },
+            cancel: {
+                text: "Cancelar",
+                btnClass: 'btn-dark',
+                action: function () {
+                    fncCancelar();
+                }
+            },
+        }
+    })
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// FUNCIONES PARA FORMULARIOS //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -433,16 +466,20 @@ function fncBuscarClienteRepo(repo) {
     var option = $(
         '<div class="wrapper container">'+
         '<div class="row">' +
-        '<div class="col-lg-12 text-left shadow-sm">' +
+        '<div class="col-lg-1 text-left shadow-sm">' +
         '<p style="margin-bottom: 0;">' +
-        '<b>Proveedor:</b> ' + repo.business_name + '<br>' +
+        '<b><i class="fas fa-user"></i></b>' +
+        '</p>' +
+        '</div>' +
+        '<div class="col-lg-11 text-left shadow-sm">' +
+        '<p style="margin-bottom: 0;">' +
+        '<b>Cliente:</b> ' + repo.value + '<br>' +
         '<b>Identificación: </b>' + repo.identification + '<br>' +
-        '<b>Celular: </b> OC000' + repo.cel_number + '<br>' +
+        '<b>Celular: </b>' + repo.cel_number + '<br>' +
         '</p>' +
         '</div>' +
         '</div>' +
         '</div>');
-
     return option;
 }
 

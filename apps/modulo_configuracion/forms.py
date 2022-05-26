@@ -423,8 +423,6 @@ class clsCrearUnidadVentaFrm(ModelForm):
             data['error'] = str(e)
         return data
 
-
-
 ##########################################################
 # 3. LISTA DE PRECIOS
 ##########################################################
@@ -710,7 +708,7 @@ class clsCrearClienteFrm(ModelForm):
     class Meta:
         model = clsCatalogoClientesMdl
         fields = '__all__'
-        exclude = ['user_update', 'user_creation', 'state']
+        exclude = ['user_update', 'user_creation', 'state', 'qr_code']
         widgets = {
             'person_type': Select(
                 attrs={
@@ -819,13 +817,19 @@ class clsCrearClienteFrm(ModelForm):
                     'id': 'pay_method'
                 }
             ),
+            'price_list': Select(
+                attrs={
+                    'class': 'form-control select',
+                    'id': 'price_list'
+                }
+            ),
             'credit_days': NumberInput(
                 attrs={
                     'class': 'form-control touchNumber',
                     'id': 'credit_days',
                 }
             ),
-            'credit_value': TextInput(
+            'approved_amount': TextInput(
                 attrs={
                     'class': 'form-control touchPrice',
                     'id': 'credit_value'
@@ -846,7 +850,7 @@ class clsCrearClienteFrm(ModelForm):
         try:
             if form.is_valid():
                 instance = form.save()
-                data = instance.toJSON()
+                data = instance.fncDataClienteSlcjsn()
             else:
                 data['error'] = form.errors
         except Exception as e:

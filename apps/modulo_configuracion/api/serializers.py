@@ -73,6 +73,15 @@ class clsListaPreciosSerializador(serializers.ModelSerializer):
     def fncFormatoNumero(self, obj):
         return number_format(obj.freight)
 
+class clsListaPreciosSrl(serializers.ModelSerializer):
+    
+    class Meta:
+        model = clsListaPreciosMdl
+        fields = (
+            'id', 
+            'list_name'
+            )
+
 class clsListaPreciosDetalleSerializador(serializers.ModelSerializer):
     product_code = serializers.StringRelatedField()
     unit_price = serializers.SerializerMethodField('fncFormatoNumero')
@@ -85,15 +94,13 @@ class clsListaPreciosDetalleSerializador(serializers.ModelSerializer):
         return number_format(obj.unit_price)
 
 class clsListaPreciosDetalleSrl(serializers.ModelSerializer):
-    product_code = clsListaPreciosSerializador(many=True)
-    unit_price = serializers.SerializerMethodField('fncFormatoNumero')
     
     class Meta:
         model = clsDetalleListaPreciosMdl
-        exclude = ('id', 'doc_number')
-
-    def fncFormatoNumero(self, obj):
-        return number_format(obj.unit_price)
+        fields = (
+            'id', 
+            'list_name'
+            )
 
 ####################################################################################
 # 3. CATÁLOGO CLIENTES

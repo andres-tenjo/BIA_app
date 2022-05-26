@@ -219,3 +219,11 @@ class PersonAdmin(ImportExportModelAdmin):
 @admin.register(clsTiemposEntregaMdl)
 class PersonAdmin(ImportExportModelAdmin):
     pass
+
+###########################################################
+# VENTAS PERDIDAS
+###########################################################
+''' Ventas perdidas'''
+@admin.register(clsVentasPerdidasMdl)
+class PersonAdmin(ImportExportModelAdmin):
+    pass

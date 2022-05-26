@@ -5,16 +5,16 @@
 {% endblock title %}
     {% block menu %}
     <li class="breadcrumb-item">
-        <a href="{% url 'comercial:crear_pedido' %}">
-            <i class="fas fa-plus"></i> Crear pedido
+        <a href="{{ create_url }}">
+            Crear pedido
         </a>
-    </li>    
+    </li>
     {% endblock menu %}
     {% block columns %}
     <tr style="text-align: center" class="table-active">
-            <th scope="col">Nº</th>
-            <th scope="col">Cliente</th>
+            <th scope="col">Nº Pedido</th>
             <th scope="col">Fecha de registro</th>
+            <th scope="col">Cliente</th>
             <th scope="col">Subtotal</th>
             <th scope="col">Iva</th>
             <th scope="col">Descuento</th>
@@ -24,7 +24,7 @@
     {% endblock columns %}      
 {% block window-js %}
     <script src="{% static 'js/modulo_comercial/ver_pedidos.js' %}"></script>
-    <div class="modal fade" id="myModelDet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="mdlDetallePedido" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -36,17 +36,174 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-bordered" id="tblDet">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Pedido Nº:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptDocumentoPedido">
+                            </div>  
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Cliente:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptNombreCliente">
+                            </div>  
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Identificación Nº:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptIdentificacionCliente">
+                            </div>  
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Ciudad:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptCiudadCliente">
+                            </div>  
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Zona:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptZonaCliente">
+                            </div>  
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Dirección de entrega:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptDireccionCliente">
+                            </div>  
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Bodega:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptBodega">
+                            </div>  
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Fecha de entrega:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptFechaEntrega">
+                            </div>  
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                              <label>Condición pedido:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptCondicionPedido">
+                            </div>  
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                              <label>Subtotal:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptSubtotal">
+                            </div>  
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                              <label>Iva:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptIva">
+                            </div>  
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                              <label>Descuento:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptDescuento">
+                            </div>  
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                              <label>Total:</label>
+                                <input 
+                                  type="text" 
+                                  class="form-control" 
+                                  readonly="true"
+                                  autocomplete="off" 
+                                  id="iptTotal">
+                            </div>  
+                        </div>
+                    </div>
+                    <hr>
+                    <table id="tblDetallePedido" class='table table-hover'>
                         <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>PVP</th>
-                            <th>Cantidad</th>
-                        </tr>
+                            <tr style="text-align: center" class="table-active">
+                                <th style="width: 10%;">Código producto</th>
+                                <th style="width: 15%;">Descripción producto</th>
+                                <th style="width: 15%;">Cantidad</th>
+                                <th style="width: 15%;">Precio Unitario</th>
+                                <th style="width: 15%;">Subtotal</th>
+                                <th style="width: 15%;">Iva</th>
+                                <th style="width: 15%;">Total</th>
+                            </tr>
                         </thead>
                         <tbody>
                         </tbody>
                     </table>
+                    <hr>
                 </div>
             </div>
         </div>

@@ -63,6 +63,10 @@ class clsCiudadesMdl(BaseModel):
         item['department'] = self.department.toJSON()
         return item
 
+    def fncDataCiudadesSlcjsn(self):
+        item = model_to_dict(self, fields=['id', 'city_name'])
+        return item
+
     def __str__ (self):
         return self.city_name
 
@@ -256,6 +260,10 @@ class clsUnidadVentaMdl(BaseModel):
         item['state'] = {'id': self.state, 'name': self.get_state_display()}
         return item
 
+    def fncConsultaUnidadVenta(self):
+        item = model_to_dict(self, fields=['id', 'sales_unit'])
+        return item
+
     def __str__ (self):
         return self.sales_unit
 
@@ -317,6 +325,21 @@ class clsCatalogoProductosMdl(BaseModel):
             item['iva'] = format(self.iva, '.2f')
         item['state'] = {'id': self.state, 'name': self.get_state_display()}
         item['qr_code'] = self.get_qr_code()
+        return item
+    
+    def fncDataProductoPedidojsn(self):
+        item = model_to_dict(self, fields=[
+            'id', 
+            'product_desc',
+            'sales_unit',
+            'full_sale_price',
+            'iva'
+            ])
+        item['value'] = self.product_desc
+        item['sales_unit'] = self.sales_unit.fncConsultaUnidadVenta()
+        item['full_sale_price'] = format(self.full_sale_price, '.2f')
+        if self.iva:
+            item['iva'] = format(self.iva, '.2f')
         return item
 
     def __str__ (self):
@@ -463,212 +486,9 @@ class clsCondicionDescuentoProveedorMdl(BaseModel):
         return self.identification.supplier_name
 
 #################################################################################################
-# 5. CATÁLOGO DE CLIENTES
+# 5. CATÁLOGO DE BODEGAS
 #################################################################################################
-''' 5.1 Tabla de categoría de cliente'''
-class clsCategoriaClienteMdl(BaseModel):
-    customer_cat = models.CharField('Nombre de categoría', max_length=200)
-    state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name= 'Categoría cliente'
-        verbose_name_plural= 'Categorías clientes'
-        ordering = ['state']
-        default_permissions = []
-    
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsCategoriaClienteMdl, self).save()
-
-    def toJSON(self):
-        item = model_to_dict(self)
-        item['state'] = {'id': self.state, 'name': self.get_state_display()}
-        return item
-
-    def __str__ (self):
-        return self.customer_cat
-        
-''' 5.2 Tabla de margén por categoría de cliente'''
-class clsMargenCategoriaClienteMdl(BaseModel):
-    customer_cat = models.ForeignKey(clsCategoriaClienteMdl, on_delete=models.CASCADE)
-    product_cat = models.ForeignKey(clsCategoriaProductoMdl, on_delete=models.CASCADE)
-    margin_min = models.DecimalField('Margen minímo', max_digits=5, decimal_places=2, blank=True, null=True)
-    margin_max = models.DecimalField('Margen máximo', max_digits=5, decimal_places=2, blank=True, null=True)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name= 'Margén categoría cliente'
-        verbose_name_plural= 'Margénes categoría cliente'
-        ordering = ['id']
-
-    
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsMargenCategoriaClienteMdl, self).save()
-
-    def toJSON(self):
-        item = model_to_dict(self,
-            exclude=['user_creation', 'user_update']
-        )
-        item['customer_cat'] = self.customer_cat.toJSON()
-        item['product_cat'] = self.product_cat.toJSON()
-        item['margin_min'] = format(self.margin_min, '.2f')
-        item['margin_max'] = format(self.margin_max, '.2f')
-        return item
-
-    def __str__ (self):
-        return self.customer_cat.customer_cat
-
-''' 5.3 Tabla de zonas de cliente'''
-class clsZonaClienteMdl(BaseModel):
-    customer_zone = models.CharField('Zona cliente', max_length=200, unique=True)
-    state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name= 'Zona cliente'
-        verbose_name_plural= 'Zonas clientes'
-        ordering = ['state']
-        default_permissions = []
-    
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsZonaClienteMdl, self).save()
-
-    def toJSON(self):
-        item = model_to_dict(self)
-        item['state'] = {'id': self.state, 'name': self.get_state_display()}
-        return item
-
-    def __str__ (self):
-        return self.customer_zone
-
-''' 5.4 Tabla asesores comerciales'''
-class clsAsesorComercialMdl(BaseModel):
-    advisor = models.CharField('Asesor comercial', max_length=200)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='usuario')
-    zone = models.ForeignKey(clsZonaClienteMdl, on_delete=models.CASCADE, verbose_name='Zona', blank= True, null= True)
-    state = models.CharField('Estado', max_length=200, choices=STATE, default='AC', blank=True, null=True)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name= 'Asesor comercial'
-        verbose_name_plural= 'Asesores comerciales'
-        ordering = ['state']
-        default_permissions = []
-        
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsAsesorComercialMdl, self).save()
-
-    def toJSON(self):
-        item = model_to_dict(self)
-        item['state'] = {'id': self.state, 'name': self.get_state_display()}
-        return item
-
-    def __str__ (self):
-        return self.advisor
-
-''' 5.5 Tabla de catálogo de clientes'''
-class clsCatalogoClientesMdl(BaseModel):
-    qr_code = models.ImageField(upload_to = 'qr_codes/customers/%Y/%m/%d', blank=True)
-    person_type = models.CharField('Tipo de persona', max_length=200, choices=PERSON_TYPE, blank=True, null=True)
-    id_type = models.CharField('Tipo de identificación', max_length=200, choices=ID_TYPE)
-    identification = models.PositiveBigIntegerField('Identificación', unique=True)
-    business_name = models.CharField('Nombre del cliente', max_length=200)
-    contact_name = models.CharField('Nombre del contacto', max_length=200, blank=True, null=True)
-    cel_number = models.PositiveBigIntegerField('Celular')
-    email = models.EmailField('Correo electrónico', max_length=200, blank=True, null=True)
-    department = models.ForeignKey(clsDepartamentosMdl, on_delete=models.CASCADE)
-    city = models.ForeignKey(clsCiudadesMdl, on_delete=models.CASCADE)
-    customer_zone = models.ForeignKey(clsZonaClienteMdl, on_delete=models.CASCADE, blank= True, null= True)
-    delivery_address = models.CharField('Dirección entrega', max_length=200)
-    del_schedule_init = models.CharField('Horario de entrega inicial', max_length=200, blank=True, null=True)
-    del_schedule_end = models.CharField('Horario de entrega final', max_length=200, blank=True, null=True)
-    customer_cat = models.ForeignKey(clsCategoriaClienteMdl, on_delete=models.CASCADE)
-    commercial_advisor = models.ForeignKey(clsAsesorComercialMdl, on_delete=models.CASCADE)
-    pay_method = models.CharField('Metodo de pago', max_length=200, choices=PAYMETHOD)
-    credit_days = models.PositiveSmallIntegerField('Días de crédito', blank=True, null=True)
-    approved_amount = models.DecimalField('Cupo crédito', max_digits=10, decimal_places=2, default=0, blank=True, null=True)
-    state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
-    objects = DataFrameManager()
-    
-    class Meta:
-        verbose_name= 'Catálogo cliente'
-        verbose_name_plural= 'Catálogo clientes'
-        ordering = ['state']
-        default_permissions = []
-        permissions = (('bia_adm_customer_catalogue', 'Catálogo clientes'),)
-    
-    def get_qr_code(self):
-        if self.qr_code:
-            return '{}{}'.format(MEDIA_URL, self.qr_code)
-        return '{}{}'.format(STATIC_URL, 'img/logo.png')
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        qrcode_img = qrcode.make(self.identification)
-        canvas = Image.new('RGB', (290, 290), 'white')
-        draw = ImageDraw.Draw(canvas)
-        canvas.paste(qrcode_img)
-        fname = f'qr_code-{self.identification}'+'.png'
-        buffer = BytesIO()
-        canvas.save(buffer, 'PNG')
-        self.qr_code.save(fname, File(buffer), save=False)
-        canvas.close()
-        super(clsCatalogoClientesMdl, self).save()        
-    
-    def toJSON(self):
-        item = model_to_dict(self)
-        item['customer_cat'] = self.customer_cat.toJSON()
-        item['customer_zone'] = self.customer_zone.toJSON()
-        item['department'] = self.department.toJSON()
-        item['city'] = self.city.toJSON()
-        item['commercial_advisor'] = self.commercial_advisor.toJSON()
-        item['id_type'] = {'id': self.id_type, 'name': self.get_id_type_display()}
-        item['pay_method'] = {'id': self.pay_method, 'name': self.get_pay_method_display()}
-        item['state'] = {'id': self.state, 'name': self.get_state_display()}
-        item['qr_code'] = self.get_qr_code()
-        return item
-    
-    def __str__ (self):
-        return self.business_name
-
-#################################################################################################
-# 6. CATÁLOGO DE BODEGAS
-#################################################################################################
-''' 6.1 Tabla de catálogo de bodegas'''
+''' 5.1 Tabla de catálogo de bodegas'''
 class clsCatalogoBodegasMdl(BaseModel): 
     qr_code = models.ImageField(upload_to = '', blank=True)
     warehouse_name = models.CharField('Nombre bodega', unique=True, max_length=200)
@@ -712,643 +532,9 @@ class clsCatalogoBodegasMdl(BaseModel):
         return self.warehouse_name
 
 #################################################################################################
-# 7. HISTORICO DE MOVIMIENTOS ALTERNO
+# 6. LISTAS DE PRECIOS
 #################################################################################################
-''' 7.1 Tabla de historico de pedidos'''
-class clsHistoricoPedidosMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
-    pay_method = models.CharField('Metodo de pago', max_length=200, choices=PAYMETHOD, blank=True, null=True)
-    delivery_date = models.DateTimeField('Fecha entrega')
-    city = models.ForeignKey(clsCiudadesMdl, on_delete=models.CASCADE, blank=True, null=True)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unit_price = models.DecimalField('Precio unitario', max_digits=10, decimal_places=2, blank=True, null=True)
-    subtotal = models.DecimalField('Subtotal', max_digits=10, decimal_places=2, blank=True, null=True)
-    iva = models.DecimalField('Iva', max_digits=10, decimal_places=2, blank=True, null=True)
-    discount = models.DecimalField('Descuento', max_digits=10, decimal_places=2, blank=True, null=True)
-    total = models.DecimalField('Total', max_digits=10, decimal_places=2)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    condition = models.CharField('Condición', max_length=200, choices=ORDERCONDITION)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Historico pedidos'
-        verbose_name_plural = 'Historico pedidos'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.identification.business_name
-
-''' 7.2 Tabla de ordenes de compra'''
-class clsHistoricoOrdenesCompraMdl(models.Model):
-    date_creation = models.DateTimeField('Fecha creación')
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
-    delivery_date = models.DateTimeField('Fecha entrega')
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unit_price = models.DecimalField('Precio unitario', max_digits=10, decimal_places=2, blank=True, null=True)
-    total_price = models.DecimalField('Subtotal', max_digits=10, decimal_places=2)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    condition = models.CharField('Condición', max_length=200, choices=STATEORDER)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Historico ordenes de compra'
-        verbose_name_plural = 'Historico ordenes de compra'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.identification.supplier_name
-
-''' 7.3 Tabla de historico alterno de movimientos'''
-class clsHistoricoMovimientosAlternoMdl(models.Model):
-    creation_date = models.CharField('Fecha de creación', max_length=200)
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    document_type = models.CharField('Tipo de documento', max_length=200)
-    type = models.CharField('Tipo de movimiento', max_length=200)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.CharField('Fecha vencimiento', max_length=200)
-    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
-    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    condition = models.CharField('Condición', max_length=200)
-    pre_bal = models.SmallIntegerField('Presaldo')
-    balance = models.SmallIntegerField('Saldo')
-    inv_value = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    identification = models.PositiveBigIntegerField('Identificación')
-    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Historico de movimiento Alterno'
-        verbose_name_plural = 'Historico de movimientos Alterno'
-        ordering = ['id']
-        permissions = (('bia_adm_historico_movimientos_alterno', 'Histórico de movimientos alterno'),)
-
-    def __str__(self):
-        return self.doc_number
-
-#################################################################################################
-# 8. AJUSTES DE INVENTARIO
-#################################################################################################
-''' 8.1 Tabla ajustes de inventario'''
-class clsAjusteInventarioMdl(BaseModel):
-    doc_number = models.CharField('Nº Documento', max_length=200, blank=True, null=True)
-    total_cost = models.DecimalField('Total costo', max_digits=30, decimal_places=2)
-    condition = models.CharField('Condición', max_length=200, choices=INCOMECONDITION, default='CE')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Ajuste inventario'
-        verbose_name_plural = 'Ajustes de inventario'
-        ordering = ['id']
-        permissions = (('bia_adm_ajustes_inventario', 'Ajustes de inventario'),)
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsAjusteInventarioMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-''' 8.2 Tabla detalle ajustes de inventario'''
-class clsDetalleAjusteInventarioMdl(models.Model):
-    doc_number = models.ForeignKey(clsAjusteInventarioMdl, on_delete=models.CASCADE)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    type = models.CharField('Tipo de ajuste', max_length=200, choices=INCOMETYPE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    batch = models.CharField('Lote', max_length=200, blank=True, null=True)
-    expiration_date = models.DateField('Fecha vencimiento', blank=True, null=True)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2, blank=True, null=True)
-    total_cost = models.DecimalField('Total costo', max_digits=20, decimal_places=2)
-    
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Ajuste inventario'
-        verbose_name_plural = 'Ajustes de inventario'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 9. ENTRADAS DE ALMACEN
-#################################################################################################
-''' 9.1 Tabla de entradas de almacén'''
-class clsEntradasAlmacenMdl(BaseModel):
-    doc_number = models.CharField('Nº Documento', max_length= 200, blank=True, null=True)
-    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
-    total_cost = models.DecimalField('Costo total', max_digits= 30, decimal_places= 2)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    condition = models.CharField('Condición', max_length=200, choices=INCOMECONDITION)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Entrada de almacén'
-        verbose_name_plural = 'Entradas de almacén'
-        ordering = ['id']
-        permissions = (('bia_log_entradas_almacen', 'Entradas de almacén'),)
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsEntradasAlmacenMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-''' 9.2 Tabla detalle de entradas de almacén'''
-class clsDetalleEntradaAlmacen(models.Model):
-    doc_number = models.ForeignKey(clsEntradasAlmacenMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unitary_cost = models.DecimalField('Costo unitario', max_digits= 30, decimal_places=2)
-    total_cost = models.DecimalField('Costo total', max_digits= 30, decimal_places=2)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle entrada de almacén'
-        verbose_name_plural = 'Detalle entradas de almacén'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 10. DEVOLUCIONES CLIENTE
-#################################################################################################
-''' 10.1 Tabla de devoluciones de cliente'''
-class clsDevolucionesClienteMdl(BaseModel):
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    returnin_type = models.CharField('Tipo de retorno', max_length=200)
-    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
-    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT)
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Devolución cliente'
-        verbose_name_plural = 'Devoluciones clientes'
-        ordering = ['id']
-        default_permissions = []
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsDevolucionesClienteMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-''' 10.2 Tabla detalle de devoluciones de cliente'''
-class clsDetalleDevolucionesClienteMdl(models.Model):
-    doc_number = models.ForeignKey(clsDevolucionesClienteMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
-    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle devolución cliente'
-        verbose_name_plural = 'Detalle devoluciones cliente'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 11. DEVOLUCIONES PROVEEDOR
-#################################################################################################
-''' 11.1 Tabla de devoluciones a proveedor'''
-class clsDevolucionesProveedorMdl(BaseModel):
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    returnin_type = models.CharField('Tipo de retorno', max_length=200)
-    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
-    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT)
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Devolución proveedor'
-        verbose_name_plural = 'Devoluciones proveedores'
-        ordering = ['id']
-        default_permissions = []
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsDevolucionesProveedorMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-''' 11.2 Tabla detalle de devolución de proveedor'''
-class clsDetalleDevolucionesProveedorMdl(models.Model):
-    doc_number = models.ForeignKey(clsDevolucionesProveedorMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
-    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle devolución proveedor'
-        verbose_name_plural = 'Detalle devoluciones proveedor'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 12. SALIDAS DE ALMACEN
-#################################################################################################
-''' 12.1 Tabla de salidas de almacén'''
-class clsSalidasAlmacenMdl(BaseModel):
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
-    discount = models.DecimalField('Descuento', max_digits=10, decimal_places=2)
-    taxes = models.DecimalField('Impuestos', max_digits=10, decimal_places=2)
-    total_price = models.DecimalField('Precio total', max_digits=10, decimal_places=2)
-    total_amount = models.DecimalField('Total', max_digits=10, decimal_places=2)
-    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2, blank=True, null=True)
-    value_paid = models.DecimalField('Valor pagado', max_digits=10, decimal_places=2)
-    credit_state = models.CharField('Estado crédito', max_length=200, choices=INCOMECONDITION)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Salida de almacén'
-        verbose_name_plural = 'Salidas de almacén'
-        ordering = ['id']
-        permissions = (('bia_log_salidas_almacen', 'Salidas de almacén'),)
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsSalidasAlmacenMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-''' 12.2 Tabla detalle de salidas de almacen'''
-class clsDetalleSalidasAlmacenMdl(models.Model):
-    doc_number = models.ForeignKey(clsSalidasAlmacenMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unit_price = models.DecimalField('Precio unitario', max_digits=10, decimal_places=2)
-    discount = models.DecimalField('Descuento', max_digits=10, decimal_places=2)
-    taxes = models.DecimalField('Impuestos', max_digits=10, decimal_places=2)
-    total_price = models.DecimalField('Precio total', max_digits=10, decimal_places=2)
-    total_amount = models.DecimalField('Total', max_digits=10, decimal_places=2)
-    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2, blank=True, null=True)
-    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2, blank=True, null=True)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle salida de almacén'
-        verbose_name_plural = 'Detalle salidas de almacén'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 13. OBSEQUIOS
-#################################################################################################
-''' 13.1 Tabla de obsequios'''
-class clsObsequiosMdl(BaseModel):
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
-    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Obsequio'
-        verbose_name_plural = 'Obsequios'
-        ordering = ['id']
-        default_permissions = []
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsObsequiosMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-''' 13.2 Tabla detalle de obsequios'''
-class clsDetalleObsequiosMdl(models.Model):
-    doc_number = models.ForeignKey(clsObsequiosMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle obsequio'
-        verbose_name_plural = 'Detalle obsequios'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 14. TRASLADOS DE BODEGA
-#################################################################################################
-''' 14.1 Tabla de traslados entre bodegas'''
-class clsTrasladosBodegasMdl(BaseModel):
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    identification = models.PositiveBigIntegerField('Identificación')
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
-    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Traslado bodega'
-        verbose_name_plural = 'Traslados bodegas'
-        ordering = ['id']
-        default_permissions = []
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsTrasladosBodegasMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-''' 14.2 Tabla detalle de traslados entre bodegas'''
-class clsDetalleTrasladosBodegaMdl(models.Model):
-    doc_number = models.ForeignKey(clsTrasladosBodegasMdl, on_delete=models.CASCADE)
-    type = models.CharField('Tipo de traslado', max_length=200, choices=INCOMETYPE, blank=True, null=True)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE, blank=True, null=True)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
-    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.DateTimeField('Fecha vencimiento')
-    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle traslado bodega'
-        verbose_name_plural = 'Detalle traslados bodegas'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 15. SALDOS DE INVENTARIO
-#################################################################################################
-''' 15.1 Tabla de saldos de inventario'''
-class clsSaldosInventarioMdl(models.Model):
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    batch = models.CharField('Lote', max_length=200)
-    inventory_avail = models.PositiveSmallIntegerField('Saldo disponible')
-    expiration_date = models.CharField('Fecha vencimiento', max_length=200)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Saldo inventario'
-        verbose_name_plural = 'Saldos inventarios'
-        ordering = ['id']
-        permissions = (('bia_log_saldos_inventario', 'Saldos de inventario'),)
-
-    def __str__(self):
-        return self.product_code.product_desc
-
-#################################################################################################
-# 16. HISTORICO REAL DE MOVIMIENTOS
-#################################################################################################
-''' 16.1 Tabla de historico real de movimientos'''
-class clsHistoricoMovimientosMdl(models.Model):
-    creation_date = models.CharField('Fecha de creación', max_length=200)
-    doc_number = models.CharField('Nº Documento', max_length=200)
-    document_type = models.CharField('Tipo de documento', max_length=200)
-    type = models.CharField('Tipo de movimiento', max_length=200)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    batch = models.CharField('Lote', max_length=200)
-    expiration_date = models.CharField('Fecha vencimiento', max_length=200)
-    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
-    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
-    crossing_doc = models.CharField('Documento cruce', max_length=200)
-    condition = models.CharField('Condición', max_length=200)
-    pre_bal = models.SmallIntegerField('Presaldo')
-    balance = models.PositiveSmallIntegerField('Saldo')
-    inv_value = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
-    identification = models.CharField('Identificación', max_length= 200)
-    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Historico de movimiento'
-        verbose_name_plural = 'Historico de movimientos'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.doc_number
-
-#################################################################################################
-# 17. PEDIDOS
-#################################################################################################
-''' 17.1 Tabla de pedidos'''
-class clsPedidosMdl(BaseModel):
-    doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
-    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete= models.CASCADE)
-    delivery_date= models.DateTimeField('Fecha de entrega')
-    subtotal= models.DecimalField('Subtotal', max_digits= 30, decimal_places= 2)
-    iva= models.DecimalField('IVA', max_digits= 10, decimal_places= 2)
-    discount= models.DecimalField('Descuento', max_digits= 20, decimal_places= 2)
-    total= models.DecimalField('Total', max_digits= 30, decimal_places= 2)
-    observations= models.CharField('Observaciones', max_length= 200)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete= models.CASCADE)
-    condition = models.CharField('Condición', max_length=200, choices= STATEORDER)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Pedidos'
-        verbose_name_plural = 'Pedidos'
-        ordering = ['id']
-        permissions = (('bia_com_pedidos', 'Pedidos'),)
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsPedidosMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-''' 17.2 Tabla detalle de pedidos'''
-class clsDetallePedidosMdl(models.Model):
-    doc_number = models.ForeignKey(clsPedidosMdl, on_delete= models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unit_price = models.DecimalField('Precio unitario', max_digits= 10, decimal_places= 2)
-    subtotal = models.DecimalField('Subtotal', max_digits= 30, decimal_places= 2)
-    iva = models.DecimalField('IVA', max_digits= 10, decimal_places= 2)
-    total= models.DecimalField('Total', max_digits= 30, decimal_places= 2)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle pedidos'
-        verbose_name_plural = 'Detalle pedidos'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 18. ORDENES DE COMPRA
-#################################################################################################
-''' 18.1 Tabla de ordenes de compra'''
-class clsOrdenesCompraMdl(BaseModel):
-    doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
-    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete= models.CASCADE)
-    delivery_date= models.DateTimeField('Fecha de entrega', blank= True, null= True)
-    subtotal= models.DecimalField('Subtotal', max_digits= 30, decimal_places= 2)
-    iva= models.DecimalField('IVA', max_digits= 10, decimal_places= 2)
-    discount= models.DecimalField('Descuento', max_digits= 20, decimal_places= 2)
-    total= models.DecimalField('Total', max_digits= 30, decimal_places= 2)
-    observations= models.CharField('Observaciones', max_length= 200)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete= models.CASCADE)
-    condition = models.CharField('Condición', max_length=200, choices= STATEORDER)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Pedidos'
-        verbose_name_plural = 'Pedidos'
-        ordering = ['id']
-        permissions = (('bia_pur_ordenes_compra', 'Ordenes de compra'),)
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsOrdenesCompraMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-''' 18.2 Tabla detalle de ordenes de compra'''
-class clsDetalleOrdenesCompraMdl(models.Model):
-    doc_number = models.ForeignKey(clsOrdenesCompraMdl, on_delete= models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    unit_price = models.DecimalField('Precio unitario', max_digits= 10, decimal_places= 2)
-    subtotal = models.DecimalField('Subtotal', max_digits= 30, decimal_places= 2)
-    iva = models.DecimalField('IVA', max_digits= 10, decimal_places= 2)
-    total= models.DecimalField('Total', max_digits= 30, decimal_places= 2)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle ordenes de compra'
-        verbose_name_plural = 'Detalle ordenes de compra'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 19. LISTAS DE PRECIOS
-#################################################################################################
-''' 19.1 Tabla de Listas de Precios'''
+''' 6.1 Tabla de Listas de Precios'''
 class clsListaPreciosMdl(BaseModel):
     doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
     list_name= models.CharField('Nombre Lista', max_length= 200)
@@ -1376,6 +562,14 @@ class clsListaPreciosMdl(BaseModel):
                 self.user_update = user
         super(clsListaPreciosMdl, self).save()
 
+    def fncConsultaListajsn(self):
+        item = model_to_dict(self, fields=['id', 'list_name'])
+        return item
+    
+    def fncConsultaListaPedidosjsn(self):
+        item = model_to_dict(self, fields=['store', 'freight'])
+        return item
+    
     def toJSON(self):
         item = model_to_dict(self)
         item['store'] = self.store.toJSON()
@@ -1385,9 +579,9 @@ class clsListaPreciosMdl(BaseModel):
         return item
 
     def __str__(self):
-        return str(self.id)
+        return self.list_name
 
-''' 19.2 Tabla detalle de listas de precios'''
+''' 6.2 Tabla detalle de listas de precios'''
 class clsDetalleListaPreciosMdl(models.Model):
     doc_number= models.ForeignKey(clsListaPreciosMdl, on_delete= models.CASCADE)
     product_code= models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE)
@@ -1418,27 +612,183 @@ class clsDetalleListaPreciosMdl(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+#################################################################################################
+# 7. CATÁLOGO DE CLIENTES
+#################################################################################################
+''' 7.1 Tabla de categoría de cliente'''
+class clsCategoriaClienteMdl(BaseModel):
+    customer_cat = models.CharField('Nombre de categoría', max_length=200)
+    state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name= 'Categoría cliente'
+        verbose_name_plural= 'Categorías clientes'
+        ordering = ['state']
+        default_permissions = []
+    
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsCategoriaClienteMdl, self).save()
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['state'] = {'id': self.state, 'name': self.get_state_display()}
+        return item
         
-#################################################################################################
-# 20. COTIZACIONES
-#################################################################################################
-''' 20.1 Tabla de Cotizaciones'''
-class clsCotizacionesMdl(BaseModel):
-    doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
-    identification= models.ForeignKey(clsCatalogoClientesMdl, on_delete= models.CASCADE)
-    condition= models.CharField('Condición', max_length= 200, choices= STATEORDER)
-    city= models.ForeignKey(clsCiudadesMdl, on_delete= models.CASCADE)
-    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete= models.CASCADE)
-    freight= models.DecimalField('Flete', max_digits= 30, decimal_places= 2)
-    general_obs= models.CharField('Observaciones Generales', max_length= 200, blank= True, null= True)
-    follow_up_date= models.DateTimeField('Fecha de seguimiento')
+    def fncDataCategoriaClienteSlcjsn(self):
+        item = model_to_dict(self, fields=['id', 'customer_cat'])
+        return item
+
+    def __str__ (self):
+        return self.customer_cat
+        
+''' 7.2 Tabla de margén por categoría de cliente'''
+class clsMargenCategoriaClienteMdl(BaseModel):
+    customer_cat = models.ForeignKey(clsCategoriaClienteMdl, on_delete=models.CASCADE)
+    product_cat = models.ForeignKey(clsCategoriaProductoMdl, on_delete=models.CASCADE)
+    margin_min = models.DecimalField('Margen minímo', max_digits=5, decimal_places=2, blank=True, null=True)
+    margin_max = models.DecimalField('Margen máximo', max_digits=5, decimal_places=2, blank=True, null=True)
     objects = DataFrameManager()
 
     class Meta:
-        verbose_name = 'Cotizaciones'
-        verbose_name_plural = 'Cotizaciones'
+        verbose_name= 'Margén categoría cliente'
+        verbose_name_plural= 'Margénes categoría cliente'
         ordering = ['id']
-        permissions = (('bia_com_cotizacion_cliente', 'Cotización cliente'),)
+
+    
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsMargenCategoriaClienteMdl, self).save()
+
+    def toJSON(self):
+        item = model_to_dict(self,
+            exclude=['user_creation', 'user_update']
+        )
+        item['customer_cat'] = self.customer_cat.toJSON()
+        item['product_cat'] = self.product_cat.toJSON()
+        item['margin_min'] = format(self.margin_min, '.2f')
+        item['margin_max'] = format(self.margin_max, '.2f')
+        return item
+
+    def __str__ (self):
+        return self.customer_cat.customer_cat
+
+''' 7.3 Tabla de zonas de cliente'''
+class clsZonaClienteMdl(BaseModel):
+    customer_zone = models.CharField('Zona cliente', max_length=200, unique=True)
+    state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name= 'Zona cliente'
+        verbose_name_plural= 'Zonas clientes'
+        ordering = ['state']
+        default_permissions = []
+    
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsZonaClienteMdl, self).save()
+
+    def fncDataZoneSlcjsn(self):
+        item = model_to_dict(self, fields=['id', 'customer_zone'])
+        return item
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['state'] = {'id': self.state, 'name': self.get_state_display()}
+        return item
+
+    def __str__ (self):
+        return self.customer_zone
+
+''' 7.4 Tabla asesores comerciales'''
+class clsAsesorComercialMdl(BaseModel):
+    advisor = models.CharField('Asesor comercial', max_length=200)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='usuario')
+    zone = models.ForeignKey(clsZonaClienteMdl, on_delete=models.CASCADE, verbose_name='Zona', blank= True, null= True)
+    state = models.CharField('Estado', max_length=200, choices=STATE, default='AC', blank=True, null=True)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name= 'Asesor comercial'
+        verbose_name_plural= 'Asesores comerciales'
+        ordering = ['state']
+        default_permissions = []
+        
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsAsesorComercialMdl, self).save()
+
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['state'] = {'id': self.state, 'name': self.get_state_display()}
+        return item
+
+    def __str__ (self):
+        return self.advisor
+
+''' 7.5 Tabla de catálogo de clientes'''
+class clsCatalogoClientesMdl(BaseModel):
+    qr_code = models.ImageField(upload_to = 'qr_codes/customers/%Y/%m/%d', blank=True)
+    person_type = models.CharField('Tipo de persona', max_length=200, choices=PERSON_TYPE, blank=True, null=True)
+    id_type = models.CharField('Tipo de identificación', max_length=200, choices=ID_TYPE)
+    identification = models.PositiveBigIntegerField('Identificación', unique=True)
+    business_name = models.CharField('Nombre del cliente', max_length=200)
+    contact_name = models.CharField('Nombre del contacto', max_length=200, blank=True, null=True)
+    cel_number = models.PositiveBigIntegerField('Celular')
+    email = models.EmailField('Correo electrónico', max_length=200, blank=True, null=True)
+    department = models.ForeignKey(clsDepartamentosMdl, on_delete=models.CASCADE, verbose_name='Departamento')
+    city = models.ForeignKey(clsCiudadesMdl, on_delete=models.CASCADE,verbose_name='Ciudad')
+    customer_zone = models.ForeignKey(clsZonaClienteMdl, on_delete=models.CASCADE, blank= True, null= True, verbose_name='Zona de cliente')
+    delivery_address = models.CharField('Dirección entrega', max_length=200)
+    del_schedule_init = models.CharField('Horario de entrega inicial', max_length=200, blank=True, null=True)
+    del_schedule_end = models.CharField('Horario de entrega final', max_length=200, blank=True, null=True)
+    customer_cat = models.ForeignKey(clsCategoriaClienteMdl, on_delete=models.CASCADE, verbose_name='Categoría de cliente')
+    commercial_advisor = models.ForeignKey(clsAsesorComercialMdl, on_delete=models.CASCADE, verbose_name='Asesor comercial')
+    pay_method = models.CharField('Metodo de pago', max_length=200, choices=PAYMETHOD)
+    credit_days = models.PositiveSmallIntegerField('Días de crédito', blank=True, null=True)
+    approved_amount = models.DecimalField('Cupo crédito', max_digits=10, decimal_places=2, default=0, blank=True, null=True)
+    price_list = models.ForeignKey(clsListaPreciosMdl, on_delete=models.CASCADE, blank=True, null=True, verbose_name='Lista de precios')
+    state = models.CharField('Estado', max_length=200, choices=STATE, default='AC')
+    objects = DataFrameManager()
+    
+    class Meta:
+        verbose_name= 'Catálogo cliente'
+        verbose_name_plural= 'Catálogo clientes'
+        ordering = ['state']
+        default_permissions = []
+        permissions = (('bia_adm_customer_catalogue', 'Catálogo clientes'),)
+    
+    def get_qr_code(self):
+        if self.qr_code:
+            return '{}{}'.format(MEDIA_URL, self.qr_code)
+        return '{}{}'.format(STATIC_URL, 'img/logo.png')
 
     def save(self, force_insert=False, force_update=False, using=None, 
             update_fields=None):
@@ -1448,262 +798,76 @@ class clsCotizacionesMdl(BaseModel):
                 self.user_creation = user
             else:
                 self.user_update = user
-        super(clsCotizacionesMdl, self).save()
+        qrcode_img = qrcode.make(self.identification)
+        canvas = Image.new('RGB', (290, 290), 'white')
+        draw = ImageDraw.Draw(canvas)
+        canvas.paste(qrcode_img)
+        fname = f'qr_code-{self.identification}'+'.png'
+        buffer = BytesIO()
+        canvas.save(buffer, 'PNG')
+        self.qr_code.save(fname, File(buffer), save=False)
+        canvas.close()
+        super(clsCatalogoClientesMdl, self).save()        
+    
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['customer_cat'] = self.customer_cat.toJSON()
+        item['customer_zone'] = self.customer_zone.toJSON()
+        item['department'] = self.department.toJSON()
+        item['city'] = self.city.toJSON()
+        item['commercial_advisor'] = self.commercial_advisor.toJSON()
+        item['id_type'] = {'id': self.id_type, 'name': self.get_id_type_display()}
+        item['pay_method'] = {'id': self.pay_method, 'name': self.get_pay_method_display()}
+        if self.price_list:
+            item['price_list'] = self.price_list.fncConsultaListajsn()
+        item['state'] = {'id': self.state, 'name': self.get_state_display()}
+        item['qr_code'] = self.get_qr_code()
+        return item
 
-    def __str__(self):
-        return str(self.id)
-
-''' 20.2 Tabla detalle de cotizaciones'''
-class clsDetalleCotizacionesMdl(models.Model):
-    doc_number= models.ForeignKey(clsCotizacionesMdl, on_delete= models.CASCADE)
-    product_code= models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE)
-    quantity= models.PositiveSmallIntegerField('Cantidad')
-    lead_time= models.SmallIntegerField('Tiempo de entrega')
-    unit_price= models.DecimalField('Precio Unitario', max_digits= 30, decimal_places= 2)
-    due_date= models.DateTimeField('Vigencia')
-    observations= models.CharField('Observaciones', max_length= 200, blank= True, null= True)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle cotizaciones'
-        verbose_name_plural = 'Detalle cotizaciones'
-        ordering = ['id']
-        default_permissions = []        
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 21. INDICADORES COMERCIALES
-#################################################################################################
-''' 21.1 Tabla indicadores comerciales'''
-class clsIndicadoresComercialesMdl(models.Model):
-    creation_date =  models.DateTimeField('Fecha creación')
-    measurement_date = models.DateTimeField('Fecha medición', blank=True, null=True)
-    indicator = models.CharField('Indicador', max_length=200)
-    set = models.CharField('Conjunto', max_length=200, blank=True, null=True) 
-    subset= models.CharField('Subconjunto', max_length=200, blank=True, null=True)
-    objetive = models.DecimalField('Objetivo', max_digits=10, decimal_places=2, blank=True, null=True)
-    real = models.DecimalField('Real', max_digits=10, decimal_places=2, blank=True, null=True)
-    fulfillment = models.DecimalField('Cumplimiento', max_digits=10, decimal_places=2, blank=True, null=True)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Indicador comercial'
-        verbose_name_plural = 'Indicadores comerciales'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return self.set
-
-#################################################################################################
-# 22. ACTIVIDADES COMERCIALES
-#################################################################################################
-''' 22.1 Tabla actividades comercial'''
-class clsActividadesComercialMdl(models.Model):
-    task_date =  models.DateTimeField('Fecha actividad')
-    start_hour = models.CharField('Hora inicio', max_length=200)
-    end_hour = models.CharField('Hora fin', max_length=200)
-    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
-    task = models.CharField('Actividad', max_length=200)
-    observation = models.CharField('Actividad', max_length=200)
-    condition = models.CharField('Condición', max_length=200, choices=STATE)    
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Actividad comercial'
-        verbose_name_plural = 'Actividades comerciales'
-        ordering = ['id']
-        default_permissions = []
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsActividadesComercialMdl, self).save()
-
-    def __str__(self):
-        return self.task
+    def fncDataClienteSlcjsn(self):
+        item = model_to_dict(self, fields=[
+            'id',
+            'identification',
+            'city',
+            'cel_number',
+            'delivery_address',
+            'pay_method',
+            'price_list'
+        ])
+        item['city'] = self.city.fncDataCiudadesSlcjsn()
+        item['customer_zone'] = self.customer_zone.fncDataZoneSlcjsn()
+        item['pay_method'] = {'id': self.pay_method, 'name': self.get_pay_method_display()}
+        item['value'] = self.business_name
+        if self.price_list:
+            item['price_list'] = self.price_list.fncConsultaListajsn()
+        return item
+    
+    def fncDataClienteCotizacionSlcjsn(self):
+        item = model_to_dict(self, fields=[
+            'id',
+            'identification',
+            'city',
+            'cel_number',
+            'delivery_address',
+            'customer_cat',
+            'pay_method',
+            'price_list'
+        ])
+        item['city'] = self.city.fncDataCiudadesSlcjsn()
+        item['customer_cat'] = self.customer_cat.fncDataCategoriaClienteSlcjsn()
+        item['pay_method'] = {'id': self.pay_method, 'name': self.get_pay_method_display()}
+        item['value'] = self.business_name
+        if self.price_list:
+            item['price_list'] = self.price_list.fncConsultaListajsn()
+        return item
+    
+    def __str__ (self):
+        return self.business_name
 
 #################################################################################################
-# 23. PROMOCIONES
+# 8. TIEMPOS DE ENTREGA
 #################################################################################################
-''' 23.1 Tabla promociones'''
-class clsPromocionesMdl(models.Model):
-    doc_number = models.CharField('Nº Documento', max_length=200, blank=True, null=True)
-    promo_name = models.CharField('Nombre promoción', max_length=200)
-    deadline_for_sale = models.DateTimeField('Fecha vigencia')
-    promo_quantity = models.SmallIntegerField('Cantidad')
-    promo_price = models.DecimalField('Precio promoción', max_digits=20, decimal_places=2)
-    promo_object = models.CharField('Objeto promoción', max_length=200)
-    auts = models.SmallIntegerField('Unidades autorizadas por cliente')
-    condition = models.CharField('Condición', max_length=200, choices=STATE)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Promoción'
-        verbose_name_plural = 'Promociones'
-        ordering = ['id']
-        permissions = (('bia_pur_promociones', 'Promociones'),)
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsPromocionesMdl, self).save()
-
-    def __str__(self):
-        return self.promo_name
-
-''' 23.2 Tabla detalle productos promociones'''
-class clsDetalleProductosPromocionesMdl(models.Model):
-    doc_number = models.ForeignKey(clsPromocionesMdl, on_delete=models.CASCADE)
-    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField('Cantidad')
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle producto promoción'
-        verbose_name_plural = 'Detalle productos promociones'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.doc_number)
-
-''' 23.3 Tabla detalle clientes promociones'''
-class clsDetalleClientesPromocionesMdl(models.Model):
-    doc_number = models.ForeignKey(clsPromocionesMdl, on_delete=models.CASCADE)
-    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle cliente promoción'
-        verbose_name_plural = 'Detalle clientes promociones'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.doc_number)
-
-''' 23.4 Tabla detalle filtros'''
-class clsDetalleFiltrosPromocionesMdl(models.Model):
-    doc_number = models.ForeignKey(clsPromocionesMdl, on_delete=models.CASCADE)
-    filter = models.CharField('Filtro', max_length=200)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Detalle filtro promoción'
-        verbose_name_plural = 'Detalle filtros promociones'
-        ordering = ['id']
-        default_permissions = []
-
-    def __str__(self):
-        return str(self.doc_number)
-
-#################################################################################################
-# 24. EVALUACIÓN PROVEEDOR
-#################################################################################################
-''' 24.1 Tabla evaluación proveedor'''
-class clsEvaluacionProveedorMdl(models.Model):
-    order_purchase = models.ForeignKey(clsOrdenesCompraMdl, on_delete= models.CASCADE)
-    incomes = models.ForeignKey(clsEntradasAlmacenMdl, on_delete=models.CASCADE)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Evaluación proveedor'
-        verbose_name_plural = 'Evaluaciones de proveedor'
-        ordering = ['id']
-        permissions = (('bia_pur_evaluacion_proveedor', 'Evaluación proveedor'),)
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsEvaluacionProveedorMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 25. INDICADORES COMPRAS
-#################################################################################################
-''' 25.1 Tabla indicadores compras'''
-class clsIndicadoresComprasMdl(models.Model):
-    measurement_date = models.DateTimeField('Fecha medición', blank=True, null=True)
-    indicator = models.CharField('Indicador', max_length=200)
-    objetive = models.DecimalField('Objetivo', max_digits=10, decimal_places=2, blank=True, null=True)
-    real = models.DecimalField('Real', max_digits=10, decimal_places=2, blank=True, null=True)
-    fulfillment = models.DecimalField('Cumplimiento', max_digits=10, decimal_places=2, blank=True, null=True)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Indicador compras'
-        verbose_name_plural = 'Indicadores compras'
-        ordering = ['id']
-        default_permissions = []
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsIndicadoresComprasMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 26. INDICADORES ALMACEN
-#################################################################################################
-''' 26.1 Tabla indicadores almacen'''
-class clsIndicadoresAlmacenMdl(models.Model):
-    measurement_date = models.DateTimeField('Fecha medición', blank=True, null=True)
-    indicator = models.CharField('Indicador', max_length=200)
-    objetive = models.DecimalField('Objetivo', max_digits=10, decimal_places=2, blank=True, null=True)
-    real = models.DecimalField('Real', max_digits=10, decimal_places=2, blank=True, null=True)
-    fulfillment = models.DecimalField('Cumplimiento', max_digits=10, decimal_places=2, blank=True, null=True)
-    objects = DataFrameManager()
-
-    class Meta:
-        verbose_name = 'Indicador almacen'
-        verbose_name_plural = 'Indicadores almacen'
-        ordering = ['id']
-        default_permissions = []
-
-    def save(self, force_insert=False, force_update=False, using=None, 
-            update_fields=None):
-        user = get_current_user()
-        if user is not None:
-            if not self.pk:
-                self.user_creation = user
-            else:
-                self.user_update = user
-        super(clsIndicadoresAlmacenMdl, self).save()
-
-    def __str__(self):
-        return str(self.id)
-
-#################################################################################################
-# 27. TIEMPOS DE ENTREGA
-#################################################################################################
-''' 27.1 Tabla de tiempos de entrega'''
+''' 8.1 Tabla de tiempos de entrega'''
 class clsTiemposEntregaMdl(BaseModel):
     city = models.ForeignKey(clsCiudadesMdl, on_delete=models.CASCADE)
     customer_zone = models.ForeignKey(clsZonaClienteMdl, on_delete=models.CASCADE)
@@ -1742,6 +906,1020 @@ class clsTiemposEntregaMdl(BaseModel):
         item['total_time'] = format(self.total_time, '.2f')
         item['state'] = {'id': self.state, 'name': self.get_state_display()}
         return item
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 9. HISTORICO DE MOVIMIENTOS ALTERNO
+#################################################################################################
+''' 9.1 Tabla de historico de pedidos'''
+class clsHistoricoPedidosMdl(models.Model):
+    date_creation = models.DateTimeField('Fecha creación')
+    doc_number = models.CharField('Nº Documento', max_length=200)
+    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
+    pay_method = models.CharField('Metodo de pago', max_length=200, choices=PAYMETHOD, blank=True, null=True)
+    delivery_date = models.DateTimeField('Fecha entrega')
+    city = models.ForeignKey(clsCiudadesMdl, on_delete=models.CASCADE, blank=True, null=True)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    unit_price = models.DecimalField('Precio unitario', max_digits=10, decimal_places=2, blank=True, null=True)
+    subtotal = models.DecimalField('Subtotal', max_digits=10, decimal_places=2, blank=True, null=True)
+    iva = models.DecimalField('Iva', max_digits=10, decimal_places=2, blank=True, null=True)
+    discount = models.DecimalField('Descuento', max_digits=10, decimal_places=2, blank=True, null=True)
+    total = models.DecimalField('Total', max_digits=10, decimal_places=2)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    condition = models.CharField('Condición', max_length=200, choices=ORDERCONDITION)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Historico pedidos'
+        verbose_name_plural = 'Historico pedidos'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return self.identification.business_name
+
+''' 9.2 Tabla de ordenes de compra'''
+class clsHistoricoOrdenesCompraMdl(models.Model):
+    date_creation = models.DateTimeField('Fecha creación')
+    doc_number = models.CharField('Nº Documento', max_length=200)
+    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
+    delivery_date = models.DateTimeField('Fecha entrega')
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    unit_price = models.DecimalField('Precio unitario', max_digits=10, decimal_places=2, blank=True, null=True)
+    total_price = models.DecimalField('Subtotal', max_digits=10, decimal_places=2)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    condition = models.CharField('Condición', max_length=200, choices=STATEORDER)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Historico ordenes de compra'
+        verbose_name_plural = 'Historico ordenes de compra'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return self.identification.supplier_name
+
+''' 9.3 Tabla de historico alterno de movimientos'''
+class clsHistoricoMovimientosAlternoMdl(models.Model):
+    creation_date = models.CharField('Fecha de creación', max_length=200)
+    doc_number = models.CharField('Nº Documento', max_length=200)
+    document_type = models.CharField('Tipo de documento', max_length=200)
+    type = models.CharField('Tipo de movimiento', max_length=200)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    batch = models.CharField('Lote', max_length=200)
+    expiration_date = models.CharField('Fecha vencimiento', max_length=200)
+    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
+    crossing_doc = models.CharField('Documento cruce', max_length=200)
+    condition = models.CharField('Condición', max_length=200)
+    pre_bal = models.SmallIntegerField('Presaldo')
+    balance = models.SmallIntegerField('Saldo')
+    inv_value = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    identification = models.PositiveBigIntegerField('Identificación')
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Historico de movimiento Alterno'
+        verbose_name_plural = 'Historico de movimientos Alterno'
+        ordering = ['id']
+        permissions = (('bia_adm_historico_movimientos_alterno', 'Histórico de movimientos alterno'),)
+
+    def __str__(self):
+        return self.doc_number
+
+#################################################################################################
+# 10. AJUSTES DE INVENTARIO
+#################################################################################################
+''' 10.1 Tabla ajustes de inventario'''
+class clsAjusteInventarioMdl(BaseModel):
+    doc_number = models.CharField('Nº Documento', max_length=200, blank=True, null=True)
+    total_cost = models.DecimalField('Total costo', max_digits=30, decimal_places=2)
+    condition = models.CharField('Condición', max_length=200, choices=INCOMECONDITION, default='CE')
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Ajuste inventario'
+        verbose_name_plural = 'Ajustes de inventario'
+        ordering = ['id']
+        permissions = (('bia_adm_ajustes_inventario', 'Ajustes de inventario'),)
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsAjusteInventarioMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+''' 10.2 Tabla detalle ajustes de inventario'''
+class clsDetalleAjusteInventarioMdl(models.Model):
+    doc_number = models.ForeignKey(clsAjusteInventarioMdl, on_delete=models.CASCADE)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    type = models.CharField('Tipo de ajuste', max_length=200, choices=INCOMETYPE)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    batch = models.CharField('Lote', max_length=200, blank=True, null=True)
+    expiration_date = models.DateField('Fecha vencimiento', blank=True, null=True)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2, blank=True, null=True)
+    total_cost = models.DecimalField('Total costo', max_digits=20, decimal_places=2)
+    
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Ajuste inventario'
+        verbose_name_plural = 'Ajustes de inventario'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 11. ENTRADAS DE ALMACEN
+#################################################################################################
+''' 11.1 Tabla de entradas de almacén'''
+class clsEntradasAlmacenMdl(BaseModel):
+    doc_number = models.CharField('Nº Documento', max_length= 200, blank=True, null=True)
+    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
+    total_cost = models.DecimalField('Costo total', max_digits= 30, decimal_places= 2)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    crossing_doc = models.CharField('Documento cruce', max_length=200)
+    condition = models.CharField('Condición', max_length=200, choices=INCOMECONDITION)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Entrada de almacén'
+        verbose_name_plural = 'Entradas de almacén'
+        ordering = ['id']
+        permissions = (('bia_log_entradas_almacen', 'Entradas de almacén'),)
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsEntradasAlmacenMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+''' 11.2 Tabla detalle de entradas de almacén'''
+class clsDetalleEntradaAlmacen(models.Model):
+    doc_number = models.ForeignKey(clsEntradasAlmacenMdl, on_delete=models.CASCADE)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    unitary_cost = models.DecimalField('Costo unitario', max_digits= 30, decimal_places=2)
+    total_cost = models.DecimalField('Costo total', max_digits= 30, decimal_places=2)
+    batch = models.CharField('Lote', max_length=200)
+    expiration_date = models.DateTimeField('Fecha vencimiento')
+    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle entrada de almacén'
+        verbose_name_plural = 'Detalle entradas de almacén'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 12. DEVOLUCIONES CLIENTE
+#################################################################################################
+''' 12.1 Tabla de devoluciones de cliente'''
+class clsDevolucionesClienteMdl(BaseModel):
+    doc_number = models.CharField('Nº Documento', max_length=200)
+    returnin_type = models.CharField('Tipo de retorno', max_length=200)
+    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
+    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT)
+    crossing_doc = models.CharField('Documento cruce', max_length=200)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Devolución cliente'
+        verbose_name_plural = 'Devoluciones clientes'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsDevolucionesClienteMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+''' 12.2 Tabla detalle de devoluciones de cliente'''
+class clsDetalleDevolucionesClienteMdl(models.Model):
+    doc_number = models.ForeignKey(clsDevolucionesClienteMdl, on_delete=models.CASCADE)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
+    batch = models.CharField('Lote', max_length=200)
+    expiration_date = models.DateTimeField('Fecha vencimiento')
+    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle devolución cliente'
+        verbose_name_plural = 'Detalle devoluciones cliente'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 13. DEVOLUCIONES PROVEEDOR
+#################################################################################################
+''' 13.1 Tabla de devoluciones a proveedor'''
+class clsDevolucionesProveedorMdl(BaseModel):
+    doc_number = models.CharField('Nº Documento', max_length=200)
+    returnin_type = models.CharField('Tipo de retorno', max_length=200)
+    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete=models.CASCADE)
+    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT)
+    crossing_doc = models.CharField('Documento cruce', max_length=200)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Devolución proveedor'
+        verbose_name_plural = 'Devoluciones proveedores'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsDevolucionesProveedorMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+''' 13.2 Tabla detalle de devolución de proveedor'''
+class clsDetalleDevolucionesProveedorMdl(models.Model):
+    doc_number = models.ForeignKey(clsDevolucionesProveedorMdl, on_delete=models.CASCADE)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
+    batch = models.CharField('Lote', max_length=200)
+    expiration_date = models.DateTimeField('Fecha vencimiento')
+    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle devolución proveedor'
+        verbose_name_plural = 'Detalle devoluciones proveedor'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 14. SALIDAS DE ALMACEN
+#################################################################################################
+''' 14.1 Tabla de salidas de almacén'''
+class clsSalidasAlmacenMdl(BaseModel):
+    doc_number = models.CharField('Nº Documento', max_length=200)
+    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
+    discount = models.DecimalField('Descuento', max_digits=10, decimal_places=2)
+    taxes = models.DecimalField('Impuestos', max_digits=10, decimal_places=2)
+    total_price = models.DecimalField('Precio total', max_digits=10, decimal_places=2)
+    total_amount = models.DecimalField('Total', max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2, blank=True, null=True)
+    value_paid = models.DecimalField('Valor pagado', max_digits=10, decimal_places=2)
+    credit_state = models.CharField('Estado crédito', max_length=200, choices=INCOMECONDITION)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    crossing_doc = models.CharField('Documento cruce', max_length=200)
+    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Salida de almacén'
+        verbose_name_plural = 'Salidas de almacén'
+        ordering = ['id']
+        permissions = (('bia_log_salidas_almacen', 'Salidas de almacén'),)
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsSalidasAlmacenMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+''' 14.2 Tabla detalle de salidas de almacen'''
+class clsDetalleSalidasAlmacenMdl(models.Model):
+    doc_number = models.ForeignKey(clsSalidasAlmacenMdl, on_delete=models.CASCADE)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    unit_price = models.DecimalField('Precio unitario', max_digits=10, decimal_places=2)
+    discount = models.DecimalField('Descuento', max_digits=10, decimal_places=2)
+    taxes = models.DecimalField('Impuestos', max_digits=10, decimal_places=2)
+    total_price = models.DecimalField('Precio total', max_digits=10, decimal_places=2)
+    total_amount = models.DecimalField('Total', max_digits=10, decimal_places=2)
+    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2, blank=True, null=True)
+    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2, blank=True, null=True)
+    batch = models.CharField('Lote', max_length=200)
+    expiration_date = models.DateTimeField('Fecha vencimiento')
+    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle salida de almacén'
+        verbose_name_plural = 'Detalle salidas de almacén'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 15. OBSEQUIOS
+#################################################################################################
+''' 15.1 Tabla de obsequios'''
+class clsObsequiosMdl(BaseModel):
+    doc_number = models.CharField('Nº Documento', max_length=200)
+    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
+    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Obsequio'
+        verbose_name_plural = 'Obsequios'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsObsequiosMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+''' 15.2 Tabla detalle de obsequios'''
+class clsDetalleObsequiosMdl(models.Model):
+    doc_number = models.ForeignKey(clsObsequiosMdl, on_delete=models.CASCADE)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
+    batch = models.CharField('Lote', max_length=200)
+    expiration_date = models.DateTimeField('Fecha vencimiento')
+    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle obsequio'
+        verbose_name_plural = 'Detalle obsequios'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 16. TRASLADOS DE BODEGA
+#################################################################################################
+''' 16.1 Tabla de traslados entre bodegas'''
+class clsTrasladosBodegasMdl(BaseModel):
+    doc_number = models.CharField('Nº Documento', max_length=200)
+    identification = models.PositiveBigIntegerField('Identificación')
+    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
+    condition = models.CharField('Condición', max_length=200, choices=WAREHOUSEEXIT)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Traslado bodega'
+        verbose_name_plural = 'Traslados bodegas'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsTrasladosBodegasMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+''' 16.2 Tabla detalle de traslados entre bodegas'''
+class clsDetalleTrasladosBodegaMdl(models.Model):
+    doc_number = models.ForeignKey(clsTrasladosBodegasMdl, on_delete=models.CASCADE)
+    type = models.CharField('Tipo de traslado', max_length=200, choices=INCOMETYPE, blank=True, null=True)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE, blank=True, null=True)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField('Total costo', max_digits=10, decimal_places=2)
+    batch = models.CharField('Lote', max_length=200)
+    expiration_date = models.DateTimeField('Fecha vencimiento')
+    state = models.CharField('Estado', max_length=200, choices=VALIDARCANTIDAD)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle traslado bodega'
+        verbose_name_plural = 'Detalle traslados bodegas'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 17. SALDOS DE INVENTARIO
+#################################################################################################
+''' 17.1 Tabla de saldos de inventario'''
+class clsSaldosInventarioMdl(models.Model):
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    batch = models.CharField('Lote', max_length=200)
+    inventory_avail = models.PositiveSmallIntegerField('Saldo disponible')
+    expiration_date = models.CharField('Fecha vencimiento', max_length=200)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Saldo inventario'
+        verbose_name_plural = 'Saldos inventarios'
+        ordering = ['id']
+        permissions = (('bia_log_saldos_inventario', 'Saldos de inventario'),)
+
+    def fncDataSaldosProductojsn(self):
+        item = model_to_dict(self, fields=['inventory_avail'])
+        return item
+
+    def __str__(self):
+        return self.product_code.product_desc
+
+#################################################################################################
+# 18. HISTORICO REAL DE MOVIMIENTOS
+#################################################################################################
+''' 18.1 Tabla de historico real de movimientos'''
+class clsHistoricoMovimientosMdl(models.Model):
+    creation_date = models.CharField('Fecha de creación', max_length=200)
+    doc_number = models.CharField('Nº Documento', max_length=200)
+    document_type = models.CharField('Tipo de documento', max_length=200)
+    type = models.CharField('Tipo de movimiento', max_length=200)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    batch = models.CharField('Lote', max_length=200)
+    expiration_date = models.CharField('Fecha vencimiento', max_length=200)
+    unitary_cost = models.DecimalField('Costo unitario', max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
+    crossing_doc = models.CharField('Documento cruce', max_length=200)
+    condition = models.CharField('Condición', max_length=200)
+    pre_bal = models.SmallIntegerField('Presaldo')
+    balance = models.PositiveSmallIntegerField('Saldo')
+    inv_value = models.DecimalField('Costo total', max_digits=10, decimal_places=2)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete=models.CASCADE)
+    identification = models.CharField('Identificación', max_length= 200)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Historico de movimiento'
+        verbose_name_plural = 'Historico de movimientos'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return self.doc_number
+
+#################################################################################################
+# 19. PEDIDOS
+#################################################################################################
+''' 19.1 Tabla de pedidos'''
+class clsPedidosMdl(BaseModel):
+    doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
+    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete= models.CASCADE)
+    city= models.ForeignKey(clsCiudadesMdl, on_delete= models.CASCADE, blank=True, null=True)
+    customer_zone = models.ForeignKey(clsZonaClienteMdl, on_delete=models.CASCADE, blank= True, null= True)
+    delivery_address = models.CharField('Dirección entrega', max_length=200, blank=True, null=True)
+    delivery_date= models.DateField('Fecha de entrega')
+    subtotal= models.DecimalField('Subtotal', max_digits= 30, decimal_places= 2)
+    iva= models.DecimalField('Iva', max_digits= 10, decimal_places= 2, blank=True, null=True)
+    discount= models.DecimalField('Descuento', max_digits= 20, decimal_places= 2, blank=True, null=True)
+    total= models.DecimalField('Total', max_digits= 30, decimal_places= 2)
+    observations= models.CharField('Observaciones', max_length= 200, blank=True, null=True)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete= models.CASCADE)
+    condition = models.CharField('Condición', max_length=200, choices= STATEORDER, default='AB')
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Pedidos'
+        verbose_name_plural = 'Pedidos'
+        ordering = ['id']
+        permissions = (('bia_com_pedidos', 'Pedidos'),)
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsPedidosMdl, self).save()
+
+    def fncDataPedidosjsn(self):
+        item = model_to_dict(self, fields=[
+            'id',
+            'doc_number',
+            'creation_date',
+            'delivery_date',
+            'subtotal',
+            'iva',
+            'discount',
+            'total',
+        ])
+        item['creation_date'] = self.creation_date.strftime('%Y-%m-%d')
+        item['business_name'] = self.identification.business_name
+        item['identification'] = self.identification.identification
+        item['city'] = self.identification.city.city_name
+        item['customer_zone'] = self.identification.customer_zone.customer_zone
+        item['delivery_address'] = self.identification.delivery_address
+        item['store'] = self.store.warehouse_name
+        item['delivery_date'] = self.delivery_date.strftime('%Y-%m-%d')
+        item['subtotal'] = format(self.subtotal, '.2f')
+        item['iva'] = format(self.iva, '.2f')
+        item['discount'] = format(self.discount, '.2f')
+        item['total'] = format(self.total, '.2f')
+        item['condition'] = {'id': self.condition, 'name': self.get_condition_display()}
+        return item
+
+    def __str__(self):
+        return str(self.id)
+
+''' 19.2 Tabla detalle de pedidos'''
+class clsDetallePedidosMdl(models.Model):
+    doc_number = models.ForeignKey(clsPedidosMdl, on_delete= models.CASCADE)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE, verbose_name='Producto')
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    unit_price = models.DecimalField('Precio unitario', max_digits= 10, decimal_places= 2)
+    subtotal = models.DecimalField('Subtotal', max_digits= 30, decimal_places= 2)
+    iva = models.DecimalField('IVA', max_digits= 10, decimal_places= 2)
+    total= models.DecimalField('Total', max_digits= 30, decimal_places= 2)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle pedidos'
+        verbose_name_plural = 'Detalle pedidos'
+        ordering = ['id']
+        default_permissions = []
+
+    def fncDataDetallePedidojsn(self):
+        item = model_to_dict(self, fields=[
+            'id',
+            'quantity',
+            'unit_price',
+            'subtotal',
+            'iva',
+            'total',
+        ])
+        item['product_code'] = self.product_code.id
+        item['product_desc'] = self.product_code.product_desc
+        item['subtotal'] = format(self.subtotal, '.2f')
+        item['iva'] = format(self.iva, '.2f')
+        item['total'] = format(self.total, '.2f')
+        return item
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 20. ORDENES DE COMPRA
+#################################################################################################
+''' 20.1 Tabla de ordenes de compra'''
+class clsOrdenesCompraMdl(BaseModel):
+    doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
+    identification = models.ForeignKey(clsCatalogoProveedoresMdl, on_delete= models.CASCADE)
+    delivery_date= models.DateTimeField('Fecha de entrega', blank= True, null= True)
+    subtotal= models.DecimalField('Subtotal', max_digits= 30, decimal_places= 2)
+    iva= models.DecimalField('IVA', max_digits= 10, decimal_places= 2)
+    discount= models.DecimalField('Descuento', max_digits= 20, decimal_places= 2)
+    total= models.DecimalField('Total', max_digits= 30, decimal_places= 2)
+    observations= models.CharField('Observaciones', max_length= 200)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete= models.CASCADE)
+    condition = models.CharField('Condición', max_length=200, choices= STATEORDER)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Pedidos'
+        verbose_name_plural = 'Pedidos'
+        ordering = ['id']
+        permissions = (('bia_pur_ordenes_compra', 'Ordenes de compra'),)
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsOrdenesCompraMdl, self).save()
+
+    def fncOrdenCompraDetallejsn(self):
+        item = model_to_dict(self, fields=[
+            'delivery_date', 'condition'
+            ])
+        item['delivery_date'] = self.delivery_date.strftime('%Y-%m-%d')
+        item['condition'] = {'id': self.condition, 'name': self.get_condition_display()}
+        return item
+
+    def __str__(self):
+        return str(self.id)
+
+''' 20.2 Tabla detalle de ordenes de compra'''
+class clsDetalleOrdenesCompraMdl(models.Model):
+    doc_number = models.ForeignKey(clsOrdenesCompraMdl, on_delete= models.CASCADE)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    unit_price = models.DecimalField('Precio unitario', max_digits= 10, decimal_places= 2)
+    subtotal = models.DecimalField('Subtotal', max_digits= 30, decimal_places= 2)
+    iva = models.DecimalField('Iva', max_digits= 10, decimal_places= 2)
+    total= models.DecimalField('Total', max_digits= 30, decimal_places= 2)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle ordenes de compra'
+        verbose_name_plural = 'Detalle ordenes de compra'
+        ordering = ['id']
+        default_permissions = []
+
+    def fncDetalleOrdenComprajsn(self):
+        item = model_to_dict(self, fields=['doc_number', 'product_code', 'quantity'])
+        item['doc_number'] = self.doc_number.doc_number
+        item['product_code'] = self.product_code.id
+        item['order'] = [ i.fncOrdenCompraDetallejsn() for i in self.clsordenescompramdl_set.all() ]
+        return item
+
+    def __str__(self):
+        return str(self.id)
+        
+#################################################################################################
+# 21. COTIZACIONES
+#################################################################################################
+''' 21.1 Tabla de Cotizaciones'''
+class clsCotizacionesMdl(BaseModel):
+    doc_number = models.CharField('Nº Documento', max_length= 200, blank= True, null= True)
+    identification= models.ForeignKey(clsCatalogoClientesMdl, on_delete= models.CASCADE)
+    city= models.ForeignKey(clsCiudadesMdl, on_delete= models.CASCADE)
+    store = models.ForeignKey(clsCatalogoBodegasMdl, on_delete= models.CASCADE)
+    freight= models.DecimalField('Flete', max_digits= 30, decimal_places= 2)
+    general_obs= models.CharField('Observaciones Generales', max_length= 200, blank= True, null= True)
+    follow_up_date= models.DateTimeField('Fecha de seguimiento')
+    subtotal= models.DecimalField('Subtotal', max_digits= 30, decimal_places= 2, blank=True, null=True)
+    iva= models.DecimalField('IVA', max_digits= 10, decimal_places= 2, blank=True, null=True)
+    total= models.DecimalField('Total', max_digits= 30, decimal_places= 2, blank=True, null=True)
+    condition= models.CharField('Condición', max_length= 200, choices= STATEORDER, default='AB')
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Cotizaciones'
+        verbose_name_plural = 'Cotizaciones'
+        ordering = ['id']
+        permissions = (('bia_com_cotizacion_cliente', 'Cotización cliente'),)
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsCotizacionesMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+''' 21.2 Tabla detalle de cotizaciones'''
+class clsDetalleCotizacionesMdl(models.Model):
+    doc_number= models.ForeignKey(clsCotizacionesMdl, on_delete= models.CASCADE)
+    product_code= models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE)
+    quantity= models.PositiveSmallIntegerField('Cantidad')
+    lead_time= models.SmallIntegerField('Tiempo de entrega')
+    unit_price= models.DecimalField('Precio Unitario', max_digits= 30, decimal_places= 2)
+    due_date= models.DateTimeField('Vigencia')
+    observations= models.CharField('Observaciones', max_length= 200, blank= True, null= True)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle cotizaciones'
+        verbose_name_plural = 'Detalle cotizaciones'
+        ordering = ['id']
+        default_permissions = []        
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 22. INDICADORES COMERCIALES
+#################################################################################################
+''' 22.1 Tabla indicadores comerciales'''
+class clsIndicadoresComercialesMdl(models.Model):
+    creation_date =  models.DateTimeField('Fecha creación')
+    measurement_date = models.DateTimeField('Fecha medición', blank=True, null=True)
+    indicator = models.CharField('Indicador', max_length=200)
+    set = models.CharField('Conjunto', max_length=200, blank=True, null=True) 
+    subset= models.CharField('Subconjunto', max_length=200, blank=True, null=True)
+    objetive = models.DecimalField('Objetivo', max_digits=10, decimal_places=2, blank=True, null=True)
+    real = models.DecimalField('Real', max_digits=10, decimal_places=2, blank=True, null=True)
+    fulfillment = models.DecimalField('Cumplimiento', max_digits=10, decimal_places=2, blank=True, null=True)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Indicador comercial'
+        verbose_name_plural = 'Indicadores comerciales'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return self.set
+
+#################################################################################################
+# 23. ACTIVIDADES COMERCIALES
+#################################################################################################
+''' 23.1 Tabla actividades comercial'''
+class clsActividadesComercialMdl(models.Model):
+    task_date =  models.DateTimeField('Fecha actividad')
+    start_hour = models.CharField('Hora inicio', max_length=200)
+    end_hour = models.CharField('Hora fin', max_length=200)
+    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
+    task = models.CharField('Actividad', max_length=200)
+    customer_state =  models.CharField('Estado cliente', max_length=200, choices=ESTADOCLIENTE, blank=True, null=True)
+    objetive = models.CharField('Objetivo', max_length=600, choices=OBJETIVOACTIVIDAD, blank=True, null=True)
+    observation = models.CharField('Observación', max_length=200)
+    condition = models.CharField('Condición', max_length=200, choices=STATE, default='AC')
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Actividad comercial'
+        verbose_name_plural = 'Actividades comerciales'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsActividadesComercialMdl, self).save()
+
+    def __str__(self):
+        return self.task
+
+#################################################################################################
+# 24. PROMOCIONES
+#################################################################################################
+''' 24.1 Tabla promociones'''
+class clsPromocionesMdl(models.Model):
+    doc_number = models.CharField('Nº Documento', max_length=200, blank=True, null=True)
+    promo_name = models.CharField('Nombre promoción', max_length=200)
+    deadline_for_sale = models.DateTimeField('Fecha vigencia')
+    promo_quantity = models.SmallIntegerField('Cantidad')
+    promo_price = models.DecimalField('Precio promoción', max_digits=20, decimal_places=2)
+    promo_object = models.CharField('Objeto promoción', max_length=200)
+    auts = models.SmallIntegerField('Unidades autorizadas por cliente')
+    condition = models.CharField('Condición', max_length=200, choices=STATE)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Promoción'
+        verbose_name_plural = 'Promociones'
+        ordering = ['id']
+        permissions = (('bia_pur_promociones', 'Promociones'),)
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsPromocionesMdl, self).save()
+
+    def __str__(self):
+        return self.promo_name
+
+''' 24.2 Tabla detalle productos promociones'''
+class clsDetalleProductosPromocionesMdl(models.Model):
+    doc_number = models.ForeignKey(clsPromocionesMdl, on_delete=models.CASCADE)
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle producto promoción'
+        verbose_name_plural = 'Detalle productos promociones'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.doc_number)
+
+''' 24.3 Tabla detalle clientes promociones'''
+class clsDetalleClientesPromocionesMdl(models.Model):
+    doc_number = models.ForeignKey(clsPromocionesMdl, on_delete=models.CASCADE)
+    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete=models.CASCADE)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle cliente promoción'
+        verbose_name_plural = 'Detalle clientes promociones'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.doc_number)
+
+''' 24.4 Tabla detalle filtros'''
+class clsDetalleFiltrosPromocionesMdl(models.Model):
+    doc_number = models.ForeignKey(clsPromocionesMdl, on_delete=models.CASCADE)
+    filter = models.CharField('Filtro', max_length=200)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Detalle filtro promoción'
+        verbose_name_plural = 'Detalle filtros promociones'
+        ordering = ['id']
+        default_permissions = []
+
+    def __str__(self):
+        return str(self.doc_number)
+
+#################################################################################################
+# 25. EVALUACIÓN PROVEEDOR
+#################################################################################################
+''' 25.1 Tabla evaluación proveedor'''
+class clsEvaluacionProveedorMdl(models.Model):
+    order_purchase = models.ForeignKey(clsOrdenesCompraMdl, on_delete= models.CASCADE)
+    incomes = models.ForeignKey(clsEntradasAlmacenMdl, on_delete=models.CASCADE)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Evaluación proveedor'
+        verbose_name_plural = 'Evaluaciones de proveedor'
+        ordering = ['id']
+        permissions = (('bia_pur_evaluacion_proveedor', 'Evaluación proveedor'),)
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsEvaluacionProveedorMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 26. INDICADORES COMPRAS
+#################################################################################################
+''' 26.1 Tabla indicadores compras'''
+class clsIndicadoresComprasMdl(models.Model):
+    measurement_date = models.DateTimeField('Fecha medición', blank=True, null=True)
+    indicator = models.CharField('Indicador', max_length=200)
+    objetive = models.DecimalField('Objetivo', max_digits=10, decimal_places=2, blank=True, null=True)
+    real = models.DecimalField('Real', max_digits=10, decimal_places=2, blank=True, null=True)
+    fulfillment = models.DecimalField('Cumplimiento', max_digits=10, decimal_places=2, blank=True, null=True)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Indicador compras'
+        verbose_name_plural = 'Indicadores compras'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsIndicadoresComprasMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 27. INDICADORES ALMACEN
+#################################################################################################
+''' 27.1 Tabla indicadores almacen'''
+class clsIndicadoresAlmacenMdl(models.Model):
+    measurement_date = models.DateTimeField('Fecha medición', blank=True, null=True)
+    indicator = models.CharField('Indicador', max_length=200)
+    objetive = models.DecimalField('Objetivo', max_digits=10, decimal_places=2, blank=True, null=True)
+    real = models.DecimalField('Real', max_digits=10, decimal_places=2, blank=True, null=True)
+    fulfillment = models.DecimalField('Cumplimiento', max_digits=10, decimal_places=2, blank=True, null=True)
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Indicador almacen'
+        verbose_name_plural = 'Indicadores almacen'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsIndicadoresAlmacenMdl, self).save()
+
+    def __str__(self):
+        return str(self.id)
+
+#################################################################################################
+# 28. VENTAS PERDIDAS
+#################################################################################################
+''' 28.1 Tabla ventas perdidas'''
+class clsVentasPerdidasMdl(models.Model):
+    date = models.DateTimeField('Fecha')
+    identification = models.ForeignKey(clsCatalogoClientesMdl, on_delete= models.CASCADE, verbose_name='Cliente')
+    product_code = models.ForeignKey(clsCatalogoProductosMdl, on_delete= models.CASCADE, verbose_name='Producto')
+    quantity = models.PositiveSmallIntegerField('Cantidad')
+    objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = 'Venta perdida'
+        verbose_name_plural = 'Ventas perdidas'
+        ordering = ['id']
+        default_permissions = []
+
+    def save(self, force_insert=False, force_update=False, using=None, 
+            update_fields=None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.user_creation = user
+            else:
+                self.user_update = user
+        super(clsVentasPerdidasMdl, self).save()
 
     def __str__(self):
         return str(self.id)

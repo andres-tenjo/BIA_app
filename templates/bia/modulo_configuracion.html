@@ -50,17 +50,6 @@
             </a>
         </li>
         <li class="nav-item">
-            <a type="button" href="{% url 'configuracion:listas_precios' %}" class="nav-link
-                {% if request.resolver_match.view_name == 'configuracion:listas_precios' %}active{% endif %}
-                {% if request.resolver_match.view_name == 'configuracion:importar_lista_precios' %}active{% endif %}
-                {% if request.resolver_match.view_name == 'configuracion:crear_lista_precios' %}active{% endif %}
-                {% if request.resolver_match.view_name == 'configuracion:editar_lista_precios' %}active{% endif %}
-                {% if request.resolver_match.view_name == 'configuracion:ver_lista_precios' %}active{% endif %}">
-                <i class="nav-icon fas fa-list-ul"></i>
-                <p>Listas de precios</p>
-            </a>
-        </li>
-        <li class="nav-item">
             <a id="suppliersButton" type="button" href="" class="nav-link
                 {% if request.resolver_match.view_name == 'configuracion:cat_proveedores' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:crear_proveedor' %}active{% endif %}
@@ -71,6 +60,27 @@
                 {% if request.resolver_match.view_name == 'configuracion:listar_proveedores' %}active{% endif %}">
                 <i class="nav-icon fas fa-id-badge"></i>
                 <p>Catálogo de proveedores</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a id="warehouseButton" type="button" href="" class="nav-link
+                {% if request.resolver_match.view_name == 'configuracion:catalogo_bodegas' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:crear_bodega' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:editar_bodega' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:listar_bodegas' %}active{% endif %}">
+                <i class="nav-icon fas fa-warehouse"></i>
+                <p>Catálogo de bodegas</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a type="button" href="{% url 'configuracion:listas_precios' %}" class="nav-link
+                {% if request.resolver_match.view_name == 'configuracion:listas_precios' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:importar_lista_precios' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:crear_lista_precios' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:editar_lista_precios' %}active{% endif %}
+                {% if request.resolver_match.view_name == 'configuracion:ver_lista_precios' %}active{% endif %}">
+                <i class="nav-icon fas fa-list-ul"></i>
+                <p>Listas de precios</p>
             </a>
         </li>
         <li class="nav-item">
@@ -93,16 +103,6 @@
                 {% if request.resolver_match.view_name == 'configuracion:ver_tiempos_entrega' %}active{% endif %}">
                 <i class="nav-icon fas fa-calendar-check"></i>
                 <p>Tiempos de entrega</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a id="warehouseButton" type="button" href="" class="nav-link
-                {% if request.resolver_match.view_name == 'configuracion:catalogo_bodegas' %}active{% endif %}
-                {% if request.resolver_match.view_name == 'configuracion:crear_bodega' %}active{% endif %}
-                {% if request.resolver_match.view_name == 'configuracion:editar_bodega' %}active{% endif %}
-                {% if request.resolver_match.view_name == 'configuracion:listar_bodegas' %}active{% endif %}">
-                <i class="nav-icon fas fa-warehouse"></i>
-                <p>Catálogo de bodegas</p>
             </a>
         </li>
         <li class="nav-item">
