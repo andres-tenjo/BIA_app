@@ -84,7 +84,6 @@ $(function () {
         .on('click', 'a[rel="details"]', function () {
             var tr = tblPedidos.cell($(this).closest('td, li')).index();
             var data = tblPedidos.row(tr.row).data();
-            console.log(data);
             $('#iptDocumentoPedido').val(data.doc_number);
             $('#iptNombreCliente').val(data.business_name);
             $('#iptIdentificacionCliente').val(data.identification);

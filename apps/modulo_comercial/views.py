@@ -205,6 +205,9 @@ class clsCrearPedidoViw(CreateView):
                     lstDetalleListaPrecios = json.loads(request.POST['lstDetalleListaPrecios'])
                     qrsPedido = clsPedidosMdl()
                     qrsPedido.identification_id = int(dctRequestForm['identification'])
+                    qrsPedido.city_id = int(dctRequestForm['city'])
+                    qrsPedido.customer_zone_id = int(dctRequestForm['customer_zone'])
+                    qrsPedido.delivery_address = int(dctRequestForm['delivery_address'])
                     qrsPedido.delivery_date = datetime.strptime(dctRequestForm['delivery_date'], '%Y-%m-%d').date()
                     qrsPedido.subtotal = float(dctRequestForm['subtotal'][2:])
                     if dctRequestForm['iva'] != '':

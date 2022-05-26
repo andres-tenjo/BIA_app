@@ -1487,8 +1487,8 @@ class clsPedidosMdl(BaseModel):
         item['business_name'] = self.identification.business_name
         item['identification'] = self.identification.identification
         item['city'] = self.identification.city.city_name
-        item['customer_zone'] = self.identification.customer_zone.customer_zone
-        item['delivery_address'] = self.identification.delivery_address
+        item['customer_zone'] = self.customer_zone.customer_zone
+        item['delivery_address'] = self.delivery_address
         item['store'] = self.store.warehouse_name
         item['delivery_date'] = self.delivery_date.strftime('%Y-%m-%d')
         item['subtotal'] = format(self.subtotal, '.2f')
