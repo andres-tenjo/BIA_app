@@ -1,143 +1,78 @@
-// Validación parametrización usuarios
-$('#userButton').on('click', function (e) {
-    e.preventDefault();
+// Función que valida los requerimientos de una ventana y retorna un mensaje o lo permite ingresar
+function fncValidarRequerimientosjsn(action, strLocation) {
     $.ajax({
         url: "/modulo_configuracion",
         type: 'POST',
         data: {
-            'action': 'user'
+            'action': action
         },
         dataType: 'json',
     }).done(function(data) {
+        console.log(data);
         if(data.hasOwnProperty('error')){
             error = data.error;
             fncMensajeErrormns(error);
+            return;
         }
         else{
-            location.href = '/configuracion/vista_usuarios';
+            location.href = strLocation;
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(textStatus +': '+errorThrown);
     }).always(function(data) {                
     });
+}
+
+// Validación parametrización usuarios
+$('#btnUsuarios').on('click', function (e) {
+    e.preventDefault();
+    fncValidarRequerimientosjsn('btnUsuariosPermisosjsn', '/configuracion/vista_usuarios')
 });
 
 // Validación parametrización productos
-$('#productsButton').on('click', function (e) {
+$('#btnCatalogoProductos').on('click', function (e) {
     e.preventDefault();
-    $.ajax({
-        url: "/modulo_configuracion",
-        type: 'POST',
-        data: {
-            'action': 'products'
-        },
-        dataType: 'json',
-    }).done(function(data) {
-        if(data.hasOwnProperty('error')){
-            error = data.error;
-            fncMensajeErrormns(error);
-        }
-        else{
-            location.href = '/configuracion/product_catalogue/';
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus +': '+errorThrown);
-    }).always(function(data) {                
-    });
+    fncValidarRequerimientosjsn('btnCatalogoProductosjsn', '/configuracion/product_catalogue/')
 });
 
 // Validación parametrización proveedores
-$('#suppliersButton').on('click', function (e) {
+$('#btnCatalogoProveedores').on('click', function (e) {
     e.preventDefault();
-    $.ajax({
-        url: "/modulo_configuracion",
-        type: 'POST',
-        data: {
-            'action': 'suppliers'
-        },
-        dataType: 'json',
-    }).done(function(data) {
-        if(data.hasOwnProperty('error')){
-            error = data.error;
-            fncMensajeErrormns(error);
-        }
-        else{
-            location.href = '/configuracion/cat_sup/';
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus +': '+errorThrown);
-    }).always(function(data) {                
-    });
-});
-
-// Validación parametrización clientes
-$('#customersButton').on('click', function (e) {
-    e.preventDefault();
-    $.ajax({
-        url: "/modulo_configuracion",
-        type: 'POST',
-        data: {
-            'action': 'customers'
-        },
-        dataType: 'json',
-    }).done(function(data) {
-        if(data.hasOwnProperty('error')){
-            error = data.error;
-            fncMensajeErrormns(error);
-        }
-        else{
-            location.href = '/configuracion/cat_cli/';
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus +': '+errorThrown);
-    }).always(function(data) {                
-    });
+    fncValidarRequerimientosjsn('btnCatalogoProveedoresjsn', '/configuracion/cat_sup/')
 });
 
 // Validación parametrización bodegas
-$('#warehouseButton').on('click', function (e) {
+$('#btnCatalogoBodegas').on('click', function (e) {
     e.preventDefault();
-    $.ajax({
-        url: "/modulo_configuracion",
-        type: 'POST',
-        data: {
-            'action': 'warehouse'
-        },
-        dataType: 'json',
-    }).done(function(data) {
-        if(data.hasOwnProperty('error')){
-            error = data.error;
-            fncMensajeErrormns(error);
-        }
-        else{
-            location.href = '/configuracion/catalogo_bodegas/';
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus +': '+errorThrown);
-    }).always(function(data) {                
-    });
+    fncValidarRequerimientosjsn('btnCatalogoBodegasjsn', '/configuracion/catalogo_bodegas/')
+});
+
+// Validación parametrización listas de precios
+$('#btnListasPrecios').on('click', function (e) {
+    e.preventDefault();
+    fncValidarRequerimientosjsn('btnListasPreciosjsn', '/configuracion/listas_precios/')
+});
+
+// Validación parametrización clientes
+$('#btnCatalogoClientes').on('click', function (e) {
+    e.preventDefault();
+    fncValidarRequerimientosjsn('btnCatalogoClientesjsn', '/configuracion/cat_cli/')
+});
+
+// Validación parametrización tiempos de entrega
+$('#btnTiemposEntrega').on('click', function (e) {
+    e.preventDefault();
+    fncValidarRequerimientosjsn('btnTiemposEntregajsn', '/configuracion/tiempos_entrega/')
 });
 
 // Validación parametrización historico movimientos
-$('#historicoMovimientosButton').on('click', function (e) {
+$('#btnHistoricoMovimientos').on('click', function (e) {
     e.preventDefault();
-    $.ajax({
-        url: "/modulo_configuracion",
-        type: 'POST',
-        data: {
-            'action': 'historico_movimientos'
-        },
-        dataType: 'json',
-    }).done(function(data) {
-        if(data.hasOwnProperty('error')){
-            error = data.error;
-            fncMensajeErrormns(error);
-        }
-        else{
-            location.href = '/configuracion/importar_historico_movimientos/';
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus +': '+errorThrown);
-    }).always(function(data) {                
-    });
+    fncValidarRequerimientosjsn('btnHistoricoMovimientosjsn', '/configuracion/importar_historico_movimientos/')
+});
+
+// Validación parametrización historico movimientos
+$('#btnAjustesInventario').on('click', function (e) {
+    e.preventDefault();
+    fncValidarRequerimientosjsn('btnAjusteInventariosjsn', '/configuracion/ajustes_inventario/')
 });

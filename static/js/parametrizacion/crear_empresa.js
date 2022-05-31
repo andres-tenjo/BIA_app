@@ -10,7 +10,7 @@ $(function () {
     // Evento que actualiza el tipo de identificación 
     // respecto al tipo de documento seleccionado
     strTipoPersona.addEventListener("change", function() {
-        fncFiltrarTipoId(strTipoPersona, strTipoIdentificacion)
+        fncFiltrarTipoId(strTipoPersona, strTipoIdentificacion) 
     });
     
     // Evento que filtra la ciudad de ubicación de la empresa

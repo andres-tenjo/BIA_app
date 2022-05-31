@@ -47,40 +47,57 @@ class modulo_configuracion(LoginRequiredMixin, TemplateView):
         data = {}
         try:
             action = request.POST['action']
-            if action == 'user':
-                com =  clsPerfilEmpresaMdl.objects.all()
-                if not com:
-                    msg = 'Para continuar con la parametrización de usuarios debe parámetrizar el perfil de su empresa'
+            if action == 'btnUsuariosPermisosjsn':
+                qrsEmpresa =  clsPerfilEmpresaMdl.objects.all()
+                if not qrsEmpresa:
+                    msg = 'Para establecer usuarios y permisos debe parámetrizar el perfil de su empresa'
                     data['error'] = msg
-            elif action == 'products':
-                user =  User.objects.filter(is_superuser=False)
-                if not user:
-                    msg = 'Para continuar con la parametrización de Productos debe parámetrizar los usuarios'
+                else:
+                    data['success'] = 'success'
+            elif action == 'btnCatalogoProductosjsn':
+                qrsUsuarios =  User.objects.filter(is_superuser=False)
+                if not qrsUsuarios:
+                    msg = 'Para establecer su cátalogo de productos debe parámetrizar sus usuarios y permisos'
                     data['error'] = msg
-            elif action == 'suppliers':
-                prod =  clsCatalogoProductosMdl.objects.filter(state='AC')
-                if not prod:
-                    msg = 'Para continuar con la parametrización de Proveedores debe parámetrizar los productos'
+            elif action == 'btnCatalogoProveedoresjsn':
+                qrsProductos =  clsCatalogoProductosMdl.objects.filter(state='AC')
+                if not qrsProductos:
+                    msg = 'Para establecer su catálogo de Proveedores debe parámetrizar sus productos'
                     data['error'] = msg
-            elif action == 'customers':
-                supp =  clsCatalogoProveedoresMdl.objects.filter(state='AC')
-                if not supp:
-                    msg = 'Para continuar con la parametrización de Clientes debe parámetrizar los proveedores'
+            elif action == 'btnCatalogoBodegasjsn':
+                qrsProveedores =  clsCatalogoProveedoresMdl.objects.filter(state='AC')
+                if not qrsProveedores:
+                    msg = 'Para establecer su catálogo de bodegas debe parámetrizar sus proveedores'
                     data['error'] = msg
-            elif action == 'warehouse':
-                cust =  clsCatalogoClientesMdl.objects.filter(state='AC')
-                if not cust:
-                    msg = 'Para continuar con la parametrización de Bodegas debe parámetrizar los clientes'
+            elif action == 'btnListasPreciosjsn':
+                qrsBodegas =  clsCatalogoBodegasMdl.objects.filter(state='AC')
+                if not qrsBodegas:
+                    msg = 'Para establecer sus listas de precios debe parámetrizar sus bodegas'
                     data['error'] = msg
-            elif action == 'historico_movimientos':
-                warehouse =  clsCatalogoBodegasMdl.objects.filter(state='AC')
+            elif action == 'btnCatalogoClientesjsn':
+                qrsListasPrecios =  clsListaPreciosMdl.objects.filter(state='AC')
+                if not qrsListasPrecios:
+                    msg = 'Para establecer su catáloo de clientes debe parámetrizar sus listas de precios'
+                    data['error'] = msg
+            elif action == 'btnTiemposEntregajsn':
+                qrsCatalogoClientes =  clsCatalogoClientesMdl.objects.filter(state='AC')
+                if not qrsCatalogoClientes:
+                    msg = 'Para establecer tiempos de entrega debe parámetrizar sus clientes'
+                    data['error'] = msg
+            elif action == 'btnHistoricoMovimientosjsn':
+                qrsCatalogoClientes =  clsCatalogoClientesMdl.objects.filter(state='AC')
+                if not qrsCatalogoClientes:
+                    msg = 'Para establecer su histórico de movimientos debe parámetrizar sus clientes'
+                    data['error'] = msg
                 historico = clsHistoricoPedidosMdl.objects.all()
-                if not warehouse:
-                    msg = 'Para continuar con la parametrización del historico de movimientos debe parámetrizar las bodegas'
-                    data['error'] = msg
                 # elif len(historico):
                 #     msg = 'Usted ya ha cargado un historico de movimientos, para cargar un nuevo historico genere un ticket de servicio'
                 #     data['error'] = msg
+            elif action == 'btnAjusteInventariosjsn':
+                qrsCatalogoClientes =  clsCatalogoClientesMdl.objects.filter(state='AC')
+                if not qrsCatalogoClientes:
+                    msg = 'Para establecer sus ajustes iniciales debe parámetrizar sus clientes'
+                    data['error'] = msg
             else:
                 data['error'] = 'No ha ingresado a ninguna opción'
         except Exception as e:

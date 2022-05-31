@@ -23,7 +23,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a id="userButton" type="button" href="" class="nav-link
+            <a id="btnUsuarios" type="button" href="" class="nav-link
                 {% if request.resolver_match.view_name == 'configuracion:vista_usuarios' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'usuarios:crear_grupos_usuarios' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'usuarios:editar_grupos' %}active{% endif %}
@@ -36,7 +36,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a id="productsButton" type="button" href="" class="nav-link
+            <a id="btnCatalogoProductos" type="button" href="" class="nav-link
                 {% if request.resolver_match.view_name == 'configuracion:product_catalogue' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:crear_producto' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:listar_productos' %}active{% endif %}
@@ -50,7 +50,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a id="suppliersButton" type="button" href="" class="nav-link
+            <a id="btnCatalogoProveedores" type="button" href="" class="nav-link
                 {% if request.resolver_match.view_name == 'configuracion:cat_proveedores' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:crear_proveedor' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:opciones_proveedor' %}active{% endif %}
@@ -63,7 +63,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a id="warehouseButton" type="button" href="" class="nav-link
+            <a id="btnCatalogoBodegas" type="button" href="" class="nav-link
                 {% if request.resolver_match.view_name == 'configuracion:catalogo_bodegas' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:crear_bodega' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:editar_bodega' %}active{% endif %}
@@ -73,7 +73,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a type="button" href="{% url 'configuracion:listas_precios' %}" class="nav-link
+            <a id="btnListasPrecios" type="button" href="" class="nav-link
                 {% if request.resolver_match.view_name == 'configuracion:listas_precios' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:importar_lista_precios' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:crear_lista_precios' %}active{% endif %}
@@ -84,7 +84,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a id="customersButton" type="button" href="" class="nav-link
+            <a id="btnCatalogoClientes" type="button" href="" class="nav-link
                 {% if request.resolver_match.view_name == 'configuracion:cat_clientes' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:crear_cliente' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:opciones_cliente' %}active{% endif %}
@@ -96,7 +96,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a type="button" href="{% url 'configuracion:tiempos_entrega' %}" class="nav-link
+            <a id="btnTiemposEntrega" type="button" href="" class="nav-link
                 {% if request.resolver_match.view_name == 'configuracion:tiempos_entrega' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:crear_tiempos_entrega' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:editar_tiempo_entrega' %}active{% endif %}
@@ -106,14 +106,14 @@
             </a>
         </li>
         <li class="nav-item">
-            <a id="historicoMovimientosButton" type="button" href="" class="nav-link
+            <a id="btnHistoricoMovimientos" type="button" href="" class="nav-link
                 {% if request.resolver_match.view_name == 'configuracion:importar_historico_movimientos' %}active{% endif %}">
                 <i class="nav-icon fas fa-file-upload"></i>
                 <p>Historico de movimientos</p>
             </a>
         </li>
         <li class="nav-item">
-            <a id="" type="button" href="{% url 'configuracion:ajustes_inventario' %}" class="nav-link
+            <a id="btnAjustesInventario" type="button" href="" class="nav-link
                 {% if request.resolver_match.view_name == 'configuracion:ajustes_inventario' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:importar_ajustes_inventario' %}active{% endif %}
                 {% if request.resolver_match.view_name == 'configuracion:crear_ajuste_inventario' %}active{% endif %}">
