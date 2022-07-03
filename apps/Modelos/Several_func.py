@@ -12,6 +12,7 @@ from apps.modulo_configuracion.models import *
 # strNombreColumna: Nombre de la columna a la cual se le dará formato fecha (str)
 # Retorna el cuadro de datos con la columna modificada (pandas.DataFrame)
 def fncFormatoFechadtf(dtfDatos, strNombreColumna):
+    pd.options.mode.chained_assignment= None
     dtfDatos[strNombreColumna]= pd.to_datetime(dtfDatos[strNombreColumna], format= '%Y-%m-%d')
     return dtfDatos
 
@@ -68,7 +69,7 @@ def fncCortaCuadrodtf(dtfDatos, intTamaño):
 def fncFechaConsecutivabol(dtfDatos):
     datUltimo= dtfDatos['creation_date'].max().month
     datActual= dt.datetime.now().month
-    if (datUltimo== datActual) | (datActual- 1== datUltimo): return True
+    if (datUltimo== datActual) | (datActual- 1== datUltimo) | (datUltimo- 1== datActual): return True
     else: return False
 
 # Función que según la frecuencia de tiempo de un cuadro de datos, asigna los períodos por fila en el cuadro de datos

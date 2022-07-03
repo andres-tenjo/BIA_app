@@ -4,6 +4,7 @@ from django.urls import path
 # Apps functions
 from .views import *
 from apps.usuario.views import *
+from apps.Modelos.Commercial_KPI import fncIndicadoresCierreMes, fncIndicadoresAlternos
 
 urlpatterns = [
     ###############################################################
@@ -67,3 +68,6 @@ urlpatterns = [
         name='planeacion_almacen_historico'
         ),
     ]
+
+fncIndicadoresAlternos()
+fncIndicadoresCierreMes()

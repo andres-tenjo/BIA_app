@@ -7,6 +7,7 @@ from pandas import pandas as pd
 # Modelos BIA
 from apps.Modelos.Several_func import *
 from apps.Modelos.Update_Balances import *
+from apps.Modelos.Commercial_KPI import fncPronosticaIndicadoreslst, fncIndicadoresAlternos
 
 # Django libraries
 from django.conf import settings
@@ -32,6 +33,7 @@ from apps.modulo_almacen.models import *
 from apps.modulo_compras.models import *
 from apps.functions_views import *
 from apps.Modelos.Several_func import *
+from apps.Modelos.Commercial_KPI import fncVentaTotalGeneralConsultadct
 
 ################################################################################################
 ############################### VISTAS DEL MODULO PLANEACIÓN ###################################
@@ -63,9 +65,11 @@ class clsPlaneacionComercialEstablecerIndicadoresViw(LoginRequiredMixin, Validat
         jsnData = {}
         try:
             action = request.POST['action']
+            fncIndicadoresAlternos()
+            lstPronostico= fncPronosticaIndicadoreslst()
             if action == 'jsnConsultarIndicadoresjsn':
-                lstIndicadoresGenerales = ['Total_Sales_Objetive', 'Customer_Retention_Rate', 'Sales_Deepening', 'New_Customers', 'Margin']
-                lstQrsIndicadores = [ {i: fncRetornarDataGraficolst('General', i)} for i in lstIndicadoresGenerales ]
+                lstIndicadoresGenerales= ['Venta_Total', 'Retención_Clientes', 'Venta_Nueva_Profundidad', 'Venta_Clientes_Nuevos', 'Margin']
+                lstQrsIndicadores = [ {i: fncRetornarDataGraficolst('Resultado_General', i)} for i in lstIndicadoresGenerales ]
                 response = JsonResponse(lstQrsIndicadores, safe=False)
             elif action == 'btnConsultarCiudadesClientesjsn':
                 lstSelectCiudad = fncRetornarDataSelectdct('modulo_configuracion_clssalidasalmacenmdl')
@@ -178,7 +182,7 @@ class clsPlaneacionComercialHistoricoViw(LoginRequiredMixin, ValidatePermissionR
             action = request.POST['action']
             if action == 'jsnConsultarIndicadorGeneralActual':
                 jsnData['fltObjetivoGeneralActual'] = float(5300000)
-                jsnData['fltRealGeneralActual'] = float(2700000)
+                jsnData['fltRealGeneralActual'] = float(111111111)
                 jsnData['strCumplimientoIndicador'] = '50%'
                 response = JsonResponse(jsnData, safe=False)
             elif action == 'btnConsultarCiudadesjsn':

@@ -7,7 +7,7 @@ from pandas import pandas as pd
 # Modelos BIA
 from apps.Modelos.Several_func import *
 from apps.Modelos.Update_Balances import *
-from apps.Modelos.Parameters import *
+from apps.Modelos.Parameters import fncMovimientosHistoricosProductosdtf
 from apps.Modelos.Information_Inactivation import *
 
 # Django libraries
@@ -813,7 +813,7 @@ class clsListarCatalogoProductosViw(LoginRequiredMixin, ListView):
                         qrsCatalogoProductos.state = "IN"
                         qrsCatalogoProductos.save()
                     else:
-                        print(bolEvaluacion[1])
+                        print(type(bolEvaluacion[1][0]))
                 else:
                     qrsCatalogoProductos.state = "AC"
                     qrsCatalogoProductos.save()
@@ -2284,7 +2284,7 @@ class clsImportarCatalogoClientesViw(LoginRequiredMixin, TemplateView):
                                 commercial_advisor_id = i[14],
                                 pay_method = i[15],
                                 credit_days = int(i[16]),
-                                credit_value = float(i[17]),
+                                approved_amount = float(i[17]),
                                 )
                         jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
                         response = JsonResponse(jsnData, safe=False)
