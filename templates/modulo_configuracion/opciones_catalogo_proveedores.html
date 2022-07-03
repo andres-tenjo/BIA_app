@@ -4,6 +4,25 @@
 {% block title-header %}
 {% endblock title-header %}
 
+{% block menu-header %}
+    <li class="breadcrumb-item">
+      <a href="{{ create_url }}">
+          Crear Proveedor
+      </a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="{{ list_url }}">
+          Ver proveedores
+      </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#">
+            <i class="fas fa-question"></i>
+            Ver instructivo
+        </a>
+    </li>
+{% endblock menu-header %}
+
 {% block content-window %}
 
 <div class="accordion" id="accordionOne">
@@ -152,7 +171,7 @@
                     aria-expanded="true" 
                     aria-controls="collapseDescuento">
                     <i class="fas fa-angle-right"></i>
-                    Descuentos por producto:
+                    Descuentos por volumen:
                   </button>
                 </h2>
               </div>
@@ -443,7 +462,7 @@
                   id="estado_cantidad">
                   <option value="AC">Activo</option>
                   <option value="IN" selected>Inactivo</option>
-              </select>
+                </select>
               </div>
             </div>
           </div>
@@ -497,7 +516,8 @@
                 <label>Proveedor:</label>
                 <select 
                   type="text" 
-                  class="form-control buscar_proveedor"
+                  class="form-control"
+                  id="buscar_proveedor_descuento"
                   autocomplete="off">
                 </select>
               </div>  

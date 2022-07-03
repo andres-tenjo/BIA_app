@@ -86,6 +86,11 @@ dctListarClientes = {
                 $('input[name="category"]').val(data.customer_cat.customer_cat);
                 $('input[name="advisor"]').val(data.commercial_advisor.advisor);
                 $('input[name="pay_method"]').val(data.pay_method.name);
+                console.log(data.price_list);
+                if(data.price_list != null){
+                    $('#iptListaPrecios').prop('hidden', false);
+                    $('input[name="price_list"]').val(data.price_list.list_name);
+                }
                 if(data.pay_method.id == 'CR'){
                     $('#credDays').prop('hidden', false);
                     $('#credLimit').prop('hidden', false);

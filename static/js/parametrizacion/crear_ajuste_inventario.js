@@ -1,47 +1,3 @@
-// Cargar repo de productos
-function fncBuscarProductoRepo(repo) {
-    if (repo.loading) {
-        return repo.text;
-    }
-
-    var option = $(
-        '<div class="wrapper container">'+
-        '<div class="row">' +
-        '<div class="col-lg-12 text-left shadow-sm">' +
-        //'<br>' +
-        '<p style="margin-bottom: 0;">' +
-        '<b>Nombre:</b> ' + repo.product_desc + '<br>' +
-        '<b>Código:</b> ' + repo.id + '<br>' +
-        '<b>Precio:</b> <span class="badge badge-warning">$'+repo.cost_pu+'</span>'+
-        '</p>' +
-        '</div>' +
-        '</div>' +
-        '</div>');
-
-    return option;
-}
-
-// Cargar repo de bodegas
-function fncBuscarBodegaRepo(repo) {
-    if (repo.loading) {
-        return repo.text;
-    }
-
-    var option = $(
-        '<div class="wrapper container">'+
-        '<div class="row">' +
-        '<div class="col-lg-12 text-left shadow-sm">' +
-        '<p style="margin-bottom: 0;">' +
-        '<b>Bodega:</b> ' + repo.warehouse_name + '<br>' +
-        '<b>Responsable: </b>' + repo.contact_name + '<br>' +
-        '</p>' +
-        '</div>' +
-        '</div>' +
-        '</div>');
-
-    return option;
-}
-
 // Diccionario que almacena las funciones y variables de la ventana
 dctAjustesInventario = {
     
@@ -118,7 +74,7 @@ $(function () {
                 };
             },
         },
-        placeholder: 'Ingrese el nombre de la bodega o responsable',
+        placeholder: 'Ingrese el código, nombre o responsable de la bodega',
         minimumInputLength: 1,
         templateResult: fncBuscarBodegaRepo,
     }).on('select2:select', function (e) {
@@ -190,7 +146,12 @@ $(function () {
         const fltCostoTotalUnitario = document.getElementById('total_cost');
         dctAjustesInventario.dctVariables.strTipoAjusteId = strInputType.value;
         dctAjustesInventario.dctVariables.strTipoAjuste = strInputTypeId;
-        dctAjustesInventario.dctVariables.strLote = strInputLote.value;
+        if(strInputLote.value == ''){
+            dctAjustesInventario.dctVariables.strLote = '0';    
+        }
+        else{
+            dctAjustesInventario.dctVariables.strLote = strInputLote.value;
+        }
         dctAjustesInventario.dctVariables.datFechaVencimiento = datInputDatFechaVencimiento.value;
         dctAjustesInventario.dctVariables.intCantidad = intInputCantidad.value;
         var parameters = new FormData();

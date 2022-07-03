@@ -418,7 +418,7 @@ $(function () {
         }else if (strMetodoPago.value === 'CO'){
             var parameters = new FormData(this);
             fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function () {
-            location.href = '/configuracion/listar_clientes/';
+            location.href = '/configuracion/crear_cliente/';
         });
         }
     });

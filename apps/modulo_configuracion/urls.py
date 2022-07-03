@@ -94,9 +94,9 @@ urlpatterns = [
         ),
     # Carga masiva de lista de precios
     path(
-        'carga_masiva_listas_precios/', 
-        clsCargaMasivaListasPreciosViw.as_view(), 
-        name='carga_masiva_listas_precios'
+        'importar_lista_precios/', 
+        clsImportarListasPreciosViw.as_view(), 
+        name='importar_lista_precios'
         ),
     # Exportar plantilla lista de precios
     path(
@@ -116,6 +116,24 @@ urlpatterns = [
         clsVerListaPreciosViw.as_view(), 
         name='ver_lista_precios'
         ),
+    # Editar lista de precios
+    path(
+        'editar_lista_precios/<int:pk>/',
+        clsEditarListaPreciosViw.as_view(),
+        name='editar_lista_precios'
+        ),
+    # Exportar lista de precios
+    path(
+        'exportar_lista_excel/<int:pk>/',
+        clsExportarListaPreciosExcelViw.as_view(), 
+        name='exportar_lista_excel'
+        ),
+    # Exportar lista de precios
+    path(
+        'exportar_lista_pdf/<int:pk>/',
+        clsExportarListaPreciosPdfViw.as_view(), 
+        name='exportar_lista_pdf'
+        ),
 
     # Tiempos de entrega
     path(
@@ -134,6 +152,12 @@ urlpatterns = [
         'ver_tiempos_entrega/', 
         clsVerTiempoEntregaViw.as_view(), 
         name='ver_tiempos_entrega'
+        ),
+    # Editar tiempos de entrega
+    path(
+        'editar_tiempo_entrega/<int:pk>/', 
+        clsEditarTiempoEntregaViw.as_view(), 
+        name='editar_tiempo_entrega'
         ),
 
     # Catálogo de proveedores
@@ -303,10 +327,5 @@ urlpatterns = [
         name='crear_ajuste_inventario'
         ),
     
-    path(
-        'descargar_excel/',
-        clsExportarPlantillaPrueba.as_view(), 
-        name='descargar_excel'
-        ),
     ]
     

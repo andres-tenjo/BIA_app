@@ -127,3 +127,18 @@ VALIDARCANTIDAD = (
     ('IN', 'Incompleto'),
     ('SU', 'Superior')
     )
+
+ESTADOCLIENTE = (
+    ('PR', 'Prospecto'),
+    ('CL', 'Cliente'),
+    ('PE', 'Cliente perdido')
+    )
+
+OBJETIVOACTIVIDAD = (
+    ('SE', 'Seguimiento'),
+    ('CO', 'Cotización'),
+    ('PE', 'Pedido'),
+    ('GP', 'Gestión PQR'),
+    ('GC', 'Gestión cartera'),
+    ('OT', 'Otro')
+    )

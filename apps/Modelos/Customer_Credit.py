@@ -48,7 +48,6 @@ def fncClienteCreditotpl(intCodigoCliente):
         dtfFinal= dtfFinal.rename(columns= {'payday_limit': 'Fecha Límite Pago', 'days_past_due': 'Días Vencidos', 
         'Identificacion': 'Identificación', 'Nombre_Cliente': 'Nombre Cliente'}).drop(['amount'], axis= 1)
         return dtfFinal, fltCupoDisponible
-        
 
 # Construye un cuadro de datos que lista los clientes que tienen pendienten pagos por realizar, ordenandolos por días vencidos
 # Retorna el cuadro de datos con el listado de clientes con que adeudan (pandas.DataFrame)

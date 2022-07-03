@@ -7,13 +7,18 @@
 {% block menu-header %}
     <li class="breadcrumb-item">
         <a href="{{ create_url }}">
-            Crear ajuste de inventario
+            Crear lista de precios
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ list_url }}">
+            Ver lista de precios
         </a>
     </li>
     <li class="breadcrumb-item">
         <a href="#">
             <i class="fas fa-question"></i>
-            Ver instructivo
+            Instructivo
         </a>
     </li>
 {% endblock menu-header %}
@@ -32,7 +37,7 @@
                     aria-expanded="true" 
                     aria-controls="collapseOne">
                     <i class="fas fa-angle-right"></i>
-                    Plantilla para cargar ajustes de inventario
+                    Plantilla para cargar listas de precios
                 </button>
             </h2>
         </div>
@@ -45,10 +50,10 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="list-group">
-                            <a href="{% url 'configuracion:plantilla_ajustes_inventario' %}" 
+                            <a href="{% url 'configuracion:exportar_plantilla_lista_precios' %}"
                                 type="button"
-                                id="downloadTemplate"  
-                                class="list-group-item list-group-item-action" 
+                                id="downloadTemplate"
+                                class="list-group-item list-group-item-action"
                                 aria-current="true">
                                 <i class="fas fa-cloud-download-alt"></i>
                                 Descargar plantilla
@@ -72,7 +77,7 @@
                     aria-expanded="true" 
                     aria-controls="collapseTwo">
                     <i class="fas fa-angle-right"></i>
-                    Carga masiva de ajustes de inventario
+                    Carga masiva de listas de precios
                 </button>
             </h2>
         </div>
@@ -144,5 +149,5 @@
 </div>
 {% endblock content-window %}
 {% block js %}
-<script src="{% static 'js/parametrizacion/importar_ajustes_inventario.js' %}"></script>
+<script src="{% static 'js/parametrizacion/importar_listas_precios.js' %}"></script>
 {% endblock js %}

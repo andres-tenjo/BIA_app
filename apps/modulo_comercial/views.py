@@ -1,5 +1,6 @@
 # Python libraries
 import json
+import math
 import os
 from datetime import timedelta, datetime, date
 from pandas import pandas as pd
@@ -14,6 +15,7 @@ from reportlab.lib import colors
 from apps.Modelos.Several_func import *
 from apps.Modelos.Update_Balances import *
 from apps.Modelos.Parameters import *
+from apps.Modelos.Customer_Credit import *
 
 # Django libraries
 from django.conf import settings
@@ -31,7 +33,7 @@ from django.db.models import Q
 from django.template.loader import get_template
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView, FormView, View
 from django.urls import reverse_lazy
-#from weasyprint import HTML, CSS
+from weasyprint import HTML, CSS
 
 # BIA files
 from apps.mixins import ValidatePermissionRequiredMixin
@@ -109,335 +111,318 @@ class clsCrearPedidoViw(CreateView):
     template_name = 'modulo_comercial/crear_pedido.html'
     success_url = reverse_lazy('comercial:ver_pedidos')
 
-    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
-
-    def upd_cart_sta(self, bd):
-        date_today = date.today()
-        for i in bd:
-            if i.state == 'AC' and i.next_payment_date < date_today:
-                i.state = 'VE'
-                i.save()
-
-    def cartera(self, bd, credit_value):
-        l = None
-        cartera = bd.to_dataframe()
-        cartera = cartera.drop(['user_creation', 'date_creation', 'user_update', 'date_update','movement_type', 'credit_value', 'balance_credit_value'], axis=1)
-        if cartera[cartera['state'] == 'Vencida'].empty == False and cartera[cartera['state'] == 'Activa'].empty == False:
-            state = 'Vencida'
-            min_pay = float(cartera[cartera['state'] == 'Vencida']['balance_payment'].sum())
-            total_pay = float(cartera[cartera['state'] == 'Activa']['balance_payment'].sum()) + min_pay
-            msg = f'El cliente presenta una mora de $ {min_pay} con pago inmediato'
-            l = [state, credit_value, min_pay, total_pay, msg]
-        elif cartera[cartera['state'] == 'Vencida'].empty == False:
-            state = 'Vencida'
-            min_pay = float(cartera[cartera['state'] == 'Vencida']['balance_payment'].sum())
-            total_pay = float(cartera[cartera['state'] == 'Vencida']['balance_payment'].sum())
-            msg = f'El cliente presenta una mora de $ {min_pay} con pago inmediato'
-            l = [state, credit_value, min_pay, total_pay, msg]
-        elif cartera[cartera['state'] == 'Activa'].empty == False:
-            state = 'Activa'
-            min_pay = 0
-            total_pay = float(cartera[cartera['state'] == 'Activa']['balance_payment'].sum())
-            msg = f'El cliente tiene un cupo disponible de $ {credit_value} para compra de crédito'
-            l = [state, credit_value, min_pay, total_pay, msg]
-        return l
 
     def post(self,request, *args, **kwargs):
         data = {}
         try:
             action = request.POST['action']
-            if action == 'search_customer':
-                data = []
+            if action == 'slcBuscarClientejsn':
                 term = request.POST['term'].strip()
                 if len(term):
                     cust = clsCatalogoClientesMdl.objects.filter(
                         Q(identification__icontains=term) | 
                         Q(business_name__icontains=term) | 
                         Q(cel_number__icontains=term))[0:10]
-                for i in cust:
-                    item = i.toJSON()
-                    item['value'] = i.business_name
-                    data.append(item)
-            elif action == 'create_customer':
+                    data = [ i.fncDataClienteSlcjsn() for i in cust ]
+            elif action == 'slcEstadoCarteraClientejsn':
+                intIdCliente = int(request.POST['intIdCliente'])
+                tplClienteCredito = fncClienteCreditotpl(intIdCliente)
+                if type(tplClienteCredito[0]) == str:
+                    data['success'] = tplClienteCredito[0]
+                else:
+                    data['error'] = 'El cliente presenta pagos pendientes'
+                    data['intIdCliente'] = intIdCliente
+            elif action == 'frmCrearClientejsn':
                 with transaction.atomic():
                     frmCustomer = clsCrearClienteFrm(request.POST)
                     data = frmCustomer.save()
-            elif action == 'cartera_cliente':
-                data = {}
-                cartera =  CustomerDebt.objects.filter(customer_id=request.POST['id'])
-                credit_value = request.POST['credit_value']
-                self.upd_cart_sta(cartera)
-                if cartera:
-                    bd = cartera.exclude(state="CE")
-                    if bd:
-                        cart = self.cartera(bd, credit_value)
-                        data['cartera'] = cart
-                else:
-                    state = 'Activa'
-                    msg = f'El cliente tiene un cupo disponible de $ {credit_value} para compra de crédito'
-                    data['msg'] = msg
-                    data['credit_value'] = credit_value
-                    data['state'] = state
-            elif action == 'search_products':
+            elif action == 'slcBuscarProductojsn':
                 data = []
                 term = request.POST['term'].strip()
-                ids_exclude = json.loads(request.POST['ids'])
                 if len(term):
-                    prods = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=term) | Q(id__icontains=term))[0:10]
-                for i in prods:
-                    item = i.toJSON()
-                    item['value'] = i.product_desc
+                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(
+                        Q(product_desc__icontains=term) | 
+                        Q(id__icontains=term) |
+                        Q(state='AC'))[0:10]
+                for i in qrsCatalogoProductos:
+                    item = i.fncDataProductoPedidojsn()
                     data.append(item)
-            elif action == 'compare_quantity':
+            elif action == 'iptConsultarSaldo':
                 data = {}
-                orders = [ i.toJSON() for i in OrderPurchaseDetail.objects.filter(product_id=request.POST['id']) ]
-                if orders:
-                    data['prod_order'] = orders
+                intCodigoProducto = int(request.POST['intCodigoProducto'])
+                intCodigoBodega = int(request.POST['intCodigoBodega'])
+                qrsSaldoProducto = clsSaldosInventarioMdl.objects.filter(product_code=intCodigoProducto, store=intCodigoBodega)
+                if len(qrsSaldoProducto):
+                    data = [ i.fncDataSaldosProductojsn() for i in qrsSaldoProducto ]
                 else:
-                    date_today = date.today()
-                    del_days = date_today + timedelta(days=4)
-                    data['del_days'] = del_days.strftime("%Y-%m-%d")
-            elif action == 'helper_table':
-                data = {}
-                catalogo = clsCatalogoProductosMdl.objects.all()
-                catalogo = catalogo.to_dataframe()
-                pedidos = clsDetallePedidosMdl.objects.filter(state='CU')
-                cust_base = pedidos.filter(customer_id=request.POST['id_cust'])
-                cust_base = cust_base.to_dataframe()
-                cat_base = pedidos.filter(city=request.POST['city'], category_cust=request.POST['category_cust'])
-                cat_base = cat_base.to_dataframe()
-                gen_base = pedidos.to_dataframe()
-                added = json.loads(request.POST['ids'])
-
-                def unique_order(df):
-                    item_count= df.drop(columns= ['Unnamed: 0', 'order', 'Fecha', 'Estado movto.', 'Bodega',
-                                                    'Cant. pedida', 'Cant. pendiente', 'Cant. comprom.', 'Cant. remision',
-                                                    'Cant. factura', 'Razón social cliente factura',
-                                                    'Desc. ciudad', 'Nombre vendedor cliente', 'DIVISION', 'Fecha entrega',
-                                                    'Precio unit.', 'Mes', 'Valor total', 'Semana'])
-                    item_probability= item_count.assign(Prob= 100)
-                    return item_probability
-
-                def prob_new_bases(df1, df2, var, filt):
-                    if filt== 'subcategory':
-                        df1= df1.merge(df2, on= 'product', how= 'left')\
-                            .drop(columns= ['Fecha creación', 'Referencia', 'Ubicación', 'Desc. item_y', 'LINEA',  
-                                            'Compra', 'Venta', 'Cant. disponible', 'Ultimo costo uni.', 'IVA',     
-                                            'Costo prom. uni.', 'Código barra principal', 'Fecha última compra',   
-                                            'Fecha última venta', 'TIPO DE PRODUCTO', 'category'])
-                    else:
-                        df1= df1.merge(df2, on= 'product', how= 'left')\
-                            .drop(columns= ['Fecha creación', 'Referencia', 'Ubicación', 'Desc. item_y', 'LINEA',  
-                                            'Compra', 'Venta', 'Cant. disponible', 'Ultimo costo uni.', 'IVA',     
-                                            'Costo prom. uni.', 'Código barra principal', 'Fecha última compra',   
-                                            'Fecha última venta', 'TIPO DE PRODUCTO', 'subcategory'])
-                    df1.rename(columns= {'Desc. item_x': 'Desc. item'}, inplace= True)
-                    new_a= df1[df1[filt]== var]
-                    return calculated_probability(new_a, new_a)
-
-                def calculated_probability(df1, df2):    
-                    item_count= df1.groupby(['product', 'Desc. item'])['order'].count().reset_index()\
-                        .sort_values(by= 'order', ascending= False)
-                    item_probability= item_count.assign(Prob= item_count['order']/ df2['order']\
-                        .nunique()* 100)
-                    item_probability.drop(columns= ['order'], inplace= True)
-                    return item_probability
-
-                def prob_per_item(df1, df2, l):
-                    base_item_probability= None
-                    complete_orders= [df2[df2['order']== i] for i in df1['order']]
-                    if len(complete_orders)== 1:        
-                        complete_orders= complete_orders[0]
-                        item_probability= unique_order(complete_orders)
-                    elif len(complete_orders)> 1:
-                        complete_orders= pd.concat(complete_orders)
-                        item_probability= calculated_probability(complete_orders, df1)
-                    return item_probability
-
-                def two_bases_concatenated(df1, df2, l):
-                    item_probability= pd.concat([df1, df2])
-                    item_probability.drop_duplicates(subset= 'product', keep= 'first', inplace= True)
-                    item_probability= [item_probability[item_probability['product']== i] for i in \
-                        item_probability['product'] if i not in l]
-                    return item_probability
-
-                def prob_list(l):
-                    var= None
-                    if len(l)== 1:
-                        var= l[0]
-                    elif len(l)> 1:
-                        var= pd.concat(l)
-                        var.sort_values(by= 'Prob', ascending= False, inplace= True)
-                    return var
-
-                def actualized_bases(df, l):
-                    orders_numbers= df[df['product']== l[0]]
-                    filter_recursion= [df[df['order']== i] for i in orders_numbers['order']]
-                    if len(filter_recursion)== 1:
-                        filter_recursion= filter_recursion[0]
-                    elif len(filter_recursion)> 1:
-                        filter_recursion= pd.concat(filter_recursion)
-                    return filter_recursion
-
-                def filter_results(df1, df2):
-                    new_a= [df1[df1['product']== i] for i in df1['product'] if i not in df2]
-                    return prob_list(new_a)
-
-                def new_bases(l1, df, l2, added):
-                    new_a= None
-                    n= 0
-                    var= df[df['product']== l1[0]]    
-                    var= var.iloc[0]['subcategory']
-                    if var== '':
-                        var= df[df['product']== l1[0]]
-                        var= var['category']
-                        if var== '':
-                            new_a= calculated_probability(l2[2], l2[2])
-                            return filter_results(new_a, added)
-                        else:
-                            filt= 'category'
-                            new_a= prob_new_bases(l2[0], df, var, filt)
-                            new_a= filter_results(new_a, added)
-                            if new_a is not None:
-                                return new_a
-                            else:
-                                n+= 1
-                                return new_bases(l1, df, l2[n: ], added)
-                    else:
-                        filt= 'subcategory'
-                        new_a= prob_new_bases(l2[0], df, var, filt)
-                        new_a= filter_results(new_a, added)
-                        if new_a is not None:
-                            return new_a
-                        else:
-                            n+= 1
-                            return new_bases(l1, df, l2[n: ], added)    
-                    
-                def validated_bases(l1, l2, df, memo= None):
-                    memo= memo
-                    item_probability= None
-                    n= 0
-                    if len(l1)== 1:
-                        if len(l1[0])!= 0:
-                            orders_numbers= l1[0][l1[0]['product']== l2[0]]
-                            if len(orders_numbers['order'])>= 1:
-                                item_probability= prob_per_item(orders_numbers, l1[0], added)
-                                item_probability= pd.concat([item_probability, memo])
-                                item_probability.drop_duplicates(subset= 'product', keep= 'first', inplace= True)
-                                if df is not None:
-                                    item_probability= two_bases_concatenated(item_probability, df, added)
-                                    item_probability= prob_list(item_probability)
-                            else:
-                                item_probability= two_bases_concatenated(df, memo, added)
-                                item_probability= prob_list(item_probability)
-                        else:
-                            if df is not None:
-                                if memo is not None:
-                                    item_probability= two_bases_concatenated(df, memo, added)
-                                    item_probability= prob_list(item_probability)
-                                else:
-                                    item_probability= df
-                        return item_probability
-                    elif len(l1)> 1:
-                        n-= 1
-                        base_orders_numbers= l1[1][l1[1]['product']== l2[0]]
-                        if len(base_orders_numbers['order'])>= 1:
-                            memo= prob_per_item(base_orders_numbers, l1[1], added)            
-                        return validated_bases(l1[: n], l2, df, memo)
-
-                def helper(rec_added, recursion, added, cust_base, cat_base, gen_base, memo= None):    
-                    added= added
-                    cust_base= cust_base
-                    cat_base= cat_base
-                    gen_base= gen_base
-                    memo= memo
-                    item_probability, filter_recursion= None, None
-                    n= 0
-                    if len(rec_added)== 1:
-                        item_probability= validated_bases([recursion, cust_base], rec_added, memo)
-                        if item_probability is not None:
-                            item_probability= filter_results(item_probability, added)
-                            if item_probability is not None:
-                                return item_probability
-                            else:
-                                new_a= new_bases(rec_added, catalogo, [cust_base, cat_base, gen_base], added)
-                                return filter_results(new_a, added)
-                        else:
-                            item_probability= new_bases(rec_added, catalogo, [cust_base, cat_base, gen_base], added)
-                            return item_probability
-                    else:
-                        n+= 1
-                        if len(recursion)== 0:
-                            filter_recursion= actualized_bases(cust_base, rec_added)
-                        else:
-                            filter_recursion= actualized_bases(recursion, rec_added)
-                        memo= validated_bases([recursion, cust_base], rec_added, memo)
-                        return helper(rec_added[n: ], filter_recursion, added, cust_base, cat_base, gen_base, memo)
-                
-                x= helper(added, cust_base, added, cust_base, cat_base, gen_base)
-
-            elif action == 'lost_sales':
-                return
-                # lost_sale = request.POST
-                # lost_sale_bd = clsVentasPerdidasMdl()
-                # lost_sale_bd.date = lost_sale['date']
-                # lost_sale_bd.customer_id = lost_sale['id_cust']
-                # lost_sale_bd.product_id = lost_sale['id_prod']
-                # lost_sale_bd.cant = lost_sale['cant']
-                # lost_sale_bd.save()
-            elif action == 'add':
+                    data['error'] = 'El producto no tiene inventario disponible'
+            elif action == 'slcListaPreciosDetallejsn':
+                intIdListaPrecios = int(request.POST['intIdListaPrecios'])
+                qrsListaPreciosDetalle = clsDetalleListaPreciosMdl.objects.filter(doc_number_id=intIdListaPrecios)
+                if len(qrsListaPreciosDetalle):
+                    data['qrsListaPreciosDetalle'] = [ i.fncDetalleListajsn() for i in qrsListaPreciosDetalle ]
+                else:
+                    data['error'] = 'No hay productos agregados en la lista de precios'
+            elif action == 'iptValidarOrdenesComprajsn':
+                qrsOrdenesCompraDetalle = [ i.fncDetalleOrdenComprajsn() for i in clsDetalleOrdenesCompraMdl.objects.filter(
+                    product_code=request.POST['intCodigoProducto']
+                    )]
+                if qrsOrdenesCompraDetalle:
+                    data['qrsOrdenesCompraDetalle'] = qrsOrdenesCompraDetalle
+                else:
+                    datHoy = date.today()
+                    datTiempoEntrega = datHoy + timedelta(days=4)
+                    data['datTiempoEntrega'] = datTiempoEntrega.strftime("%Y-%m-%d")
+            elif action == 'iptValidarTiempoEntregajsn':
+                datHoy = date.today()
+                qrsTiemposEntrega = clsTiemposEntregaMdl.objects.filter(
+                    city=request.POST['intCodigoCiudad'],
+                    customer_zone=request.POST['intCodigoZona'],
+                    warehouse=request.POST['intCodigoBodega']
+                )
+                if len(qrsTiemposEntrega == 1):
+                    for i in qrsTiemposEntrega:
+                        intTotalDias = math.ceil(i.total_time)
+                    datTiempoEntrega = datHoy + timedelta(days=intTotalDias)
+                    data['qrsTiemposEntrega'] = datTiempoEntrega.strftime("%Y-%m-%d")
+                else:
+                    datTiempoEntrega = datHoy + timedelta(days=4)
+                    data['datTiempoEntrega'] = datTiempoEntrega.strftime("%Y-%m-%d")
+            elif action == 'btnVentasPerdidasjsn':
                 with transaction.atomic():
-                    sales = json.loads(request.POST['sales'])
-                    orders = clsPedidosMdl()
-                    orders.customer_id = sales['customer']
-                    orders.order_date = sales['order_date']
-                    orders.pay_method = sales['pay_method']
-                    orders.deliver_date = sales['deliver_date']
-                    orders.order_address = sales['order_address']
-                    orders.obs = sales['observation']
-                    orders.subtotal = float(sales['subtotal'])
-                    orders.iva = float(sales['iva'])
-                    orders.dcto = float(sales['dcto'])
-                    orders.total = float(sales['total'])
-                    orders.save()
-                    if orders.pay_method == 'CR':
-                        cartera = CustomerDebt()
-                        cartera.customer_id = sales['customer']
-                        cartera.order_id = orders.id
-                        cartera.order_value = float(sales['total'])
-                        
-                        # Vairables para cartera
-                        cartera.term = float(sales['total'])
-                        cartera.next_payment_date = float(sales['total'])
-                        cartera.next_payment_value = float(sales['total'])
-                        cartera.balance_payment = float(sales['total'])
-                        cartera.credit_value = float(sales['total'])
-                        cartera.balance_credit_value = float(sales['total'])
+                    jsnParametros = request.POST
+                    clsVentasPerdidasMdl.objects.create(
+                    date = datetime.today(),
+                    identification_id = int(jsnParametros['identification']),
+                    product_code_id = int(jsnParametros['product_code']),
+                    quantity = int(jsnParametros['quantity'])
+                    )
+            elif action == 'btnGuardarPedidojsn':
+                with transaction.atomic():
+                    dctRequestForm = request.POST
+                    lstDetalleListaPrecios = json.loads(request.POST['lstDetalleListaPrecios'])
+                    qrsPedido = clsPedidosMdl()
+                    qrsPedido.identification_id = int(dctRequestForm['identification'])
+                    qrsPedido.city_id = int(dctRequestForm['city'])
+                    qrsPedido.customer_zone_id = int(dctRequestForm['customer_zone'])
+                    qrsPedido.delivery_address = int(dctRequestForm['delivery_address'])
+                    qrsPedido.delivery_date = datetime.strptime(dctRequestForm['delivery_date'], '%Y-%m-%d').date()
+                    qrsPedido.subtotal = float(dctRequestForm['subtotal'][2:])
+                    if dctRequestForm['iva'] != '':
+                        qrsPedido.iva = float(dctRequestForm['iva'][2:])
+                    else:
+                        qrsPedido.iva = 0
+                    if dctRequestForm['discount'] != '':
+                        qrsPedido.discount = float(dctRequestForm['discount'][2:])
+                    else:
+                        qrsPedido.discount = 0
+                    qrsPedido.total = float(dctRequestForm['total'][2:])
+                    qrsPedido.observations = dctRequestForm['observations']
+                    qrsPedido.store_id = int(dctRequestForm['store'])
+                    qrsPedido.save()
+                    for i in lstDetalleListaPrecios:
+                        qrsDetallePedido = clsDetallePedidosMdl()
+                        qrsDetallePedido.doc_number_id = qrsPedido.id
+                        qrsDetallePedido.product_code_id = i['product_code']
+                        qrsDetallePedido.quantity = int(i['quantity'])
+                        qrsDetallePedido.unit_price = float(i['unit_price'])
+                        qrsDetallePedido.subtotal = float(i['subtotal'])
+                        qrsDetallePedido.iva = float(i['iva'])
+                        qrsDetallePedido.total = float(i['total'])
+                        qrsDetallePedido.save()
+                    data = {'id': qrsPedido.id}
+            # elif action == 'helper_table':
+            #     data = {}
+            #     catalogo = clsCatalogoProductosMdl.objects.all()
+            #     catalogo = catalogo.to_dataframe()
+            #     pedidos = clsDetallePedidosMdl.objects.filter(state='CU')
+            #     cust_base = pedidos.filter(customer_id=request.POST['id_cust'])
+            #     cust_base = cust_base.to_dataframe()
+            #     cat_base = pedidos.filter(city=request.POST['city'], category_cust=request.POST['category_cust'])
+            #     cat_base = cat_base.to_dataframe()
+            #     gen_base = pedidos.to_dataframe()
+            #     added = json.loads(request.POST['ids'])
 
-                    for i in sales['products']:
-                        order_prods = clsDetallePedidosMdl()
-                        order_prods.order_id = orders.id
-                        order_prods.customer_id = sales['customer']
-                        order_prods.category_cust = sales['category_cust']
-                        order_prods.city = sales['order_city']
-                        order_prods.product_id = i['id']
-                        order_prods.cant = int(i['cant'])
-                        order_prods.sale_price = float(i['price_udv'])
-                        order_prods.subtotal = float(i['subtotal'])
-                        order_prods.iva = float(i['iva'])
-                        order_prods.dcto = float(i['desc'])
-                        order_prods.total = float(i['total'])
-                        order_prods.save()
-                    data = {'id': orders.id}
+            #     def unique_order(df):
+            #         item_count= df.drop(columns= ['Unnamed: 0', 'order', 'Fecha', 'Estado movto.', 'Bodega',
+            #                                         'Cant. pedida', 'Cant. pendiente', 'Cant. comprom.', 'Cant. remision',
+            #                                         'Cant. factura', 'Razón social cliente factura',
+            #                                         'Desc. ciudad', 'Nombre vendedor cliente', 'DIVISION', 'Fecha entrega',
+            #                                         'Precio unit.', 'Mes', 'Valor total', 'Semana'])
+            #         item_probability= item_count.assign(Prob= 100)
+            #         return item_probability
+
+            #     def prob_new_bases(df1, df2, var, filt):
+            #         if filt== 'subcategory':
+            #             df1= df1.merge(df2, on= 'product', how= 'left')\
+            #                 .drop(columns= ['Fecha creación', 'Referencia', 'Ubicación', 'Desc. item_y', 'LINEA',  
+            #                                 'Compra', 'Venta', 'Cant. disponible', 'Ultimo costo uni.', 'IVA',     
+            #                                 'Costo prom. uni.', 'Código barra principal', 'Fecha última compra',   
+            #                                 'Fecha última venta', 'TIPO DE PRODUCTO', 'category'])
+            #         else:
+            #             df1= df1.merge(df2, on= 'product', how= 'left')\
+            #                 .drop(columns= ['Fecha creación', 'Referencia', 'Ubicación', 'Desc. item_y', 'LINEA',  
+            #                                 'Compra', 'Venta', 'Cant. disponible', 'Ultimo costo uni.', 'IVA',     
+            #                                 'Costo prom. uni.', 'Código barra principal', 'Fecha última compra',   
+            #                                 'Fecha última venta', 'TIPO DE PRODUCTO', 'subcategory'])
+            #         df1.rename(columns= {'Desc. item_x': 'Desc. item'}, inplace= True)
+            #         new_a= df1[df1[filt]== var]
+            #         return calculated_probability(new_a, new_a)
+
+            #     def calculated_probability(df1, df2):    
+            #         item_count= df1.groupby(['product', 'Desc. item'])['order'].count().reset_index()\
+            #             .sort_values(by= 'order', ascending= False)
+            #         item_probability= item_count.assign(Prob= item_count['order']/ df2['order']\
+            #             .nunique()* 100)
+            #         item_probability.drop(columns= ['order'], inplace= True)
+            #         return item_probability
+
+            #     def prob_per_item(df1, df2, l):
+            #         base_item_probability= None
+            #         complete_orders= [df2[df2['order']== i] for i in df1['order']]
+            #         if len(complete_orders)== 1:        
+            #             complete_orders= complete_orders[0]
+            #             item_probability= unique_order(complete_orders)
+            #         elif len(complete_orders)> 1:
+            #             complete_orders= pd.concat(complete_orders)
+            #             item_probability= calculated_probability(complete_orders, df1)
+            #         return item_probability
+
+            #     def two_bases_concatenated(df1, df2, l):
+            #         item_probability= pd.concat([df1, df2])
+            #         item_probability.drop_duplicates(subset= 'product', keep= 'first', inplace= True)
+            #         item_probability= [item_probability[item_probability['product']== i] for i in \
+            #             item_probability['product'] if i not in l]
+            #         return item_probability
+
+            #     def prob_list(l):
+            #         var= None
+            #         if len(l)== 1:
+            #             var= l[0]
+            #         elif len(l)> 1:
+            #             var= pd.concat(l)
+            #             var.sort_values(by= 'Prob', ascending= False, inplace= True)
+            #         return var
+
+            #     def actualized_bases(df, l):
+            #         orders_numbers= df[df['product']== l[0]]
+            #         filter_recursion= [df[df['order']== i] for i in orders_numbers['order']]
+            #         if len(filter_recursion)== 1:
+            #             filter_recursion= filter_recursion[0]
+            #         elif len(filter_recursion)> 1:
+            #             filter_recursion= pd.concat(filter_recursion)
+            #         return filter_recursion
+
+            #     def filter_results(df1, df2):
+            #         new_a= [df1[df1['product']== i] for i in df1['product'] if i not in df2]
+            #         return prob_list(new_a)
+
+            #     def new_bases(l1, df, l2, added):
+            #         new_a= None
+            #         n= 0
+            #         var= df[df['product']== l1[0]]    
+            #         var= var.iloc[0]['subcategory']
+            #         if var== '':
+            #             var= df[df['product']== l1[0]]
+            #             var= var['category']
+            #             if var== '':
+            #                 new_a= calculated_probability(l2[2], l2[2])
+            #                 return filter_results(new_a, added)
+            #             else:
+            #                 filt= 'category'
+            #                 new_a= prob_new_bases(l2[0], df, var, filt)
+            #                 new_a= filter_results(new_a, added)
+            #                 if new_a is not None:
+            #                     return new_a
+            #                 else:
+            #                     n+= 1
+            #                     return new_bases(l1, df, l2[n: ], added)
+            #         else:
+            #             filt= 'subcategory'
+            #             new_a= prob_new_bases(l2[0], df, var, filt)
+            #             new_a= filter_results(new_a, added)
+            #             if new_a is not None:
+            #                 return new_a
+            #             else:
+            #                 n+= 1
+            #                 return new_bases(l1, df, l2[n: ], added)    
+                    
+            #     def validated_bases(l1, l2, df, memo= None):
+            #         memo= memo
+            #         item_probability= None
+            #         n= 0
+            #         if len(l1)== 1:
+            #             if len(l1[0])!= 0:
+            #                 orders_numbers= l1[0][l1[0]['product']== l2[0]]
+            #                 if len(orders_numbers['order'])>= 1:
+            #                     item_probability= prob_per_item(orders_numbers, l1[0], added)
+            #                     item_probability= pd.concat([item_probability, memo])
+            #                     item_probability.drop_duplicates(subset= 'product', keep= 'first', inplace= True)
+            #                     if df is not None:
+            #                         item_probability= two_bases_concatenated(item_probability, df, added)
+            #                         item_probability= prob_list(item_probability)
+            #                 else:
+            #                     item_probability= two_bases_concatenated(df, memo, added)
+            #                     item_probability= prob_list(item_probability)
+            #             else:
+            #                 if df is not None:
+            #                     if memo is not None:
+            #                         item_probability= two_bases_concatenated(df, memo, added)
+            #                         item_probability= prob_list(item_probability)
+            #                     else:
+            #                         item_probability= df
+            #             return item_probability
+            #         elif len(l1)> 1:
+            #             n-= 1
+            #             base_orders_numbers= l1[1][l1[1]['product']== l2[0]]
+            #             if len(base_orders_numbers['order'])>= 1:
+            #                 memo= prob_per_item(base_orders_numbers, l1[1], added)            
+            #             return validated_bases(l1[: n], l2, df, memo)
+
+            #     def helper(rec_added, recursion, added, cust_base, cat_base, gen_base, memo= None):    
+            #         added= added
+            #         cust_base= cust_base
+            #         cat_base= cat_base
+            #         gen_base= gen_base
+            #         memo= memo
+            #         item_probability, filter_recursion= None, None
+            #         n= 0
+            #         if len(rec_added)== 1:
+            #             item_probability= validated_bases([recursion, cust_base], rec_added, memo)
+            #             if item_probability is not None:
+            #                 item_probability= filter_results(item_probability, added)
+            #                 if item_probability is not None:
+            #                     return item_probability
+            #                 else:
+            #                     new_a= new_bases(rec_added, catalogo, [cust_base, cat_base, gen_base], added)
+            #                     return filter_results(new_a, added)
+            #             else:
+            #                 item_probability= new_bases(rec_added, catalogo, [cust_base, cat_base, gen_base], added)
+            #                 return item_probability
+            #         else:
+            #             n+= 1
+            #             if len(recursion)== 0:
+            #                 filter_recursion= actualized_bases(cust_base, rec_added)
+            #             else:
+            #                 filter_recursion= actualized_bases(recursion, rec_added)
+            #             memo= validated_bases([recursion, cust_base], rec_added, memo)
+            #             return helper(rec_added[n: ], filter_recursion, added, cust_base, cat_base, gen_base, memo)
+                
+            #     x= helper(added, cust_base, added, cust_base, cat_base, gen_base)
+            
+            
         except Exception as e:
             data['error'] = str(e)
         return JsonResponse(data, safe=False)
         
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['title'] = 'Crear Pedido'
+        context['frmDetallePedido'] = clsCrearPedidoDetalleFrm()
         context['frmCust'] = clsCrearClienteFrm()
+        context['frmDetalleLista'] = clsCrearListaPreciosDetalleFrm()
         context['list_url'] = self.success_url
         context['action'] = 'add'
         return context
@@ -447,56 +432,55 @@ class clsVerPedidosViw(ListView):
     model = clsPedidosMdl
     template_name = 'modulo_comercial/ver_pedidos.html'
 
-    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        data = {}
+        jsnData = {}
         try:
             action = request.POST['action']
-            if action == 'searchdata':
-                data = []
-                for i in clsPedidosMdl.objects.all():
-                    data.append(i.toJSON())
-            elif action == 'search_details_prod':
-                data = []
-                for i in clsDetallePedidosMdl.objects.filter(order_id=request.POST['id']):
-                    data.append(i.toJSON())
+            if action == 'tblPedidojsn':
+                jsnData = []
+                qrsPedidos = clsPedidosMdl.objects.all()
+                if qrsPedidos:
+                    for i in qrsPedidos:
+                        jsnData.append(i.fncDataPedidosjsn())
+            elif action == 'tblDetallePedidojsn':
+                jsnData = []
+                qrsDetallePedido = clsDetallePedidosMdl.objects.filter(doc_number_id=int(request.POST['id']))
+                if qrsDetallePedido:
+                    for i in qrsDetallePedido:
+                        jsnData.append(i.fncDataDetallePedidojsn())
             else:
-                data['error'] = 'Ha ocurrido un error'
+                jsnData['error'] = 'Ha ocurrido un error'
         except Exception as e:
-            data['error'] = str(e)
-        return JsonResponse(data, safe=False)
+            jsnData['error'] = str(e)
+        return JsonResponse(jsnData, safe=False)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title_table'] = 'Tabla de pedidos'
+        context['create_url'] = reverse_lazy('comercial:crear_pedido')
         return context
 
 ''' 2.4 Vista para imprimir pedido pdf'''
-class clsImprimirPedidoPdfViw(View):
+class clsExportarPedidoPdfViw(View):
 
     def get(self, request, *args, **kwargs):
         try:
-            template = get_template('modulo_comercial/invoice.html')
+            template = get_template('modulo_comercial/exportar_pedido_pdf.html')
+            lstQuerysetPerfilEmpresa = [ i.fncRetornarConsultaDocumentosjsn() for i in clsPerfilEmpresaMdl.objects.all() ]
             context = {
-                'sale': clsPedidosMdl.objects.get(pk=self.kwargs['pk']),
-                'comp': {'name': 'CONVERGENCIA SOLUCIONES S.A.S', 'NIT': '900817889-2', 'address': 'Calle 158 # 96a 25'},
-                'icon': '{}{}'.format(settings.STATIC_URL, 'img/home/logo.png')
+                'qrsPedido': clsPedidosMdl.objects.get(pk=self.kwargs['pk']),
+                'qrsPerfilEmpresa': lstQuerysetPerfilEmpresa[0]
             }
-            print(context)
             html = template.render(context)
             css_url = os.path.join(settings.BASE_DIR, 'static/lib/bootstrap-4.5.3-dist/css/bootstrap.min.css')
-            print(css_url)
             pdf = HTML(string=html, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(css_url)])
             return HttpResponse(pdf, content_type='application/pdf')
         except:
             pass
-        return HttpResponseRedirect(reverse_lazy('comercial:ver_pedidos'))
-
-''' 2.5 Vista para exportar pedido excel'''
-
+        return HttpResponseRedirect(reverse_lazy('configuracion:ver_lista_precios'))
 
 #################################################################################################
 # 3. COTIZACIONES
@@ -515,12 +499,11 @@ class clsMenuCotizacionesViw(LoginRequiredMixin, TemplateView):
 
 ''' 3.2 Vista para crear cotización'''
 class clsCrearCotizacionViw(CreateView):
-    # model = Quotes
-    # form_class = QuoteForm
+    model = clsCotizacionesMdl
+    form_class = clsCotizacionComercialFrm
     template_name = 'modulo_comercial/crear_cotizacion.html'
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy('comercial:ver_cotizaciones')
 
-    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
@@ -528,69 +511,117 @@ class clsCrearCotizacionViw(CreateView):
         data = {}
         try:
             action = request.POST['action']
-            if action == 'search_customer':
-                data = []
+            if action == 'slcBuscarClientejsn':
                 term = request.POST['term'].strip()
                 if len(term):
                     cust = clsCatalogoClientesMdl.objects.filter(
                         Q(identification__icontains=term) | 
                         Q(business_name__icontains=term) | 
                         Q(cel_number__icontains=term))[0:10]
-                for i in cust:
-                    item = i.toJSON()
-                    item['value'] = i.business_name
-                    data.append(item)
-            elif action == 'create_customer':
+                    data = [ i.fncDataClienteCotizacionSlcjsn() for i in cust ]
+            elif action == 'slcEstadoCarteraClientejsn':
+                intIdCliente = int(request.POST['intIdCliente'])
+                tplClienteCredito = fncClienteCreditotpl(intIdCliente)
+                if type(tplClienteCredito[0]) == str:
+                    data['success'] = tplClienteCredito[0]
+                else:
+                    data['error'] = 'El cliente presenta pagos pendientes'
+                    data['intIdCliente'] = intIdCliente
+            elif action == 'frmCrearClientejsn':
                 with transaction.atomic():
                     frmCustomer = clsCrearClienteFrm(request.POST)
                     data = frmCustomer.save()
-            elif action == 'search_products':
+            elif action == 'slcBuscarProductojsn':
                 data = []
                 term = request.POST['term'].strip()
-                ids_exclude = json.loads(request.POST['ids'])
-                
                 if len(term):
-                    prods = clsCatalogoProductosMdl.objects.filter(Q(product_desc__icontains=term) | Q(id__icontains=term))[0:10]
-                for i in prods:
-                    item = i.toJSON()
-                    item['value'] = i.product_desc
+                    qrsCatalogoProductos = clsCatalogoProductosMdl.objects.filter(
+                        Q(product_desc__icontains=term) | 
+                        Q(id__icontains=term) |
+                        Q(state='AC'))[0:10]
+                for i in qrsCatalogoProductos:
+                    item = i.fncDataProductoPedidojsn()
                     data.append(item)
-            elif action == 'add':
+            elif action == 'iptConsultarSaldo':
+                data = {}
+                intCodigoProducto = int(request.POST['intCodigoProducto'])
+                qrsSaldoProducto = clsSaldosInventarioMdl.objects.filter(product_code=intCodigoProducto)
+                if len(qrsSaldoProducto):
+                    data = [ i.fncDataSaldosProductojsn() for i in qrsSaldoProducto ]
+                else:
+                    data['error'] = 'El producto no tiene inventario disponible'
+            elif action == 'slcListaPreciosDetallejsn':
+                intIdListaPrecios = int(request.POST['intIdListaPrecios'])
+                qrsListaPreciosDetalle = clsDetalleListaPreciosMdl.objects.filter(doc_number_id=intIdListaPrecios)
+                if len(qrsListaPreciosDetalle):
+                    data = [ i.fncDetalleListajsn() for i in qrsListaPreciosDetalle ]
+                else:
+                      data['error'] = 'El producto no tiene inventario disponible'
+            elif action == 'iptValidarOrdenesComprajsn':
+                qrsOrdenesCompraDetalle = [ i.fncDetalleOrdenComprajsn() for i in clsDetalleOrdenesCompraMdl.objects.filter(
+                    product_code=request.POST['intCodigoProducto']
+                    )]
+                if qrsOrdenesCompraDetalle:
+                    data['qrsOrdenesCompraDetalle'] = qrsOrdenesCompraDetalle
+                else:
+                    datHoy = date.today()
+                    datTiempoEntrega = datHoy + timedelta(days=4)
+                    data['datTiempoEntrega'] = datTiempoEntrega.strftime("%Y-%m-%d")
+            elif action == 'btnVentasPerdidasjsn':
                 with transaction.atomic():
-                    sales = json.loads(request.POST['sales'])
-                    quotes = Quotes()
-                    quotes.doc = sales['doc']
-                    quotes.customer_id = sales['customer']
-                    quotes.order_date = sales['order_date']
-                    quotes.deliver_date = sales['deliver_date']
-                    quotes.subtotal = float(sales['subtotal'])
-                    quotes.iva = float(sales['iva'])
-                    quotes.dcto = float(sales['dcto'])
-                    quotes.total = float(sales['total'])
-                    quotes.save()
-                    for i in sales['products']:
-                        quotes_prods = QuotesDetail()
-                        quotes_prods.order_id = quotes.id
-                        quotes_prods.product_id = i['id']
-                        quotes_prods.cant = int(i['cant'])
-                        quotes_prods.sale_price = float(i['unit_price'])
-                        quotes_prods.save()
-            else:
-                data['error'] = form.errors
+                    jsnParametros = request.POST
+                    clsVentasPerdidasMdl.objects.create(
+                    date = datetime.today(),
+                    identification_id = int(jsnParametros['identification']),
+                    product_code_id = int(jsnParametros['product_code']),
+                    quantity = int(jsnParametros['quantity'])
+                    )
+            elif action == 'btnGuardarPedidojsn':
+                with transaction.atomic():
+                    dctRequestForm = request.POST
+                    lstDetalleListaPrecios = json.loads(request.POST['lstDetalleListaPrecios'])
+                    qrsPedido = clsPedidosMdl()
+                    qrsPedido.identification_id = int(dctRequestForm['identification'])
+                    qrsPedido.delivery_date = datetime.strptime(dctRequestForm['delivery_date'], '%Y-%m-%d').date()
+                    qrsPedido.subtotal = float(dctRequestForm['subtotal'][2:])
+                    if dctRequestForm['iva'] != '':
+                        qrsPedido.iva = float(dctRequestForm['iva'][2:])
+                    else:
+                        qrsPedido.iva = 0
+                    if dctRequestForm['discount'] != '':
+                        qrsPedido.discount = float(dctRequestForm['discount'][2:])
+                    else:
+                        qrsPedido.discount = 0
+                    qrsPedido.total = float(dctRequestForm['total'][2:])
+                    qrsPedido.observations = dctRequestForm['observations']
+                    qrsPedido.store_id = int(dctRequestForm['store'])
+                    qrsPedido.save()
+                    for i in lstDetalleListaPrecios:
+                        qrsDetallePedido = clsDetallePedidosMdl()
+                        qrsDetallePedido.doc_number_id = qrsPedido.id
+                        qrsDetallePedido.product_code_id = i['product_code']
+                        qrsDetallePedido.quantity = int(i['quantity'])
+                        qrsDetallePedido.unit_price = float(i['unit_price'])
+                        qrsDetallePedido.subtotal = float(i['subtotal'])
+                        qrsDetallePedido.iva = float(i['iva'])
+                        qrsDetallePedido.total = float(i['total'])
+                        qrsDetallePedido.save()
+                    data = {'id': qrsPedido.id}
         except Exception as e:
             data['error'] = str(e)
         return JsonResponse(data, safe=False)
-    
+        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['list_url'] = reverse_lazy('comercial:ver_cotizaciones')
+        context['title'] = 'Crear cotización'
+        context['frmDetalleCotizacion'] = clsCotizacionComercialDetalleFrm()
         context['frmCust'] = clsCrearClienteFrm()
+        context['list_url'] = self.success_url
         context['action'] = 'add'
         return context
-
-''' 3.3 Vista para ver cotizaciones'''
-class clsVerCotizacionesViw(ListView):
-    # model = Quotes
+    
+''' 3.3 Vista para ver cotizaciones'''  
+class clsVerCotizacionesViw(ListView):    # model = Quotes
     template_name = 'modulo_comercial/ver_cotizaciones.html'
 
     @method_decorator(csrf_exempt)

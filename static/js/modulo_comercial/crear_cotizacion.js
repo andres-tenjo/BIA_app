@@ -1,70 +1,397 @@
-var tblProducts;
-var idCartera;
-var product = '';
-var id_prod;
-var creditValue;
+/////////////////////////////////////////////////////////////
+// Variables
+var dctCotizacion = {
 
-var sales = {
-    items: {
-        customer_id: '',
-        name: '',
-        identification: '',
-        cel: '',
-        customer_cat: '',
-        pay_method: '',
-        estado_cartera: '',
-        order_date: '',
-        order_city:'',
-        order_address: '',
-        deliver_date: '',
-        del_schedule: '',
-        observation:'',
-        subtotal: 0.00,
-        iva: 00,
-        dcto: 0.00,
-        total: 0.00,
-        products: [],
-        salesHelper: []
+    dctResumenCotizacion:{
+        lstDetalleCotizacion: [],
+        lstPrecios: [],
+        lstListaPrecios: []
     },
-    get_ids: function () {
-        var ids = [];
-        $.each(this.items.products, function (key, value) {
-            ids.push(value.id);
-        });
-        return ids;
-    },
-    add: function (item) {
-        this.items.products.push(item);
-        this.list();
-    },
-    calculate_invoice: function () {
-        var subtotal = 0.00;
-        var iva = 0.00;
-        var dcto = 0.00;
-        var total = 0.00;
-        cbDesc = $('.cbDesc').val();
-        $.each(this.items.products, function (pos, dict) {
-            subtotal += dict.subtotal;
-            iva += (dict.cant * dict.full_sale_price) * dict.iva
-            dcto += (dict.cant * dict.full_sale_price) * dict.desc
-        });
-        this.items.subtotal = subtotal;
-        this.items.iva = iva;
-        this.items.dcto = dcto;
-        total = subtotal + iva - dcto
-        this.items.total = total;
+};
 
-        $('input[name="subtotal"]').val('$ ' + this.items.subtotal.toFixed(2));
-        $('input[name="iva"]').val('$ ' + this.items.iva.toFixed(2));
-        $('input[name="dcto"]').val('$ ' + this.items.dcto);
-        $('input[name="total"]').val('$ ' + this.items.total.toFixed(2));
-    },
-    list: function () {
-        this.calculate_invoice();
-        tblProducts = $('#tblProducts').DataTable({
+/////////////////////////////////////////////////////////////
+// Eventos
+$(function () {
+
+    // Init
+    fncCLienteslc();
+    fncBuscarProductoslc();
+    fncCargarLibreriaSelect2('.select', 'Seleccione una opción');
+
+    /////////////////////////////////////////////////////////////
+    //////////////////////// Funciones Cliente//////////////////
+    // Busqueda de cliente
+    function fncCLienteslc() {
+        $('#identification').select2({
+            theme: "bootstrap4",
+            language: 'es',
+            allowClear: true,
+            ajax: {
+                delay: 250,
+                type: 'POST',
+                url: window.location.pathname,
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                data: function (params) {
+                    var queryParameters = {
+                        term: params.term,
+                        action: 'slcBuscarClientejsn',
+                    }
+                    return queryParameters;
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+            },
+            placeholder: 'Nº de identificación, nombre o celular del cliente',
+            minimumInputLength: 1,
+            templateResult: fncBuscarClienteRepo,
+        }).on('select2:select', function (e) {  
+            var dctDataCliente = e.params.data;
+            var intIdCliente = dctDataCliente.id;
+            var jsnparameters = new FormData();
+            jsnparameters.append('action', 'slcEstadoCarteraClientejsn');
+            jsnparameters.append('intIdCliente', intIdCliente);
+            fncValidarCarteraCliente(window.location.pathname, jsnparameters,
+                function () {
+                    if(!dctDataCliente.price_list){
+                        fncCargarCliente(dctDataCliente);
+                        fncMensajeInformacionmns('El cliente no tiene lista de precios asociada, los productos se mantienen en precio de venta full');
+                        return;    
+                    }
+                    intIdListaPrecios = dctDataCliente.price_list.id;
+                    var parameters = new FormData();
+                    parameters.append('action', 'slcListaPreciosDetallejsn');
+                    parameters.append('intIdListaPrecios', intIdListaPrecios);
+                    fcnCargarListaPrecios(window.location.pathname, parameters,
+                        function () {
+                            fncCargarCliente(dctDataCliente);
+                            return;
+                        }
+                    );
+                    return;
+                }
+            );
+        }).on('select2:unselect', function (e) {
+            fncLimpiarCliente();
+        });    
+    }
+
+    // Validar cartera cliente
+    function fncValidarCarteraCliente(url, jsnParametros, fncRetorno) {
+        $.ajax({
+            url: url,
+            data: jsnParametros,
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            processData: false,
+            contentType: false,
+            success: function (request) {
+                if (request.hasOwnProperty('success')) {
+                    fncRetorno(request);
+                    return false;
+                }
+                fncMensajeConfirmacionmns('Confirmación!', '' + request.error + ' ¿Desea visualizar el historial de crédito?',
+                    function () {
+                        // Visualizar la ventana de cartera del cliente
+                        window.open('/configuracion/exportar_lista_pdf/' + request.intIdCliente + '/', '_blank');
+                        return;
+                    },
+                    function () {
+                        
+                    }
+                );
+                return false;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                fncMensajeErrormns(errorThrown + ' ' + textStatus);
+            }
+        });
+    }
+    
+    // Cargar lista de precios del cliente
+    function fcnCargarListaPrecios(url, jsnParametros, fncSuccess) {
+        $.ajax({
+            url: url,
+            data: jsnParametros,
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            processData: false,
+            contentType: false,
+            success: function (request) {
+                dctCotizacion.dctResumenCotizacion.lstListaPrecios = request.data;
+                fncSuccess();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                fncMensajeErrormns(errorThrown + ' ' + textStatus);
+            }
+        });
+    }
+    
+    // Función que carga la información del cliente al pedido una vez es validado
+    function fncCargarCliente(dctDataCliente) {
+        $('.dataCliente').prop('hidden', false);
+        $('#iptIdentificacionCliente').val(dctDataCliente.identification);
+        $('#iptCelularCliente').val(dctDataCliente.cel_number);
+        $('#city').val(dctDataCliente.city.id);
+        $('#iptDireccionCliente').val(dctDataCliente.delivery_address);
+        $('#iptCategoriaCliente').val(dctDataCliente.customer_cat.customer_cat);
+        $('#iptObservacionesCliente').val('');
+        $('#iptFormaPagoCliente').val(dctDataCliente.pay_method.name);
+        $('#colEstadoCarteraCliente').prop('hidden', false);
+        $('#iptEstadoCarteraCliente').val('Sin pagos pendientes');
+    }
+    
+    // Función que limpia la información del cliente en el pedido
+    function fncLimpiarCliente() {
+        $('.dataCliente').prop('hidden', true);
+        $('#iptIdentificacionCliente').val('');
+        $('#iptCelularCliente').val('');
+        $('#iptCiudadCliente').val('');
+        $('#iptDireccionCliente').val('');
+        $('#iptObservacionesCliente').val('');
+        $('#iptFormaPagoCliente').val('');
+        $('#colEstadoCarteraCliente').prop('hidden', true);
+        $('#iptEstadoCarteraCliente').val('');
+    }
+
+    /////////////////////////////////////////////////////////////
+    //////////////////////// Eventos Cliente//////////////////
+    // Abrir modal formulario creación cliente
+    $('#btnModalCrearCliente').on('click', function () {
+        $('#modalCustomer').modal('show');
+    });
+
+    // Reestablecer formulario creación cliente
+    $('#modalCustomer').on('hidden.bs.modal', function (e) {
+        $('#formCustomer').trigger('reset');
+    })
+
+    // Crear un cliente
+    $('#formCustomer').on('submit', function (e) {
+        e.preventDefault();
+        var parameters = new FormData(this);
+        parameters.append('action', 'frmCrearClientejsn');
+        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
+            '¿Estas seguro de guardar el registro?', parameters, function (response) {
+                var newOption = new Option(response.value, response.id, false, true);
+                if(!response.price_list){
+                    fncMensajeInformacionmns('El cliente no tiene lista de precios asociada, los productos se mantienen en precio de venta full');
+                    return;    
+                }
+                intIdListaPrecios = response.price_list.id;
+                var parameters = new FormData();
+                parameters.append('action', 'slcListaPreciosDetallejsn');
+                parameters.append('intIdListaPrecios', intIdListaPrecios);
+                fcnCargarListaPrecios(window.location.pathname, parameters,
+                    function () {
+                        fncCLienteslc();
+                        $('#identification').append(newOption).trigger('change');
+                        fncCargarCliente(response);
+                        $('#modalCustomer').modal('hide');
+                        return;
+                    }
+                );
+                return;
+                
+            }
+        );
+    });
+
+    /////////////////////////////////////////////////////////////
+    //////////////////////// Funciones producto///////////////////
+    // Busqueda de producto
+    function fncBuscarProductoslc() {
+        $('#product_code').select2({
+            theme: "bootstrap4",
+            language: 'es',
+            allowClear: true,
+            ajax: {
+                delay: 250,
+                type: 'POST',
+                url: window.location.pathname,
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                data: function (params) {
+                    var queryParameters = {
+                        term: params.term,
+                        action: 'slcBuscarProductojsn',
+                    }
+                    return queryParameters;
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+            },
+            placeholder: 'Ingrese el código, nombre o presentación del producto',
+            minimumInputLength: 1,
+            templateResult: fncBuscarProductoRepo,
+        // Seleccionar un producto
+        }).on('select2:select', function (e) {
+            let dctDataProducto = e.params.data;
+            if (dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion.length >= 1){
+                bolValidarDuplicado = fncValidarDuplicadosbol(dctDataProducto.id);
+                if (bolValidarDuplicado.bolValidacion == true) {
+                    fncMensajeConfirmacionmns('Alerta', 'Ya se encuentra en la tabla este producto ¿desea eliminar el actual y establecerlo de nuevo?',
+                        function () {
+                            dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion.splice(bolValidarDuplicado.intIndice, 1);
+                            $('#tblDetalleCotizacion').DataTable().clear().rows.add(dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion).draw();
+                            let lstPrecios = dctCotizacion.dctResumenCotizacion.lstPrecios;
+                            fncCargarProducto(dctDataProducto, lstPrecios);
+                            return;
+                        },  
+                        function () {
+                            fncLimpiarFormularioDetalle();
+                            return;
+                        });
+                    return;
+                }
+                else if(bolValidarDuplicado.bolValidacion == false){
+                    let lstPrecios = dctCotizacion.dctResumenCotizacion.lstPrecios;
+                    fncCargarProducto(dctDataProducto, lstPrecios);
+                    return;
+                }
+                return;
+            }
+            let lstPrecios = dctCotizacion.dctResumenCotizacion.lstPrecios;
+            fncCargarProducto(dctDataProducto, lstPrecios);
+            return;
+        }).on('select2:unselect', function (e) {
+            fncLimpiarFormularioDetalle();
+            return;
+        });
+    }
+
+    // Validar si un producto esta en pedido
+    function fncValidarDuplicadosbol(intProductCode) {
+        dctValidacion = {
+            'bolValidacion': false,
+            'intIndice': false,
+        }
+        dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion.forEach(function (item, index) {
+            if(item.product_code == intProductCode){
+                dctValidacion.bolValidacion = true;
+                dctValidacion.intIndice = index;
+            }
+        });
+        return dctValidacion;
+    }
+
+    // Función para cargar la información de un producto
+    function fncCargarProducto(dctDataProducto, lstPrecios) {
+        if (lstPrecios.length > 0){
+            lstPrecios.forEach(function (item, index) {
+                if(item.product_code == dctDataProducto.id){
+                    $('.dataProducto').prop('hidden', false);
+                    $('#iptCodigo').val(dctDataProducto.id);
+                    $('#iptUnidadVenta').val(dctDataProducto.sales_unit.sales_unit);
+                    $('#iva_producto').val(dctDataProducto.iva + ' %');
+                    $('#unit_price').val(item.unit_price); 
+                    $('#quantity').focus();
+                    return;
+                }
+                else if(item.product_code != dctDataProducto.id){
+                    fncMensajeConfirmacionmns('Confirmación!', 'El producto no se encuentra registrado en la lista de precios ¿Desea envíar una notificación para incluirlo?',
+                        function () {
+                            // Enviar alerta para incluir producto a lista de precios
+                            return;
+                        },
+                        function () {
+                            $('.dataProducto').prop('hidden', false);
+                            $('#iptCodigo').val(dctDataProducto.id);
+                            $('#iptUnidadVenta').val(dctDataProducto.sales_unit.sales_unit);
+                            $('#iva_producto').val(dctDataProducto.iva + ' %');
+                            $('#unit_price').val(dctDataProducto.full_sale_price);
+                            $('#quantity').focus();
+                            return false;
+                        }
+                    );
+                    return;
+                }
+            });
+        }
+        $('.dataProducto').prop('hidden', false);
+        $('#iptCodigo').val(dctDataProducto.id);
+        $('#iptUnidadVenta').val(dctDataProducto.sales_unit.sales_unit);
+        $('#iva_producto').val(dctDataProducto.iva);
+        $('#unit_price').val(dctDataProducto.full_sale_price);  
+        var jsnParametros = new FormData();
+        jsnParametros.append('action', 'iptConsultarSaldo');
+        jsnParametros.append('intCodigoProducto', dctDataProducto.id);
+        return;
+    }
+
+    // Reestablecer formulario producto
+    function fncLimpiarFormularioDetalle() {
+        $('#product_code').val('').trigger('change.select2');
+        $('#iptCodigo').val('');
+        $('#iptUnidadVenta').val('');
+        $('#lead_time').val('');
+        $('#quantity').val('');
+        $('#unit_price').val('');
+        $('#due_date').val('');
+        $('#observations').val('');
+        $('#product_code').select2('open');
+        $('.dataProducto').prop('hidden', true);
+    }
+
+    // Agregar producto a tabla
+    function fncAgregarProductoTabla(dctProductoNuevo) {
+        dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion.push(dctProductoNuevo);
+        if(dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion.length == 1){
+            fncDetallePedidotbl();
+            $('.dataTotales').prop('hidden', false);
+            $('#rowGuardarPedido').prop('hidden', false);
+            document.getElementById('follow_up_date').setAttribute("min", '2022-05-09');
+            $('#tblDetallePedido').DataTable().clear().rows.add(dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion).draw();
+            fncMensajeConfirmacionmns('Confirmación', '¿Desea agregar otro producto?',
+            function () {    
+                fncLimpiarFormularioDetalle();
+                fncCalcularPedido();
+                return;
+            },
+            function () {
+                fncCalcularPedido();
+                $('#mdlAgregarProducto').modal('hide');
+                return;
+            });
+            return;
+        }
+        $('#tblDetallePedido').DataTable().clear().rows.add(dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion).draw();
+        fncMensajeConfirmacionmns('Confirmación', '¿Desea agregar otro producto?',
+        function () {    
+            fncLimpiarFormularioDetalle();
+            fncCalcularPedido();
+            return;
+        },
+        function () {
+            fncCalcularPedido();
+            $('#mdlAgregarProducto').modal('hide');
+            return;
+        });
+    }
+
+    // Cargar tabla detalle de pedido
+    function fncDetallePedidotbl() {
+        tblDetallePedido = $('#tblDetallePedido').DataTable({
             responsive: true,
             autoWidth: false,
             destroy: true,
+            pageLength: 0,
+            lengthMenu: [5, 10, 20, 50, 100],
+            deferRender: true,
             language: {
                 "decimal": "",
                 "emptyTable": "No existe información creada",
@@ -85,1077 +412,231 @@ var sales = {
                     "previous": "Anterior"
                 },
             },
-            data: this.items.products,
+            data: dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion,
             columns: [
-                { "data": "id"},
+                { "data": "product_code"},
                 { "data": "product_desc"},
-                { "data": "sales_unit.sales_unit"},
-                { "data": "full_sale_price"},
-                { "data": "cant"},
+                { "data": "sales_unit"},
+                { "data": "unit_price"},
+                { "data": "quantity"},
                 { "data": "subtotal"},
                 { "data": "iva"},
-                { "data": "desc"},
-                { "data": "id"},
+                { "data": "total"},
+                { "data": "product_code"}
             ],
             columnDefs: [
+                {
+                    targets: [-5, -7, -8, -9],
+                    class: 'text-center',
+                    orderable: true,
+                },
+                {
+                    targets: [-2, -3, -4, -6],
+                    class: 'text-center',
+                    orderable: true,
+                    render: function (data, type, row) {
+                        return '$ '+ parseFloat(data).toFixed(2);
+                    }
+                },
                 {
                     targets: [-1],
                     class: 'text-center',
                     orderable: false,
                     render: function (data, type, row) {
-                        return '<a rel="remove" class="btn btn-danger btn-xs btn-flat" style="color: white;"><i class="fas fa-trash-alt"></i></a>';
+                        var buttons = '<a href ="#" rel="edit" class="btn btn-success btn-xs btn-flat" title="Editar producto"><i class="fas fa-edit"></i></a> ';
+                        buttons += '<a href="#" rel="delete" class="btn btn-danger btn-xs btn-flat" title="Eliminar producto"><i class="fas fa-trash"></i></a> ';
+                        return buttons;
                     }
                 },
-                {
-                    targets: [-4, -6],
-                    class: 'text-center',
-                    orderable: false,
-                    render: function (data, type, row) {
-                        return '$ '+parseFloat(data).toFixed(2);
-                    }
-                },
-                {
-                    targets: [-2, -3],
-                    class: 'text-center',
-                    orderable: false,
-                    render: function (data, type, row) {
-                        return (parseFloat(data).toFixed(2) * 100) + ' %';
-                    }
-                },
-                {
-                    targets: [-5],
-                    class: 'text-center',
-                },
-            ],
-            rowCallback(row, data, displayNum, displayIndex, dataIndex) {
-
-                $(row).find('input[name="cant"]').TouchSpin({
-                    min: 1,
-                    max: 1000000000,
-                    step: 1
-                });
-
-            },
-            initComplete: function(settings, json) {
-            }
-        });
-    },
-    helperList: function () {
-        tblHelper = $('#tblHelp').DataTable({
-            responsive: true,
-            autoWidth: false,
-            destroy: true,
-            language: {
-                "decimal": "",
-                "emptyTable": "No existe información creada",
-                "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
-                "infoEmpty": "Mostrando 0 de 0 Entradas",
-                "infoFiltered": "(Filtrado de _MAX_ total entradas)",
-                "infoPostFix": "",
-                "thousands": ",",
-                "lengthMenu": "Mostrar _MENU_ Entradas",
-                "loadingRecords": "Cargando...",
-                "processing": "Procesando...",
-                "search": "Buscar:",
-                "zeroRecords": "Sin resultados encontrados",
-                "paginate": {
-                    "first": "Primero",
-                    "last": "Ultimo",
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                },
-            },
-            data: this.items.salesHelper,
-            columns: [
-                { "data": "id"},
-                { "data": "name"},
-                { "data": "udv.name"},
-                { "data": "price_udv"},
-                { "data": "cant"},
-                { "data": "subtotal"},
-                { "data": "iva"},
-                { "data": "desc"},
-                { "data": "id"},
-            ],
-            columnDefs: [
-                {
-
-                }
             ],
             initComplete: function(settings, json) {
             }
         });
-    },
-};
 
-// Cargar repo de cliente
-function fncBuscarClienteRepo(repo) {
-    if (repo.loading) {
-        return repo.text;
-    }
-
-    var option = $(
-        '<div class="wrapper container">'+
-        '<div class="row">' +
-        '<div class="col-lg-12 text-left shadow-sm">' +
-        //'<br>' +
-        '<p style="margin-bottom: 0;">' +
-        '<b>Nombre:</b> ' + repo.business_name + '<br>' +
-        '<b>Id:</b> ' + repo.identification + '<br>' +
-        '<b>Categoría:</b> ' + repo.customer_cat.customer_cat + '<br>' +
-        '<b>Celular:</b> ' + repo.cel_number + '<br>' +
-        '</p>' +
-        '</div>' +
-        '</div>' +
-        '</div>');
-
-    return option;
-}
-
-// Cargar repo de productos
-function fncBuscarProductoRepo(repo) {
-    if (repo.loading) {
-        return repo.text;
-    }
-
-    var option = $(
-        '<div class="wrapper container">'+
-        '<div class="row">' +
-        '<div class="col-lg-12 text-left shadow-sm">' +
-        //'<br>' +
-        '<p style="margin-bottom: 0;">' +
-        '<b>Nombre:</b> ' + repo.product_desc + '<br>' +
-        '<b>Código:</b> ' + repo.id + '<br>' +
-        '<b>Presentación:</b> ' + repo.presentation + '<br>' +
-        '<b>Precio:</b> <span class="badge badge-warning">$'+repo.cost_pu+'</span>'+
-        '</p>' +
-        '</div>' +
-        '</div>' +
-        '</div>');
-
-    return option;
-}
-
-$(function(){
-
-    // Cargar select2
-    $('.select2').select2({                                                                                                                                                                                                                                                                                                                                         
-        theme: "bootstrap4",
-        language: 'es'
-    });
-
-    // Buscar cliente
-    $('#identification').select2({
-        theme: "bootstrap4",
-        language: 'es',
-        allowClear: true,
-        ajax: {
-            delay: 250,
-            type: 'POST',
-            url: window.location.pathname,
-            data: function (params) {
-                var queryParameters = {
-                    term: params.term,
-                    action: 'search_customer'
+        // Editar producto
+        $('#tblDetallePedido tbody').on('click', 'a[rel="edit"]', function (e) {
+            e.preventDefault();
+            var tr = tblDetallePedido.cell($(this).closest('td, li')).index();
+            var data_row = tblDetallePedido.row(tr.row).data();
+            $.each(dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion, function (pos, value) {
+                if(data_row.product_code == value.product_code){
+                    dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion.splice(pos, 1);
+                    $('#tblDetallePedido').DataTable().clear().rows.add(dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion).draw();
+                    $('#product_code').val(data_row.product_code).trigger('change.select2');
+                    $('#iptCodigo').val(data_row.product_code).trigger('change.select2');
+                    $('#iptUnidadVenta').val(data_row.sales_unit).trigger('change.select2');
+                    $('#quantity').val(data_row.quantity);
+                    $('#unit_price').val(data_row.unit_price);
+                    $('#subtotal').val(data_row.subtotal);
+                    $('#iva_producto').val(data_row.iva_producto);
+                    $('#total_producto').val(data_row.total_producto);
+                    var jsnParametros = new FormData();
+                    jsnParametros.append('action', 'iptConsultarSaldo');
+                    jsnParametros.append('intCodigoProducto', data_row.product_code);
+                    $('#mdlAgregarProducto').modal('show');
+                    return;
                 }
-                return queryParameters;
-            },
-            processResults: function (data) {
-                return {
-                    results: data
-                };
-            },
-        },
-        placeholder: 'Ingrese el nombre, número de identificación ó celular del cliente',
-        minimumInputLength: 1,
-        templateResult: fncBuscarClienteRepo,
-
-    // Seleccionar cliente
-    }).on('select2:select', function (e) {
-        var data = e.params.data;
-        sales.items.customer_id = data.id;
-        sales.items.name = data.business_name;
-        sales.items.identification = data.identification;
-        sales.items.cel = data.cel_number;
-        sales.items.category_cust = data.customer_cat.customer_cat;
-        sales.items.order_city = data.city.name;
-        sales.items.del_schedule = data.del_schedule;
-        $('#dataCustomer').attr('hidden', false)
-        $('input[name="id_number"]').val(data.identification);
-        $('input[name="cel_number"]').val(data.cel_number);
-        $('input[name="mail"]').val(data.email);
-        $('input[name="cust_cat"]').val(data.customer_cat.customer_cat);
-        $('input[name="city"]').val(data.city.name);
-        $('input[name="zone"]').val(data.customer_zone.customer_zone);
-        $('input[name="address"]').val(data.delivery_address);
-        cartera = data.pay_method.name;
-        id_customer = data.id;
-        if(cartera == 'Crédito' ){
-            credit_value = data.credit_value;
-            $.ajax({
-                url: window.location.pathname,
-                type: 'POST',
-                data: {
-                    'action':'cartera_cliente',
-                    'id': id_customer,
-                    'credit_value': credit_value
-                },
-                dataType: 'json',
-            }).done(function(data) {
-                if (!data.hasOwnProperty('msg')){
-                    $('#dataCustCartera').attr('hidden', false)
-                    $('#stateCart').val(data.cartera[0])
-                    $('#creditValue').val('$ ' + data.cartera[1])
-                    creditValue = data.cartera[1]
-                    $('#minPay').val('$ ' + data.cartera[2])
-                    $('#totalPay').val('$ ' + data.cartera[3])
-                    Swal.fire({
-                        icon: 'warning',
-                        html: data.cartera[4],
-                        showConfirmButton: false,
-                        timer: 2500
-                    });
-                }else if(data.hasOwnProperty('msg')){
-                    $('#dataCustCartera').attr('hidden', false)
-                    $('#stateCart').val(data.state)
-                    $('#creditValue').val('$ ' + data.credit_value)
-                    creditValue = data.credit_value
-                    $('#minPay').val('$ ' + 0)
-                    $('#totalPay').val('$ '+ 0)
-                    $('#pay_method').val('CR')
-                    Swal.fire({
-                        icon: 'warning',
-                        html: data.msg,
-                        showConfirmButton: false,
-                        timer: 2500
-                    });
-                }
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                alert(textStatus +': '+errorThrown);
-            }).always(function(data) {                
             });
+            return;
+        });
+        
+        $('#tblDetallePedido tbody').on('click', 'a[rel="delete"]', function (e) {
+            e.preventDefault();
+            var tr = tblDetallePedido.cell($(this).closest('td, li')).index();
+            var data_row = tblDetallePedido.row(tr.row).data();
+            $.each(dctListaPreciosDetalle.lstDetalleListaPrecios, function (pos, value) {
+                if(data_row.product_code == value.product_code){
+                    fncMensajeConfirmacionmns('Confirmación!', '¿Desea eliminar el producto de la tabla?',
+                    function () {
+                        dctListaPreciosDetalle.lstDetalleListaPrecios.splice(pos, 1);
+                        $('#tblDetallePedido').DataTable().clear().rows.add(dctListaPreciosDetalle.lstDetalleListaPrecios).draw();
+                        return;
+                    },
+                    function () {
+                        
+                    });
+                    return;
+                }
+            });
+            return;
+        });
+    }
+
+    // Guardar venta perdida
+    function fncGuardarVentaPerdida(jsnParametros, fncRetorno) {
+        $.ajax({
+            url: window.location.pathname,
+            data: jsnParametros,
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            processData: false,
+            contentType: false,
+            success: function (request) {
+                fncRetorno();
+                return;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                fncMensajeErrormns(errorThrown + ' ' + textStatus);
+            }
+        });
+    } 
+
+    // Actualizar calcular totales pedido
+    function fncCalcularPedido() {
+        let subtotal = 0.00;
+        let iva = 0.00;
+        let total = 0.00;
+        $.each(dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion, function (pos, dict) {
+            subtotal += parseFloat(dict.subtotal);
+            iva += parseFloat(dict.iva)
+            total += parseFloat(dict.total)
+        });
+        $('#subtotal').val('$ ' + subtotal.toFixed(2));
+        $('#iva').val('$ ' + iva.toFixed(2));
+        $('#total').val('$ ' + total.toFixed(2));
+    }
+
+    /////////////////////////////////////////////////////////////
+    //////////////////////// Eventos producto///////////////////
+    // Abrir modal formulario producto
+    $('#btnModalProductos').on('click', function () {
+        let strBodega = $('#store').val()
+        if (strBodega == ''){
+            fncMensajeInformacionmns('!Seleccione una bodega!');
+            return;
         }
-        $('select[name="search"]').focus();
-
-    }).on('select2:unselect', function (e) {
-        $('input[name="id_number"]').val('');
-        $('input[name="cel_number"]').val('');
-        $('input[name="mail"]').val('');
-        $('input[name="cust_cat"]').val('');
-        $('#dataCustomer').attr('hidden', true)
-        $('#dataCustCartera').attr('hidden', true)
-        $('input[name="stateCartera"]').val('');
-        $('#stateCart').val('')
-        $('#creditValue').val('')
-        $('#minPay').val('')
-        $('#totalPay').val('')
-        // falta btn cartera
-        $('.btnCartera').attr('disabled');
-        $('#addProds').collapse("hide");
-    });
-    
-    // Abrir modal creación cliente
-    $('.addCust').on('click', function () {
-        $('#modalCustomer').modal('show');
+        $('#mdlAgregarProducto').modal('show');
     });
 
-    // Borrar lo digitado en el formulario cliente
-    $('#modalCustomer').on('hidden.bs.modal', function (e) {
-        $('#formCustomer').trigger('reset');
+    // Enfocar busqueda de producto
+    $('#mdlAgregarProducto').on('shown.bs.modal', function (e) {
+        $('#product_code').select2('open');
+    });
+
+    // Cerrar modal formulario producto
+    $('#mdlAgregarProducto').on('hidden.bs.modal', function () {
+        fncLimpiarFormularioDetalle();
+    });
+
+    // Agregar producto
+    $('#frmProducto').on('submit', function (e) {
+        e.preventDefault();
+        let intCodigoProducto = $('#product_code').val();
+        let strUnidadVenta = $('#iptUnidadVenta').val();
+        let strDescripcionProducto = $('#product_code  :selected').text();
+        let intCantidad = $('#quantity').val();
+        let fltPrecioUnitario = parseFloat($('#unit_price').val()).toFixed(2);
+        let fltSubtotal = parseFloat($('#subtotal_producto').val()).toFixed(2);
+        let fltIva = parseFloat($('#iva_producto').val()).toFixed(2);
+        let fltTotal = parseFloat($('#total_producto').val()).toFixed(2);
+        dctProductoNuevo = {
+            'product_code': intCodigoProducto,
+            'product_desc': strDescripcionProducto,
+            'sales_unit': strUnidadVenta,
+            'unit_price': fltPrecioUnitario,
+            'quantity': intCantidad,
+            'subtotal': fltSubtotal,
+            'iva': fltIva,
+            'total': fltTotal,
+        }
+        fncAgregarProductoTabla(dctProductoNuevo)
+    });
+
+    // Eliminar productos de la tabla
+    $('#btnEliminarProductos').on('click', function (e) {
+        e.preventDefault();
+        if (dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion.length >= 1){
+            fncMensajeConfirmacionmns('¡Confirmación!', '¿Desea eliminar todos los productos de la tabla?',
+                function () {
+                    dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion = [];
+                    $('#tblDetallePedido').DataTable().clear().rows.add(dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion).draw();
+                    $('.dataTotales').prop('hidden', true);
+                    $('#rowGuardarPedido').prop('hidden', true);   
+                    return;
+                },
+                function () {
+                    
+                });
+                return;
+        }
+        fncMensajeInformacionmns('!La tabla se encuentra vacia!');
+        return;
     })
 
-    // Guardar el registro de cliente
-    $('#formCustomer').on('submit', function (e) {
+    //Guardar pedido
+    $('#frm').on('submit', function (e) {
         e.preventDefault();
-        var parameters = new FormData(this);
-        parameters.append('action', 'create_customer');
-        fncGuardarFormularioAjax(window.location.pathname, 'Notificación',
-            '¿Estas seguro de guardar el registro?', parameters, function (response) {
-                var newOption = new Option(response.name, false, true);
-                $('#identification').append(newOption).trigger('change');
-                $('#modalCustomer').modal('hide');
-            });
-    });
-
-    // Agregar productos collapse
-    $('.btnAddProd').on('click', function () {
-        cust = $('#identification').val();
-        cart = $('#stateCart').val();
-        if(cust == ''){
-            fncMensajeInformacionmns('Debe ingresar un cliente a la venta');
-            $('select[name="customer"]').focus();
-            return false;
-        }else if(cart == 'Vencida'){
-            fncMensajeInformacionmns('El cliente presenta una cartera vencida');
-            return false;
-        }
-    });
-
-    // Cargar datetimepicker a fecha de venta
-    $('#order_date').datetimepicker({
-        format: 'YYYY-MM-DD',
-        date: moment().format("YYYY-MM-DD"),
-        locale: 'es',
-        minDate: moment().format("YYYY-MM-DD"),
-        maxDate: moment().format("YYYY-MM-DD"),
-    });
-
-    sales.items.order_date = $('#order_date').val();
-
-    // Cargar datetimepicker a fecha de entrega
-    $('#deliver_date').datetimepicker({
-        format: 'YYYY-MM-DD',
-        date: moment().format("YYYY-MM-DD"),
-        locale: 'es',
-        minDate: moment().format("YYYY-MM-DD"),
-    });
-
-    // Buscar productos
-    $('select[name="search"]').select2({
-        theme: "bootstrap4",
-        language: 'es',
-        allowClear: true,
-        ajax: {
-            delay: 250,
-            type: 'POST',
-            url: window.location.pathname,
-            data: function (params) {
-                var queryParameters = {
-                    term: params.term,
-                    action: 'search_products',
-                    ids: JSON.stringify(sales.get_ids())
-                }
-                return queryParameters;
-            },
-            processResults: function (data) {
-                return {
-                    results: data
-                };
-            },
-        },
-        placeholder: 'Ingrese el código, nombre o presentación del producto',
-        minimumInputLength: 1,
-        templateResult: fncBuscarProductoRepo,
-
-    }).on('select2:select', function (e) {
-        var data = e.params.data;
-        console.log(data);
-        id_prod = data.id;
-        products = sales.get_ids();
-        if (products.length > 0){
-            $.each(products, function (pos, value) {
-                if(id_prod == value){
-                    $.confirm({
-                        title: 'Alerta',
-                        content: '¿El producto ya se registro, desea modificarlo?',
-                        buttons: {
-                            Si: function () {
-                                sales.items.products.splice(pos, 1);
-                                $('input[name="cod"]').val(data.id);
-                                $('input[name="nameProd"]').val(data.product_desc);
-                                $('input[name="pres"]').val(data.presentation);
-                                $('input[name="udv"]').val(data.sales_unit.sales_unit);
-                                $('input[name="uniPrice"]').val('$ ' + parseFloat(data.full_sale_price).toFixed(2));
-                                $('input[name="ivaProd"]').val(parseFloat(data.iva).toFixed(2) + ' %');
-                                if(data.saldos_inv.length > 0){
-                                    $('input[name="cantDisp"]').val(data.saldos_inv[0].inventory_balance);
-                                }
-                                $('select[name="search"]').val('').trigger('change.select2');
-                                data.cant = 1;
-                                data.subtotal = 0.00;
-                                data.desc = 0.00;
-                                data.total = 0.00;
-                                product = data;
-                                sales.list();
-                                $('input[name="cantSol"]').focus();
-                            },
-                            Cancelar: function () {
-                                $('select[name="search"]').val('').trigger('change.select2');
-                                $('select[name="search"]').select2('open');
-                            }
-                        }
-                    });
-                } else if(id_prod != value){
-                $('input[name="cod"]').val(data.id);
-                $('input[name="nameProd"]').val(data.product_desc);
-                $('input[name="pres"]').val(data.presentation);
-                $('input[name="udv"]').val(data.sales_unit.sales_unit);
-                $('input[name="uniPrice"]').val('$ ' + parseFloat(data.full_sale_price).toFixed(2));
-                $('input[name="ivaProd"]').val(parseFloat(data.iva).toFixed(2) + ' %');
-                if(data.saldos_inv.length > 0){
-                    $('input[name="cantDisp"]').val(data.saldos_inv[0].inventory_avail);
-                }
-                $('select[name="search"]').val('').trigger('change.select2');
-                data.cant = 1;
-                data.subtotal = 0.00;
-                data.desc = 0.00;
-                data.total = 0.00;
-                product = data;
-                sales.list();
-                $('input[name="cantSol"]').focus();
-                }
-            });
-        }
-        else if (products.length == 0){
-            $('input[name="cod"]').val(data.id);
-            $('input[name="nameProd"]').val(data.product_desc);
-            $('input[name="pres"]').val(data.presentation);
-            $('input[name="udv"]').val(data.sales_unit.sales_unit);
-            $('input[name="uniPrice"]').val('$ ' + parseFloat(data.full_sale_price).toFixed(2));
-            $('input[name="ivaProd"]').val(parseFloat(data.iva).toFixed(2) + ' %');
-            if(data.saldos_inv.length > 0){
-                $('input[name="cantDisp"]').val(data.saldos_inv[0].inventory_avail);
-            }
-            $(this).val('').trigger('change.select2');
-            $('input[name="cantSol"]').focus();
-            data.cant = 1;
-            data.subtotal = 0.00;
-            data.desc = 0.00;
-            data.total = 0.00;
-            product = data;
-            sales.list();
-        }
-    });
-    
-    // Función para calcular la cantidad disponible vs la solicitada
-    $("input[name='cantSol']").TouchSpin({
-        min: 1,
-        step: 1,
-    }).on('change', function (){
-        disp = parseInt($('input[name="cantDisp"]').val());
-        real = parseInt($('input[name="cantSol"]').val());
-        parcial = real - disp
-        prod = $('input[name="nameProd"]').val();
-        udv = $('input[name="udv"]').val();
-        if (real > disp){
-            $.ajax({
-                url: window.location.pathname,
-                type: 'POST',
-                data: {
-                    'action':'compare_quantity',
-                    'id': id_prod
-                },
-                dataType: 'json',
-            }).done(function(data) {
-                console.log(data);
-                if(data.hasOwnProperty('prod_order')){
-                    ordersPurchase = data;
-                    order = '';
-                    cant = 0;
-                    fecha = '';
-                    $.each(ordersPurchase, function (pos, dict) {
-                    if(dict.order_purchase.state.name == 'Abierta'){
-                        order = dict.order_purchase.id;
-                        cant = dict.cant;
-                        fecha = dict.order_purchase.deliver_date;
-                        cant_total = disp + cant;
-                        if(real < cant_total){
-                            $.confirm({
-                                columnClass: 'col-md-12',
-                                title: 'Próximos ingresos',
-                                content: 'El producto ' + prod + ' tiene previsto el ingreso para ' + fecha + ' con la cantidad de ' + cant  + udv + ' en la O.C. ' + order,
-                                buttons: {
-                                    Continuar: function () {
-                                        cant = real;
-                                        product.cant = cant;
-                                        product.subtotal = product.cant * product.price_udv;
-                                        product.price_udv = parseFloat(product.price_udv);
-                                        product.iva = parseFloat(product.iva)/100;
-                                        $('input[name="cod"]').val('');
-                                        $('input[name="nameProd"]').val('');
-                                        $('input[name="pres"]').val('');
-                                        $('input[name="udv"]').val('');
-                                        $('input[name="uniPrice"]').val('');
-                                        $('input[name="ivaProd"]').val('');
-                                        $('input[name="descProd"]').val('');
-                                        $('input[name="cantDisp"]').val('');
-                                        $('input[name="cantSol"]').val(0);
-                                        sales.add(product);
-                                        sales.calculate_invoice();
-                                        product = '';
-                                    },
-                                    Cancelar: function () {
-                                        $.ajax({
-                                            url: window.location.pathname,
-                                            type: 'POST',
-                                            data: {
-                                                'action':'lost_sales',
-                                                'date' : sales.items.order_date,
-                                                'id_cust': sales.items.customer,
-                                                'id_prod': id_prod,
-                                                'cant': real
-                                            },
-                                            dataType: 'json',
-                                        }).done(function(data) {
-                                            if (!data.hasOwnProperty('error')){
-                                                $('input[name="cod"]').val('');
-                                                $('input[name="nameProd"]').val('');
-                                                $('input[name="pres"]').val('');
-                                                $('input[name="udv"]').val('');
-                                                $('input[name="uniPrice"]').val('');
-                                                $('input[name="ivaProd"]').val('');
-                                                $('input[name="descProd"]').val('');
-                                                $('input[name="cantDisp"]').val('');
-                                                $('input[name="cantSol"]').val(0);
-                                                return false;
-                                            }
-                                            fncMensajeErrormns(data.error);
-                                        }).fail(function (jqXHR, textStatus, errorThrown) {
-                                            alert(textStatus +': '+errorThrown);
-                                        }).always(function(data) {                
-                                        });        
-                                    },
-                                    Parcial: {
-                                        text: 'Venta parcial',
-                                        btnClass: 'btn-blue',
-                                        keys: ['enter', 'shift'],
-                                        action: function(){
-                                            $.ajax({
-                                                url: window.location.pathname,
-                                                type: 'POST',
-                                                data: {
-                                                    'action':'lost_sales',
-                                                    'date' : sales.items.order_date,
-                                                    'id_cust': sales.items.customer,
-                                                    'id_prod': id_prod,
-                                                    'cant': parcial
-                                                },
-                                                dataType: 'json',
-                                            }).done(function(data) {
-                                                if (!data.hasOwnProperty('error')){
-                                                    cant = disp;
-                                                    product.cant = cant;
-                                                    product.subtotal = product.cant * product.price_udv;
-                                                    product.price_udv = parseFloat(product.price_udv);
-                                                    product.iva = parseFloat(product.iva)/100;
-                                                    $('input[name="cod"]').val('');
-                                                    $('input[name="nameProd"]').val('');
-                                                    $('input[name="pres"]').val('');
-                                                    $('input[name="udv"]').val('');
-                                                    $('input[name="uniPrice"]').val('');
-                                                    $('input[name="ivaProd"]').val('');
-                                                    $('input[name="descProd"]').val('');
-                                                    $('input[name="cantDisp"]').val('');
-                                                    $('input[name="cantSol"]').val(0);
-                                                    sales.add(product);
-                                                    sales.calculate_invoice();
-                                                    product = '';
-                                                    return false;
-                                                }
-                                                fncMensajeErrormns(data.error);
-                                            }).fail(function (jqXHR, textStatus, errorThrown) {
-                                                alert(textStatus +': '+errorThrown);
-                                            }).always(function(data) {                
-                                            });
-                                        }
-                                    }
-                                }
-                            });
-                        }else if(real > cant_total){
-                            $.confirm({
-                                columnClass: 'col-md-12',
-                                title: 'Próximos ingresos',
-                                content: 'El producto ' + prod + ' tiene previsto el ingreso para ' + fecha + ' con la cantidad de ' + cant  + udv + ' en la O.C. ' + order + 
-                                '<br> Si se genera O.C. hoy el producto tendría un ingreso previsto para el ' + fecha,
-                                buttons: {
-                                    Continuar: function () {
-                                        cant = real;
-                                        product.cant = cant;
-                                        product.subtotal = product.cant * product.price_udv;
-                                        product.price_udv = parseFloat(product.price_udv);
-                                        product.iva = parseFloat(product.iva)/100;
-                                        $('input[name="cod"]').val('');
-                                        $('input[name="nameProd"]').val('');
-                                        $('input[name="pres"]').val('');
-                                        $('input[name="udv"]').val('');
-                                        $('input[name="uniPrice"]').val('');
-                                        $('input[name="ivaProd"]').val('');
-                                        $('input[name="descProd"]').val('');
-                                        $('input[name="cantDisp"]').val('');
-                                        $('input[name="cantSol"]').val(0);
-                                        sales.add(product);
-                                        sales.calculate_invoice();
-                                        product = '';
-                                    },
-                                    Cancelar: function () {
-                                        $.ajax({
-                                            url: window.location.pathname,
-                                            type: 'POST',
-                                            data: {
-                                                'action':'lost_sales',
-                                                'date' : sales.items.order_date,
-                                                'id_cust': sales.items.customer,
-                                                'id_prod': id_prod,
-                                                'cant': real
-                                            },
-                                            dataType: 'json',
-                                        }).done(function(data) {
-                                            if (!data.hasOwnProperty('error')){
-                                                $('input[name="cod"]').val('');
-                                                $('input[name="nameProd"]').val('');
-                                                $('input[name="pres"]').val('');
-                                                $('input[name="udv"]').val('');
-                                                $('input[name="uniPrice"]').val('');
-                                                $('input[name="ivaProd"]').val('');
-                                                $('input[name="descProd"]').val('');
-                                                $('input[name="cantDisp"]').val('');
-                                                $('input[name="cantSol"]').val(0);
-                                                return false;
-                                            }
-                                            fncMensajeErrormns(data.error);
-                                        }).fail(function (jqXHR, textStatus, errorThrown) {
-                                            alert(textStatus +': '+errorThrown);
-                                        }).always(function(data) {                
-                                        });        
-                                    },
-                                    Parcial: {
-                                        text: 'Venta parcial',
-                                        btnClass: 'btn-blue',
-                                        keys: ['enter', 'shift'],
-                                        action: function(){
-                                            $.ajax({
-                                                url: window.location.pathname,
-                                                type: 'POST',
-                                                data: {
-                                                    'action':'lost_sales',
-                                                    'date' : sales.items.order_date,
-                                                    'id_cust': sales.items.customer,
-                                                    'id_prod': id_prod,
-                                                    'cant': parcial
-                                                },
-                                                dataType: 'json',
-                                            }).done(function(data) {
-                                                if (!data.hasOwnProperty('error')){
-                                                    cant = disp;
-                                                    product.cant = cant;
-                                                    product.subtotal = product.cant * product.price_udv;
-                                                    product.price_udv = parseFloat(product.price_udv);
-                                                    product.iva = parseFloat(product.iva)/100;
-                                                    $('input[name="cod"]').val('');
-                                                    $('input[name="nameProd"]').val('');
-                                                    $('input[name="pres"]').val('');
-                                                    $('input[name="udv"]').val('');
-                                                    $('input[name="uniPrice"]').val('');
-                                                    $('input[name="ivaProd"]').val('');
-                                                    $('input[name="descProd"]').val('');
-                                                    $('input[name="cantDisp"]').val('');
-                                                    $('input[name="cantSol"]').val(0);
-                                                    sales.add(product);
-                                                    sales.calculate_invoice();
-                                                    product = '';
-                                                    return false;
-                                                }
-                                                fncMensajeErrormns(data.error);
-                                            }).fail(function (jqXHR, textStatus, errorThrown) {
-                                                alert(textStatus +': '+errorThrown);
-                                            }).always(function(data) {                
-                                            });
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
-                });
-                }else if(data.hasOwnProperty('del_days')){
-                    fecha = data.del_days;
-                    $.confirm({
-                        columnClass: 'col-md-12',
-                        title: 'Próximos ingresos',
-                        content: 'Si se genera O.C. hoy el producto tendría un ingreso previsto para el ' + fecha,
-                        buttons: {
-                            Continuar: function () {
-                                cant = real;
-                                product.cant = cant;
-                                product.subtotal = product.cant * product.price_udv;
-                                product.price_udv = parseFloat(product.price_udv);
-                                product.iva = parseFloat(product.iva)/100;
-                                $('input[name="cod"]').val('');
-                                $('input[name="nameProd"]').val('');
-                                $('input[name="pres"]').val('');
-                                $('input[name="udv"]').val('');
-                                $('input[name="uniPrice"]').val('');
-                                $('input[name="ivaProd"]').val('');
-                                $('input[name="descProd"]').val('');
-                                $('input[name="cantDisp"]').val('');
-                                $('input[name="cantSol"]').val(0);
-                                sales.add(product);
-                                sales.calculate_invoice();
-                                product = '';
-                            },
-                            Cancelar: function () {
-                                $.ajax({
-                                    url: window.location.pathname,
-                                    type: 'POST',
-                                    data: {
-                                        'action':'lost_sales',
-                                        'date' : sales.items.order_date,
-                                        'id_cust': sales.items.customer,
-                                        'id_prod': id_prod,
-                                        'cant': real
-                                    },
-                                    dataType: 'json',
-                                }).done(function(data) {
-                                    if (!data.hasOwnProperty('error')){
-                                        $('input[name="cod"]').val('');
-                                        $('input[name="nameProd"]').val('');
-                                        $('input[name="pres"]').val('');
-                                        $('input[name="udv"]').val('');
-                                        $('input[name="uniPrice"]').val('');
-                                        $('input[name="ivaProd"]').val('');
-                                        $('input[name="descProd"]').val('');
-                                        $('input[name="cantDisp"]').val('');
-                                        $('input[name="cantSol"]').val(0);
-                                        return false;
-                                    }
-                                    fncMensajeErrormns(data.error);
-                                }).fail(function (jqXHR, textStatus, errorThrown) {
-                                    alert(textStatus +': '+errorThrown);
-                                }).always(function(data) {                
-                                });        
-                            },
-                            Parcial: {
-                                text: 'Venta parcial',
-                                btnClass: 'btn-blue',
-                                keys: ['enter', 'shift'],
-                                action: function(){
-                                    $.ajax({
-                                        url: window.location.pathname,
-                                        type: 'POST',
-                                        data: {
-                                            'action':'lost_sales',
-                                            'date' : sales.items.order_date,
-                                            'id_cust': sales.items.customer,
-                                            'id_prod': id_prod,
-                                            'cant': parcial
-                                        },
-                                        dataType: 'json',
-                                    }).done(function(data) {
-                                        if (!data.hasOwnProperty('error')){
-                                            cant = disp;
-                                            product.cant = cant;
-                                            product.subtotal = product.cant * product.price_udv;
-                                            product.price_udv = parseFloat(product.price_udv);
-                                            product.iva = parseFloat(product.iva)/100;
-                                            $('input[name="cod"]').val('');
-                                            $('input[name="nameProd"]').val('');
-                                            $('input[name="pres"]').val('');
-                                            $('input[name="udv"]').val('');
-                                            $('input[name="uniPrice"]').val('');
-                                            $('input[name="ivaProd"]').val('');
-                                            $('input[name="descProd"]').val('');
-                                            $('input[name="cantDisp"]').val('');
-                                            $('input[name="cantSol"]').val(0);
-                                            sales.add(product);
-                                            sales.calculate_invoice();
-                                            product = '';
-                                            return false;
-                                        }
-                                        fncMensajeErrormns(data.error);
-                                    }).fail(function (jqXHR, textStatus, errorThrown) {
-                                        alert(textStatus +': '+errorThrown);
-                                    }).always(function(data) {                
-                                    });
-                                }
-                            }
-                        }
-                    }); 
-                }
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                alert(textStatus +': '+errorThrown);
-            }).always(function(data) {                
-            });
-        }
-    }).val(1)
-
-    // Función para agregar productos a la tabla
-    $('.btnAddP').on('click', function () {
-        
-        if (product == ''){
-            fncMensajeInformacionmns('Ingrese un producto');
-            $('select[name="search"]').focus();
-            return false;
-        }else if (product != ''){
-            cant = $('input[name="cantSol"]').val();
-            product.cant = cant;
-            product.subtotal = product.cant * product.full_sale_price;
-            product.full_sale_price = parseFloat(product.full_sale_price);
-            product.iva = parseFloat(product.iva)/100;
-            product.total = product.subtotal + product.iva + product.desc
-            $('input[name="cod"]').val('');
-            $('input[name="nameProd"]').val('');
-            $('input[name="pres"]').val('');
-            $('input[name="udv"]').val('');
-            $('input[name="uniPrice"]').val('');
-            $('input[name="ivaProd"]').val('');
-            $('input[name="descProd"]').val('');
-            $('input[name="cantDisp"]').val('');
-            $('input[name="cantSol"]').val(0);
-            sales.add(product);
-            sales.calculate_invoice();
-            product = '';
-        }
-        if(sales.items.products.length > 0){
-            products = sales.get_ids();
-            $.ajax({
-                url: window.location.pathname,
-                type: 'POST',
-                data: {
-                    'action':'helpertable',
-                    'ids' : JSON.stringify(sales.get_ids()),
-                    'id_cust': sales.items.customer,
-                    'city': sales.items.order_city,
-                    'category_cust': sales.items.category_cust
-                },
-                dataType: 'json',
-            }).done(function(data) {
-                console.log(data);
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                alert(textStatus +': '+errorThrown);
-            }).always(function(data) {                
-            });
-        }
-    });
-    
-    // Checkbutton para establecer descuentos
-    $('.cbDesc').on('click', function () {
-        cbDesc = parseInt($('.cbDesc').val());
-        dcto = sales.items.dcto;
-        if(cbDesc == 0){
-            if(sales.items.products.length === 0){
-                fncMensajeInformacionmns('Agregue al menos un producto para aplicar el descuento')
-                return false;
-            } else if(dcto >= 0){
-                $('.cbDesc').val(1);
-                fncMensajeInformacionmns('ingrese el % de descuento que desea aplicar')
-                $('#inpDesc').attr('disabled', false)
-                $('#inpDesc').focus();
-            }
-        } else if (cbDesc == 1){
-            $('.cbDesc').val(0);
-            $('#inpDesc').attr('disabled', true);
-            sales.calculate_invoice();
-        }
-    });
-
-    // Función para establecer descuento
-    $("#inpDesc").TouchSpin({
-        min: 0,
-        max: 100,
-        step: 1,
-        decimals: 1,
-        boostat: 5,
-        maxboostedstep: 10,
-        postfix: '%',
-    }).on('change', function (){
-        subtotal = sales.items.subtotal;
-        desGen = $("#inpDesc").val()/100;
-        desc = parseFloat(subtotal * desGen).toFixed(2);
-        sales.items.dcto = desc;
-        $('input[name="discount"]').val('$ ' + desc);
-    }).val(0.00)
-
-    // Boton eliminar productos de la tabla
-    $('.btnRemoveAll').on('click', function () {
-        if(sales.items.products.length === 0) return false;
-        fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar todos los productos?', function () {
-            sales.items.products = [];
-            sales.list();    
-        });
-    });
-    
-    // Eventos de la tabla
-    $('#tblProducts tbody')
-        //Eliminar un producto de la tabla
-        .on('click', 'a[rel="remove"]', function () {
-            var tr = tblProducts.cell($(this).closest('td, li')).index();
-            fncMensajeAlertamns('Notificación', '¿Está seguro de eliminar el producto?', function () {
-                sales.items.products.splice(tr.row, 1);
-                sales.list();
-            });
-        })
-        //Calcular cantidades de la tabla
-        .on('change', 'input[name="cant"]', function () {
-            var cant = parseInt($(this).val());
-            var tr = tblProducts.cell($(this).closest('td, li')).index();
-            sales.items.products[tr.row].cant = cant;
-            sales.items.products[tr.row].subtotal = cant * sales.items.products[tr.row].price_udv
-            sales.calculate_invoice();
-            $('td:eq(5)', tblProducts.row(tr.row).node()).html('$' + sales.items.products[tr.row].subtotal.toFixed(2));
-    });
-
-    // Función para generar pedido
-    $('.genOrder').on('click', function (e) {
-        e.preventDefault();
-        if(sales.items.products.length === 0 ){
-            fncMensajeErrormns('Debe agregar al menos un producto al pedido ')
-            return false;
-        }
-    });
-
-    // event submit form
-    $('form').on('submit', function (e) {
-        e.preventDefault();
-        if(sales.items.products.length === 0 ){
-            fncMensajeErrormns('Debe agregar al menos un producto al pedido')
-            return false;
-        }
-        pay_method = $('#pay_method').val();
-        if(pay_method == 'CR' ){
-            if(sales.items.total > creditValue){
-                $.confirm({
-                    animation: 'Rotate',
-                    closeAnimation: 'scale',
-                    columnClass: 'col-md-9',
-                    icon: 'fa fa-save',
-                    title: 'Confirmación',
-                    content: 'El cupo disponible de credito ($ '+ credit_value +') excede el total del pedido ($ '+ sales.items.total +') seleccione una opción',
-                    buttons: {
-                        Generar: {
-                            text: 'Pagar excedente de pedido en contado',
-                            btnClass: 'btn-green',
-                            action: function () {
-                                sales.items.deliver_date = $('input[name="deliver_date"]').val();
-                                sales.items.pay_method = pay_method;
-                                sales.items.order_address = $('input[name="order_address"]').val();
-                                sales.items.observation = $('textarea[name="obs"]').val();
-                                var parameters = new FormData();
-                                parameters.append('action', $('input[name="action"]').val());
-                                parameters.append('sales', JSON.stringify(sales.items));
-                                $.ajax({
-                                    url: window.location.pathname,
-                                    type: 'POST',
-                                    data: parameters,
-                                    dataType: 'json',
-                                    processData: false,
-                                    contentType: false,
-                                }).done(function(response) {
-                                    $.confirm({
-                                        animation: 'Rotate',
-                                        closeAnimation: 'scale',
-                                        columnClass: 'col-md-6',
-                                        icon: 'fa fa-save',
-                                        title: 'Confirmación',
-                                        content: 'Se ha generado el pedido Nº 000'+ response.id + ', por favor seleccione una opción',
-                                        buttons: {
-                                            Generar: {
-                                                text: 'Generar PDF',
-                                                btnClass: 'btn-green',
-                                                action: function () {
-                                                    window.open('/comercial/sale/invoice/pdf/' + response.id + '/', '_blank');
-                                                    location.href = '/comercial/lista_pedidos/';
-                                                },
-                                            },
-                                            Correo: {
-                                                text: 'Envìar por correo',
-                                                btnClass: 'btn-blue',
-                                                action: function () {
-                                                    
-                                                },
-                                            },
-                                            Cancelar: {
-                                                text: 'Cancelar',
-                                                btnClass: 'btn-red',
-                                                action: function(){
-                                                    
-                                                }
-                                            }
-                                        }
-                                    });
-                                }).fail(function (jqXHR, textStatus, errorThrown) {
-                                    alert(textStatus +': '+errorThrown);
-                                }).always(function(data) {                
-                                });
-                            },
+        if (dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion.length >= 1){
+            var parameters = new FormData(this);
+            parameters.append('action', 'btnGuardarPedidojsn');
+            parameters.append('lstDetalleListaPrecios', JSON.stringify(dctCotizacion.dctResumenCotizacion.lstDetalleCotizacion));
+            fncGuardarFormularioAjax(window.location.pathname, 'Notificación', '¿Está seguro de guardar el registro?', parameters, function (response) {
+                fncMensajeConfirmacionDocumentomns('¡Confirmación!', 'Seleccione una opción:',
+                function () {
+                    window.open('/configuracion/exportar_lista_pdf/' + response.id + '/', '_blank');
+                    fncMensajeConfirmacionmns('¡Confirmación!', '¿Desea crear una nueva lista?',
+                        function () {
+                            location.href = '/configuracion/crear_lista_precios/';
+                            return;
                         },
-                        Cancelar: {
-                            text: 'Modificar pedido',
-                            btnClass: 'btn-red',
-                            action: function(){
-                                
-                            }
-                        }
-                    }
-                });
-            return false;
-            }        
-        }
-        sales.items.deliver_date = $('input[name="deliver_date"]').val();
-        sales.items.pay_method = pay_method;
-        sales.items.order_address = $('input[name="order_address"]').val();
-        sales.items.observation = $('textarea[name="obs"]').val();
-        var parameters = new FormData();
-        parameters.append('action', $('input[name="action"]').val());
-        parameters.append('sales', JSON.stringify(sales.items));
-        $.confirm({
-            theme: 'material',
-            title: 'Confirmaciòn',
-            icon: 'fa fa-bell',
-            content: '¿Está seguro de generar el pedido?',
-            columnClass: 'small',
-            typeAnimated: true,
-            cancelButtonClass: 'btn-primary',
-            draggable: true,
-            dragWindowBorder: false,
-            buttons: {
-                info: {
-                    text: "Si",
-                    btnClass: 'btn-primary',
-                    action: function () {
-                        $.ajax({
-                            url: window.location.pathname,
-                            type: 'POST',
-                            data: parameters,
-                            dataType: 'json',
-                            processData: false,
-                            contentType: false,
-                        }).done(function(response) {
-                            $.confirm({
-                                animation: 'Rotate',
-                                closeAnimation: 'scale',
-                                columnClass: 'col-md-6',
-                                icon: 'fa fa-save',
-                                title: 'Confirmación',
-                                content: 'Se ha generado el pedido Nº 000'+ response.id + ', por favor seleccione una opción',
-                                buttons: {
-                                    Generar: {
-                                        text: 'Generar PDF',
-                                        btnClass: 'btn-green',
-                                        action: function () {
-                                            window.open('/comercial/sale/invoice/pdf/' + response.id + '/', '_blank');
-                                            location.href = '/comercial/lista_pedidos/';
-                                        },
-                                    },
-                                    Correo: {
-                                        text: 'Envìar por correo',
-                                        btnClass: 'btn-blue',
-                                        action: function () {
-                                            
-                                        },
-                                    },
-                                    Cancelar: {
-                                        text: 'Cancelar',
-                                        btnClass: 'btn-red',
-                                        action: function(){
-                                            
-                                        }
-                                    }
-                                }
-                            });
-                        }).fail(function (jqXHR, textStatus, errorThrown) {
-                            alert(textStatus +': '+errorThrown);
-                        }).always(function(data) {                
+                        function () {
+                            location.href = '/configuracion/ver_lista_precios/';
+                            return;
                         });
-                    }
+                        return;
                 },
-                danger: {
-                    text: "No",
-                    btnClass: 'btn-red',
-                    action: function () {
-                        
-                    }
-                },
-            }
-        });
+                function () {
+                    location.href = '/configuracion/crear_lista_precios/';
+                    return;
+                });
+            });
+            return;
+        }
+        fncMensajeInformacionmns('!Debe agregar al menos un producto a la lista de precios!');
+        return;
     });
+
 });

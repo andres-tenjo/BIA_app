@@ -27,14 +27,12 @@ urlpatterns = [
         views.clsVerPedidosViw.as_view(), 
         name='ver_pedidos'
         ),
-    # Imprimir pedido
-    #path(
-    # 'sale/invoice/pdf/<int:pk>/', 
-    # views.clsImprimirPedidoPdfViw.as_view(), 
-    # name='sale_invoice_pdf'
-    # ),
-    
-    # Exportar pedido
+    # Exportar pedido Pdf
+    path(
+    'exportar_pedido_pdf/<int:pk>/', 
+    views.clsExportarPedidoPdfViw.as_view(), 
+    name='exportar_pedido_pdf'
+    ),
 
     # Menu cotizaciones
     path(
