@@ -115,7 +115,8 @@ ORDERCONDITION = (
     )
 INCOMECONDITION = (
     ('CA', 'Causado'),
-    ('NC', 'No causado')
+    ('NC', 'No causado'),
+    ('CS', 'Causado con saldo a favor')
     )
 INCOMETYPE = (
     ('EN', 'Entrada'),

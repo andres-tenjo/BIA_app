@@ -3,6 +3,7 @@ from django.db import connection
 from apps.Modelos.Several_func import fncConsultalst, fncFormatoFechadtf
 import numpy as np
 import sqlite3
+from sklearn.impute import KNNImputer
 
 # Calcula un saldo no acumulado
 # dtfMovimientoHistorico: Es el cuadro de datos que contiene el histórico de movimiento para todos los productos, bodegas y lotes
@@ -55,7 +56,7 @@ def fncMovimientoHistoricodtf(intCodigoProducto, lstBasesDatos):
 #                      'salidas', 'obsequíos', 'Traslados', 'Catálogo de productos', 'Catálogo de bodegas']
 def fncMovimientosHistoricosProductosdtf(lstDocumentos):
     tplColumnasHistorico= ('id', 'creation_date', 'doc_number', 'document_type', 'type', 'quantity', 'batch', 'expiration_date', 
-    'unitary_cost', 'total_cost', 'crossing_doc', 'condition', 'pre_bal', 'balance', 'inv_value', 'identification', 
+    'unitary_cost', 'total_cost', 'total_price', 'crossing_doc', 'condition', 'pre_bal', 'balance', 'inv_value', 'identification', 
     'product_code_id', 'store_id', 'user_id_id')
     lstBasesDatos= lstDocumentos
     strConsultaBodegas= 'SELECT id FROM modulo_configuracion_clscatalogobodegasmdl'
@@ -66,12 +67,12 @@ def fncMovimientosHistoricosProductosdtf(lstDocumentos):
     lstMovimientosHistoricos= [fncMovimientoHistoricodtf(lstCodigoProductos[i][j], lstDatosProducto[i])\
                                for i in range(0, len(lstDatosProducto)) for j in range(0, len(lstCodigoProductos[i]))]
     dtfMovimientoHistorico= pd.concat(lstMovimientosHistoricos).sort_values(by= ['store', 'creation_date', 'batch', 'document_type'])
-    dtfMovimientoHistorico.drop(['unit_price', 'discount', 'total_price'], axis= 1)
+    dtfMovimientoHistorico.drop(['unit_price', 'discount'], axis= 1, inplace= True)
     dtfMovimientoHistorico['id']= [i for i in range(1, len(dtfMovimientoHistorico['creation_date'])+ 1)]
     dtfMovimientoHistorico['user_id']= 1
     dtfMovimientoHistorico= dtfMovimientoHistorico.reindex(columns= ['id', 'creation_date', 'doc_number', 'document_type', 'type', 
-    'quantity', 'batch', 'expiration_date', 'unitary_cost', 'total_cost', 'crossing_doc', 'condition', 'pre_bal', 'balance', 
-    'inv_value', 'identification', 'product_code', 'store', 'user_id'])
+    'quantity', 'batch', 'expiration_date', 'unitary_cost', 'total_cost', 'total_price', 'crossing_doc', 'condition', 'pre_bal', 
+    'balance',  'inv_value', 'identification', 'product_code', 'store', 'user_id'])
     dtfMovimientoHistorico.loc[:, 'id']= dtfMovimientoHistorico['id'].astype(int)
     dtfMovimientoHistorico.loc[:, 'creation_date']= dtfMovimientoHistorico['creation_date'].astype(str)
     dtfMovimientoHistorico.loc[:, 'doc_number']= dtfMovimientoHistorico['doc_number'].astype(str)
@@ -82,6 +83,7 @@ def fncMovimientosHistoricosProductosdtf(lstDocumentos):
     dtfMovimientoHistorico.loc[:, 'expiration_date']= dtfMovimientoHistorico['expiration_date'].astype(str)
     dtfMovimientoHistorico.loc[:, 'unitary_cost']= dtfMovimientoHistorico['unitary_cost'].astype(float)
     dtfMovimientoHistorico.loc[:, 'total_cost']= dtfMovimientoHistorico['total_cost'].astype(float)
+    dtfMovimientoHistorico.loc[:, 'total_price']= dtfMovimientoHistorico['total_price'].astype(float)
     dtfMovimientoHistorico.loc[:, 'crossing_doc']= dtfMovimientoHistorico['crossing_doc'].astype(str)
     dtfMovimientoHistorico.loc[:, 'condition']= dtfMovimientoHistorico['condition'].astype(str)
     dtfMovimientoHistorico.loc[:, 'pre_bal']= dtfMovimientoHistorico['pre_bal'].astype(int)
@@ -92,7 +94,7 @@ def fncMovimientosHistoricosProductosdtf(lstDocumentos):
     dtfMovimientoHistorico.loc[:, 'store']= dtfMovimientoHistorico['store'].astype(int)
     dtfMovimientoHistorico.loc[:, 'user_id']= dtfMovimientoHistorico['user_id'].astype(int)
     strConsultaHistorico= f'''INSERT INTO modulo_configuracion_clshistoricomovimientosalternomdl {tplColumnasHistorico} VALUES
-    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
     with connection.cursor() as cursor:    
         sqlite3.register_adapter(np.int64, lambda val: int(val))
         sqlite3.register_adapter(np.int32, lambda val: int(val))

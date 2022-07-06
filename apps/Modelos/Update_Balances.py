@@ -12,7 +12,7 @@ from django.db import connection
 import sqlite3
 
 # Calcula el nuevo valor del producto en una tabla de datos
-# strCondition: Valor de la columna que indica si la orden está cerrada o abierta (str)
+# strCondition: Valor de la columna que indica si el documento esta cerrada o anulado (str)
 # strType: Valor de la columna que indica si es entrada o salida (str)
 # intQuantity: Valor de la columna que contiene la cantidad del movimiento (int)
 # Retorna el valor del saldoco el que se va a actualizar el cuadro de datos (int)
@@ -42,7 +42,7 @@ def fncActualizaSaldo(strDocumento, dtfDocumento, tplColumnasHistorico= tplColum
     lstAccion= ['EN', 'EN', 'SA', 'SA', 'SA']
     if (strDocumento!= 'Ajuste_De_Inventario') & (strDocumento!= 'Traslado'):
         dtfModificado= dtfDocumento.assign(document_type= strDocumento, 
-        Type= np.select(lstNombreDocumentos, lstAccion, 'No Definido'))
+        Type= np.select(lstNombreDocumentos, lstAccion, 'No Definido')[()])
         dtfModificado= dtfModificado.rename(columns= {'Type': 'type'})
     else: dtfModificado= dtfDocumento.assign(document_type= strDocumento)
     intLlaveHistorico= fncLlavePrimariaint('modulo_configuracion_clshistoricomovimientosmdl')

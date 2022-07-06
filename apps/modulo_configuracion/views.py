@@ -9,7 +9,7 @@ from weasyprint import HTML, CSS
 # Modelos BIA
 from apps.Modelos.Several_func import *
 from apps.Modelos.Update_Balances import *
-from apps.Modelos.Parameters import *
+from apps.Modelos.Parameters import fncMovimientosHistoricosProductosdtf
 from apps.Modelos.Information_Inactivation import *
 
 # Django libraries
@@ -1062,7 +1062,6 @@ class clsOpcionesCatalogoProveedoresViw(LoginRequiredMixin, ValidatePermissionRe
             elif action == 'btnGuardarCondicionCantidadMinimajsn':
                 with transaction.atomic():
                     intProveedorId = int(request.POST['proveedor'])
-                    print(type(intProveedorId))
                     jsnProductos = json.loads(request.POST['items'])
                     for i in jsnProductos:
                         clsCondicionMinimaCompraMdl.objects.create(
@@ -2772,7 +2771,7 @@ class clsImportarCatalogoClientesViw(LoginRequiredMixin, TemplateView):
                                 commercial_advisor_id = i[14],
                                 pay_method = i[15],
                                 credit_days = int(i[16]),
-                                credit_value = float(i[17]),
+                                approved_amount = float(i[17]),
                                 price_list = i[18]
                                 )
                         jsnData['success'] = '¡Se ha cargado el archivo a su base de datos con éxito!'
